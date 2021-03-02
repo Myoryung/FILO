@@ -74,7 +74,7 @@ public class Fire : MonoBehaviour
             if(obstacles.GetTile(nPos) == null) // 해당 위치에 아무것도 없으면 작은 불 생성
             {
                 //좌표값의 변화에 따른 코드 수정 필요함
-                GameMgr.Instance.Embers.GetChild(GameMgr.Instance.UsedEmberCount).position = GameMgr.Instance.BackTile.CellToWorld(nPos);
+                GameMgr.Instance.Embers.GetChild(GameMgr.Instance.UsedEmberCount).position = transform.position + new Vector3(1000 * (_SearchArea[i] % 5) - 2000, 1000 * (_SearchArea[i] / 5) - 2000, 0);
                 GameMgr.Instance.Embers.GetChild(GameMgr.Instance.UsedEmberCount).gameObject.SetActive(true);
                 GameMgr.Instance.UsedEmberCount++;
                 break;

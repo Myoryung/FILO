@@ -72,10 +72,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23f89c18c64f23f4989bbc353d3a147b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HPGage: {fileID: 7042168152952561195}
+  O2Gage: {fileID: 0}
   _maxo2: 0
   _useo2: 0
-  _maxHp: 0
-  HPGage: {fileID: 7042168152952561195}
+  _maxHp: 50
   SmileMark: {fileID: 7160356350746327719}
 --- !u!1 &4662694992756842750
 GameObject:

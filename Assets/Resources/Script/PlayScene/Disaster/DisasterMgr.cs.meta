@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: aa732d13aed080b4a95ec366583f8020
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - FallingRock: {fileID: 7848885900539748514, guid: ab4d7b4b7fe314445879690ae6ed514d,
+      type: 3}
+  - ShortCircuit: {fileID: 7107425091617073584, guid: 71090678e8542b64e8aff06fe8d66de0,
+      type: 3}
+  - Flashover: {fileID: 7986293602088653043, guid: f1068626b39fd7e4492ff7c0ff4f4454,
+      type: 3}
+  - Smoke: {fileID: 3720198032530668074, guid: 559d934896605f04783d9123cb9b3d73, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

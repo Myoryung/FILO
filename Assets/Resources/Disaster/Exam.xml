@@ -1,0 +1,66 @@
+<Events>
+    <Event>
+        <Id>0</Id>
+        <Triggers>
+            <Trigger>
+                <Id>0</Id>
+                <Type>Turn</Type>
+                <Turn>3</Turn>
+            </Trigger>
+            <Trigger>
+                <Id>1</Id>
+                <Type>Exist</Type>
+                <Point>1,2</Point>
+                <Object>All</Object>
+            </Trigger>
+            <Trigger>
+                <Id>2</Id>
+                <Type>NotExist</Type>
+                <Point>1,1</Point>
+                <Object>Player</Object>
+            </Trigger>
+
+            <TriggerGroup>1,2</TriggerGroup>
+        </Triggers>
+
+        <Targets>
+            <TargetEvent>1</TargetEvent>
+            <TargetEvent>2</TargetEvent>
+
+            <Target>
+                <Type>낙석</Type>
+                <Point>1,2</Point>
+            </Target>
+        </Targets>
+    </Event>
+</Events>
+
+<!--
+트리거 종류
+- Turn: 이벤트 시작부터 일정 턴 경과 시 만족
+- Eixst: 특정 좌표에 특정 오브젝트가 존재할 시 만족
+- NotExist: 특정 좌표에 특정 오브젝트가 존재하지 않을 시 만족
+
+다른 Event에 참조되지 않는 Event는 스테이지 시작 시 작동
+
+<Event>
+    <Id>0</Id> // 필수. 이벤트 ID
+    <Triggers> // 필수
+        <Trigger> // 선택
+            <Id>숫자</Id> // 필수. 트리거 Id. 이벤트마다 유일
+            <Type>[Turn, Exist, NotExist]</Type> // 필수
+            <Turn>숫자</Turn> // Turn 타입에서 사용. 필수
+            <Object>[(All), Player, Char, Fire, Electric, ...]</Object> // Exist, NotExist 타입에서 사용. 선택
+        </Trigger>
+    </Triggers>
+
+    <Targets> // 필수
+        <TargetEvent>숫자</TargetEvent> // 선택. 연쇄하여 작동할 이벤트의 ID
+
+        <Target> // 선택
+            <Type>[낙석, 누전, 플래쉬 오버, 짙은 연기]</Type> // 필수. 사건 유형
+            <Point>x,y</Point> // 필수. 이벤트가 발생할 위치
+        </Target>
+    </Targets>
+</Events>
+-->

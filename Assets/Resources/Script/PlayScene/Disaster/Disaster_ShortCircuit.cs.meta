@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 845d3e536e0aeb34ca8581951ff55475
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - electricTile: {fileID: 11400000, guid: 58ec45b770f4b1d4fbac32b9d888ee18, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -14,13 +14,14 @@ public class RescueTarget : Charactor {
 
     private int _panicMoveCount = 2;
     private float _speed = 100.0f;
+    private bool _moveDone = false;
+
     public int RescueCount
     {
         get { return _rescueCount; }
         set { _rescueCount = value; }
     }
 
-    // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
@@ -36,12 +37,13 @@ public class RescueTarget : Charactor {
         }
     }
 
-    public void TurnEndActive()
-    {
-        if (GameMgr.Instance.GameTurn % 1 == 0 && _RescueTargetState == _state.Panic)
-        {
+    public void TurnEndActive() {
+        if (GameMgr.Instance.GameTurn % 1 == 0 && _RescueTargetState == _state.Panic) {
+            _moveDone = false;
             StartCoroutine(Move());
         }
+        else
+            _moveDone = true;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -79,58 +81,40 @@ public class RescueTarget : Charactor {
         SmileMark.SetActive(false);
     }
 
-    IEnumerator Move()
-    {
-        int randx = 0;
-        int randy = 0;
-        while (true)
-        {
-            randx = Random.Range(-1, 2);
-            randy = Random.Range(-1, 2);
-            if (randx == 0 && randy == 0)
-            {
-                continue;
-            }
-            else
-            {
+    IEnumerator Move() {
+        yield return null;
+
+        for (int i = 0; i < _panicMoveCount; i++) {
+            Vector3Int pPos = GameMgr.Instance.BackTile.WorldToCell(transform.position);
+            Vector3Int nPos;
+
+            while (true) {
+                int randx = Random.Range(-1, 2);
+                int randy = Random.Range(-1, 2);
+                nPos = pPos + new Vector3Int(randx, randy, 0);
+
+                if (TileMgr.Instance.RescueTargets.ContainsKey(nPos))
+                    continue;
+
                 break;
             }
-        }
-        Vector3Int rPos = new Vector3Int(randx, randy, 0);
-        Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(transform.position) + rPos;
-        Vector3 arrivePos = GameMgr.Instance.BackTile.CellToWorld(nPos) - (GameMgr.Instance.BackTile.cellSize / 2);
-        while (_panicMoveCount > 0)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, arrivePos, _speed * Time.deltaTime);
-            yield return null;
-            if (Vector3.Distance(arrivePos, transform.position) < 10f)
-            {
-                while (true)
-                {
-                    randx = Random.Range(-1, 2);
-                    randy = Random.Range(-1, 2);
-                    if (randx == 0 && randy == 0)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                transform.position = new Vector3(arrivePos.x, arrivePos.y);
-                rPos = new Vector3Int(randx, randy, 0);
-                nPos = GameMgr.Instance.BackTile.WorldToCell(transform.position) + rPos;
-                arrivePos = GameMgr.Instance.BackTile.CellToWorld(nPos) - (GameMgr.Instance.BackTile.cellSize / 2);
 
-                _panicMoveCount--;
+            TileMgr.Instance.RescueTargets.Remove(pPos);
+            TileMgr.Instance.RescueTargets.Add(nPos, this);
+
+            Vector3 arrivePos = GameMgr.Instance.BackTile.CellToWorld(nPos) + (GameMgr.Instance.BackTile.cellSize / 2);
+
+            float delta = _speed * Time.deltaTime;
+            while (Vector3.Distance(arrivePos, transform.position) > delta) {
+                transform.position = Vector3.MoveTowards(transform.position, arrivePos, delta);
+                yield return null;
             }
+
+            transform.position = arrivePos;
         }
-        TileMgr.Instance.RescueTargets.Remove(GameMgr.Instance.BackTile.WorldToCell(transform.position));
-        TileMgr.Instance.RescueTargets.Add(GameMgr.Instance.BackTile.WorldToCell(transform.position), this);
-        _panicMoveCount = 2;
-        Debug.Log("Panic Done");
+        _moveDone = true;
     }
+
     public override void AddHP(float value)
     {
         base.AddHP(value);
@@ -138,4 +122,7 @@ public class RescueTarget : Charactor {
         if (CurrentHP <= 0)
             Destroy(gameObject);
     }
+    public bool IsMoveDone {
+        get { return _moveDone; }
+	}
 }

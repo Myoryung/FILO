@@ -57,8 +57,10 @@ public class Player : Charactor
     // Update is called once per frame
     protected virtual void Update()
     {
-        Move();
-        Activate();
+        if (GameMgr.Instance != null && GameMgr.Instance.CurrGameState == GameMgr.GameState.PLAYER_TURN) {
+            Move();
+            Activate();
+        }
     }
 
     protected virtual void Move()

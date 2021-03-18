@@ -15,6 +15,7 @@ TagManager:
   - Water(Electric)
   - MentalText
   - StateText
+  - Beacon
   layers:
   - Default
   - TransparentFX

@@ -342,6 +342,10 @@ public class Player : Charactor
             AddHP(-35.0f); // 체력 감소
             AddMental(-2); // 멘탈 감소
             break;
+
+        case "Beacon":
+            // TODO: 구조 종료
+            break;
         }
 
         ChangeMentalText(); // 멘탈 UI 변경

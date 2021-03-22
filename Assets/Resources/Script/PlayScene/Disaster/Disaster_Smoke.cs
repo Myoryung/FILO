@@ -26,9 +26,8 @@ public class Disaster_Smoke : DisasterObject {
 			}
 		}
 
-		foreach (Player player in GameMgr.Instance.Comp_Players) {
-			if ((player.currentTilePos - Pos).magnitude < 2)
-				player.AddO2(-30);
-		}
+		List<Player> players = GameMgr.Instance.GetAroundPlayers(Pos, 2);
+		foreach (Player player in players)
+			player.AddO2(-30);
 	}
 }

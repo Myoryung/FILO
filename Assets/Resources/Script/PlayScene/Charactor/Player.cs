@@ -12,13 +12,11 @@ public class Player : Charactor
     public GameObject UI_ToolBtns; // 도구 버튼 UI
     public GameObject FireWall; // 방화벽 Prefab
     public TileBase FireWallTile; // 타일맵에 적용할 방화벽
-    private Text _mentalText; // ID Card 멘탈 Text UI
-    private Text _stateText; // ID Card 상태 Text UI
 
     // 플레이어 스테이터스
     //안녕안녕?
-    protected enum _Act { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
-    protected _Act _playerAct; 
+    public enum Action { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
+    protected Action _playerAct; 
     private RescueTarget _rescueTarget; // 현재 구조중인 타겟
     [SerializeField]
     private int _playerNum = 0; // 캐릭터 번호
@@ -48,8 +46,6 @@ public class Player : Charactor
     {
         base.Start();
         _tileLayout = GameMgr.Instance.BackTile.GetComponent<GridLayout>();
-        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
-        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
         //SetFOV();
@@ -69,7 +65,7 @@ public class Player : Charactor
         float ver = Input.GetAxisRaw("Vertical");
 
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != _Act.Rescue && _currentMental > 0)
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != Action.Rescue && _currentMental > 0)
         {
             this.transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
             if (GameMgr.Instance.CheckEmberTick()) // 작은 불 재생성
@@ -176,14 +172,13 @@ public class Player : Charactor
     public virtual void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
         AddO2(10.0f);
-        if(_playerAct == _Act.Rescue) // 구조중이라면
+        if(_playerAct == Action.Rescue) // 구조중이라면
         {
             _rescueTarget.RescueCount--; // 구조중인 대상의 남은 구조턴 감소
             if(_rescueTarget.RescueCount <= 0) // 구조턴 값이 0보다 작으면
             {
                 _rescueTarget.gameObject.SetActive(false); // 구조 대상 숨기기
-                _playerAct = _Act.Idle; // Idle 상태로 변경
-                ChangeStateText();
+                _playerAct = Action.Idle; // Idle 상태로 변경
             }
         }
     }
@@ -203,8 +198,7 @@ public class Player : Charactor
             if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
             {
                 _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
-                _playerAct = _Act.Rescue; // 구조 상태로 변경
-                ChangeStateText();
+                _playerAct = Action.Rescue; // 구조 상태로 변경
             }
         }
         UI_Actives.SetActive(false); // UI 숨기기
@@ -347,9 +341,6 @@ public class Player : Charactor
             // TODO: 구조 종료
             break;
         }
-
-        ChangeMentalText(); // 멘탈 UI 변경
-        ChangeStateText(); // 상태 UI 변경
     }
 
     protected void RenderInteractArea(ref Vector3Int oPos)
@@ -373,62 +364,12 @@ public class Player : Charactor
         }
     }
 
-    public void ChangeMentalText()
-    {
-        switch(_currentMental)
-        {
-            case 4:
-                _mentalText.text = "아주좋음";
-                _mentalText.color = new Color(0, 1, 1);
-                break;
-            case 3:
-                _mentalText.text = "좋    음";
-                _mentalText.color = new Color(0.52f, 0.796f, 0.063f);
-                break;
-            case 2:
-                _mentalText.text = "보    통";
-                _mentalText.color = new Color(0.992f, 0.82f, 0.02f);
-                break;
-            case 1:
-                _mentalText.text = "나    쁨";
-                _mentalText.color = new Color(1, 0.5f, 0);
-                break;
-            default:
-                _mentalText.text = "패    닉";
-                _mentalText.color = new Color(0.8f, 0.353f, 0.353f);
-                break;
-        }
-    }
-
-    public void ChangeStateText()
-    {
-        switch(_playerAct)
-        {
-            case _Act.Rescue:
-                _stateText.text = "구조중";
-                _stateText.color = new Color(1, 0.5f, 0);
-                break;
-            case _Act.Retire:
-                _stateText.text = "행동불능";
-                _stateText.color = new Color(0.35f, 0.35f, 0.35f);
-                break;
-            case _Act.Panic:
-                _stateText.text = "패    닉";
-                _stateText.color = new Color(0.8f, 0.35f, 0.35f);
-                break;
-            default:
-                _stateText.text = "정    상";
-                _stateText.color = new Color(1, 1, 1);
-                break;
-        }
-    }
-
     public override void AddHP(float value)
     {
         base.AddHP(value);
 
         if (CurrentHP <= 0 )
-            _playerAct = _Act.Retire;
+            _playerAct = Action.Retire;
     }
 
     public override void AddO2(float value)
@@ -436,7 +377,7 @@ public class Player : Charactor
         base.AddO2(value);
 
         if (CurrentO2 <= 0)
-            _playerAct = _Act.Retire;
+            _playerAct = Action.Retire;
     }
 
     private void AddMental(int value)
@@ -444,13 +385,20 @@ public class Player : Charactor
         _currentMental += value;
         if(_currentMental <= 0)
         {
-            _playerAct = _Act.Panic;
+            _playerAct = Action.Panic;
         }
         if(_currentMental > _maxMental)
         {
             _currentMental = _maxMental;
         }
     }
+
+    public Action Act {
+        get { return _playerAct; }
+	}
+    public float Mental {
+        get { return _currentMental; }
+	}
 
     //private void SetFOV()
     //{

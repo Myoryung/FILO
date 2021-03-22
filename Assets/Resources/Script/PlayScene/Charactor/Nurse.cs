@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Nurse : Player
 {
@@ -44,15 +45,13 @@ public class Nurse : Player
             {
                 GameMgr.Instance.BackTile.SetTileFlags(oPos, UnityEngine.Tilemaps.TileFlags.None);
                 GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1));
-                foreach(Player player in GameMgr.Instance.Comp_Players)
-                {
-                    if(player.currentTilePos == oPos)
-                    {
-                        player.AddHP(30.0f);
-                        player.AddO2(20.0f);
-                        AddO2(-15);
-                        break;
-                    }
+
+                List<Player> players = GameMgr.Instance.GetPlayersAt(oPos);
+                foreach (Player player in players) {
+                    player.AddHP(30.0f);
+                    player.AddO2(20.0f);
+                    AddO2(-15);
+                    break;
                 }
                 break;
             }

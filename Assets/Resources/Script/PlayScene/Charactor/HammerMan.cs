@@ -45,7 +45,7 @@ public class HammerMan : Player
                     AddO2(-10);
                     if (GameMgr.Instance.RescueTilemap.GetTile(oPos - GameMgr.Instance.RescueTilemap.WorldToCell(transform.position)) != null)
                     {
-                        _playerAct = _Act.Panic; // 턴제한 추가 필요
+                        _playerAct = Action.Panic; // 턴제한 추가 필요
                     }
                 }
                 break;

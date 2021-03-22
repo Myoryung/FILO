@@ -15,15 +15,6 @@ public abstract class InteractiveObject : MonoBehaviour
         TileMgr.Instance.SetInteractiveObject(position, null);
     }
 
-	protected int GetAroundPlayerCount() {
-        int aroundPlayerCount = 0;
-        Player[] players = GameMgr.Instance.Comp_Players;
-        foreach (Player player in players) {
-            if ((player.currentTilePos - position).magnitude < 2)
-                aroundPlayerCount++;
-        }
-        return aroundPlayerCount;
-    }
     public virtual bool IsAvailable() {
         if (IsBeenUsed) return false;
         return true;

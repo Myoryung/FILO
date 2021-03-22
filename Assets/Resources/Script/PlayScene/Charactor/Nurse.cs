@@ -38,13 +38,10 @@ public class Nurse : Player
     IEnumerator Heal()
     {
         Vector3Int oPos = Vector3Int.zero; // 갱신용 old Pos
-        while (true) // 클릭 작용시까지 반복
-        {
+        while (true) { // 클릭 작용시까지 반복
             RenderInteractArea(ref oPos);
-            if (Input.GetMouseButtonDown(0))
-            {
-                GameMgr.Instance.BackTile.SetTileFlags(oPos, UnityEngine.Tilemaps.TileFlags.None);
-                GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1));
+            if (Input.GetMouseButtonDown(0)) {
+                TileMgr.Instance.SetTileColor(oPos, Color.white);
 
                 List<Player> players = GameMgr.Instance.GetPlayersAt(oPos);
                 foreach (Player player in players) {
@@ -55,12 +52,11 @@ public class Nurse : Player
                 }
                 break;
             }
-            else if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-            {
-                GameMgr.Instance.BackTile.SetTileFlags(oPos, UnityEngine.Tilemaps.TileFlags.None);
-                GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1));
+            else if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) {
+                TileMgr.Instance.SetTileColor(oPos, Color.white);
                 break;
             }
+
             yield return null;
         }
     }

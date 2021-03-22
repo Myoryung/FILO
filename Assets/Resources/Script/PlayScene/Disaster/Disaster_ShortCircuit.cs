@@ -8,9 +8,6 @@ public class Disaster_ShortCircuit : DisasterObject {
 	private static Sprite[] ObjectSprites = null;
 	private const string RESOURCE_PATH = "Sprite/Disaster/ShortCircuit";
 
-	[SerializeField]
-	private TileBase electricTile = null;
-
 	protected override void Start() {
 		if (ObjectSprites == null)
 			ObjectSprites = Resources.LoadAll<Sprite>(RESOURCE_PATH);
@@ -21,7 +18,6 @@ public class Disaster_ShortCircuit : DisasterObject {
 	}
 
 	protected override void Active() {
-		if (GameMgr.Instance.Obstacle.GetTile(Pos) == null)
-			GameMgr.Instance.Obstacle.SetTile(Pos, electricTile);
+		TileMgr.Instance.CreateElectric(Pos);
 	}
 }

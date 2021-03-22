@@ -23,25 +23,13 @@ public class GameMgr : MonoBehaviour {
     private List<Player> Players = new List<Player>(); // 사용할 캐릭터들의 Components
     private int _currentChar = 0; // 현재 사용중인 캐릭터의 번호
 
+    private Dictionary<Vector3Int, RescueTarget> RescueTargets = new Dictionary<Vector3Int, RescueTarget>();
+
     public int CurrentChar {
         get { return _currentChar; }
         set { _currentChar = value; }
     } // CurrentChar Property
-    private float _EmberTime = 0.0f; // 작은 불 생성 주기
-    public float EmberTime {
-        get { return _EmberTime; }
-        set { _EmberTime = value; }
-    } // 작은 불 생성 주기Property
-    private int _usedEmberCount = 0; // 현재 사용중인 작은 불의 숫자
-    public int UsedEmberCount {
-        get { return _usedEmberCount; }
-        set { _usedEmberCount = value; }
-    } //현재 사용중인 작은 불의 숫자 Property
-    public Transform Embers; // 작은 불의 부모 오브젝트의 Transform
-    public GameObject Ember; // 작은 불 Prefab
-    public Tilemap BackTile; // Background Tilemap
-    public Tilemap Obstacle; // Obstacel Tilemap
-    public Tilemap RescueTilemap; // RescueTarget Tilemap
+   
 
     [SerializeField]
     private Image    DisasterAlaram = null;
@@ -50,7 +38,7 @@ public class GameMgr : MonoBehaviour {
 
     [SerializeField]
     private Text _timerText = null; // 시계 UI
-    private int _minute; // 게임 상의 시간
+    private int GameTime; // 게임 상의 시간
 
     private int _stage = 0;
     private DisasterMgr disasterMgr;
@@ -60,9 +48,9 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        SELECT_CHAR, STAGE_SETUP, PLAYER_TURN, RESCUE_TARGET_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
+        STAGE_SETUP, SELECT_CHAR, STAGE_READY, PLAYER_TURN, RESCUE_TARGET_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
     }
-    private GameState _currGameState = GameState.SELECT_CHAR;
+    private GameState _currGameState = GameState.STAGE_SETUP;
     public GameState CurrGameState {
         get { return _currGameState; }
     }
@@ -72,9 +60,7 @@ public class GameMgr : MonoBehaviour {
     private DisasterObject disasterObject = null;
     private bool bDisasterExist = false;
 
-    [SerializeField]
     private GameObject SelectCanvas, PlayCanvas;
-
 
     private void Awake()
     {
@@ -90,8 +76,9 @@ public class GameMgr : MonoBehaviour {
 
     private void Update() {
         switch (CurrGameState) {
-        case GameState.SELECT_CHAR: SelectChar(); break;
         case GameState.STAGE_SETUP: StageSetup(); break;
+        case GameState.SELECT_CHAR: SelectChar(); break;
+        case GameState.STAGE_READY: StageReady(); break;
         case GameState.PLAYER_TURN: PlayerTurn(); break;
         case GameState.RESCUE_TARGET_TURN: RescueTargetTurn(); break;
         case GameState.SPREAD_FIRE: SpreadFire(); break;
@@ -107,25 +94,15 @@ public class GameMgr : MonoBehaviour {
         }
     }
 
-    private void SelectChar() {
-
-        _currGameState = GameState.STAGE_SETUP;
-    }
     private void StageSetup() {
-        PlayCanvas.SetActive(true);
+        // Load Canvas Object
+        GameObject canvas = GameObject.Find("UICanvas");
+        SelectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
+        PlayCanvas = canvas.transform.Find("PlayCanvas").gameObject;
 
-        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
-        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
+        SelectCanvas.SetActive(true);
+        PlayCanvas.SetActive(false);
 
-        Players.Add(GameObject.Find("Captain").GetComponent<Player>());
-        Players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
-        Players.Add(GameObject.Find("Nurse").GetComponent<Player>());
-        Players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
-
-        for (int i = 0; i < 100; i++) // 작은 불 생성
-        {
-            Instantiate(Ember, Vector3.zero, Quaternion.identity, Embers);
-        }
         //for(int i=BackTile.cellBounds.xMin; i<BackTile.cellBounds.xMax; i++)
         //{
         //    for(int j=BackTile.cellBounds.yMin; j<BackTile.cellBounds.yMax; j++)
@@ -137,7 +114,26 @@ public class GameMgr : MonoBehaviour {
         //        }
         //    }
         //}
-        _minute = 1189; // 게임 상의 시간
+        GameTime = 1189; // 게임 상의 시간
+
+        _currGameState = GameState.SELECT_CHAR;
+    }
+    private void SelectChar() {
+
+        Players.Add(GameObject.Find("Captain").GetComponent<Player>());
+        Players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
+        Players.Add(GameObject.Find("Nurse").GetComponent<Player>());
+        Players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+
+
+        _currGameState = GameState.STAGE_READY;
+    }
+    private void StageReady() {
+        PlayCanvas.SetActive(true);
+
+        // Load ID Card Text
+        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
+        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
 
         disasterMgr = new DisasterMgr(_stage);
 
@@ -154,13 +150,13 @@ public class GameMgr : MonoBehaviour {
     }
     private void RescueTargetTurn() {
         if (!bRescueTargetActive) {
-            foreach (var rt in TileMgr.Instance.RescueTargets.Values)
+            foreach (var rt in RescueTargets.Values)
                 rt.TurnEndActive();
             bRescueTargetActive = true;
         }
         else {
             bool moveDone = true;
-            foreach (var rt in TileMgr.Instance.RescueTargets.Values) {
+            foreach (var rt in RescueTargets.Values) {
                 if (!rt.IsMoveDone)
                     moveDone = false;
             }
@@ -173,8 +169,6 @@ public class GameMgr : MonoBehaviour {
     }
     private void SpreadFire() {
         // 큰 불 생성
-        for (int i = 0, count = TileMgr.Instance.Fires.Count; i< count; i++)
-            TileMgr.Instance.Fires[i].SpreadFire();
 
         _currGameState = GameState.DISASTER_ALARM;
     }
@@ -217,24 +211,9 @@ public class GameMgr : MonoBehaviour {
     }
     private void TurnEnd() {
         GameTurn++;
-        _minute += 5;
-        _timerText.text = (_minute / 60).ToString() + " : " + (_minute % 60).ToString(); // 시계 UI 갱신
+        AddGameTime(5);
 
         _currGameState = GameState.PLAYER_TURN;
-    }
-
-
-    public bool CheckEmberTick()
-    {
-        if (_EmberTime > 2.0f) // 2초가 지나면 true 반환
-        {
-            _EmberTime = 0.0f;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     public void OnClickTurnEnd() {
@@ -246,8 +225,14 @@ public class GameMgr : MonoBehaviour {
             bDisasterAlarmClicked = true;
 	}
 
+    private void AddGameTime(int minute) {
+        GameTime += minute;
+         _timerText.text = (GameTime / 60).ToString() + " : " + (GameTime % 60).ToString(); // 시계 UI 갱신
+    }
 
     private void ChangeMentalText(Player player) {
+        if (_mentalText == null) return;
+
         switch (player.Mental) {
         case 4:
             _mentalText.text = "아주좋음";
@@ -271,8 +256,9 @@ public class GameMgr : MonoBehaviour {
             break;
         }
     }
-
     private void ChangeStateText(Player player) {
+        if (_stateText == null) return;
+
         switch (player.Act) {
         case Player.Action.Rescue:
             _stateText.text = "구조중";
@@ -307,5 +293,21 @@ public class GameMgr : MonoBehaviour {
     }
     public List<Player> GetPlayersAt(Vector3Int pos) {
         return GetAroundPlayers(pos, 1);
+    }
+
+    public void AddRescueTarget(Vector3Int pos, RescueTarget rt) {
+        RescueTargets.Add(pos, rt);
+	}
+    public RescueTarget GetRescueTargetAt(Vector3Int pos) {
+        if (RescueTargets.ContainsKey(pos))
+            return RescueTargets[pos];
+        return null;
+    }
+    public void MoveRescueTarget(Vector3Int oldPos, Vector3Int newPos) {
+        if (RescueTargets.ContainsKey(oldPos)) {
+            RescueTarget rt = RescueTargets[oldPos];
+            RescueTargets.Remove(oldPos);
+            RescueTargets.Add(newPos, rt);
+        }
     }
 }

@@ -65,8 +65,7 @@ public class DisasterMgr {
 
     private DisasterObject CreateDisasterObject(Disaster disaster) {
         Object obj = null;
-        Vector3 pos = GameMgr.Instance.BackTile.CellToWorld(disaster.position);
-        pos += GameMgr.Instance.BackTile.cellSize / 2.0f;
+        Vector3 pos = TileMgr.Instance.CellToWorld(disaster.position);
 
         switch (disaster.type) {
         case Disaster.DisasterType.FALLING_ROCK:  obj = FallingRock;   break;

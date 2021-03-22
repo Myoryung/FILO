@@ -29,7 +29,6 @@ public class Player : Charactor
     private Vector3 _moveDir = Vector3.left; // 캐릭터가 바라보는 방향
 
     // 타일 충돌체크용 값
-    private GridLayout _tileLayout; // 타일맵 값 변경용 변수 (Tilemap::Background)
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
 
     // Local Component
@@ -45,7 +44,6 @@ public class Player : Charactor
     protected override void Start()
     {
         base.Start();
-        _tileLayout = GameMgr.Instance.BackTile.GetComponent<GridLayout>();
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
         //SetFOV();
@@ -67,30 +65,20 @@ public class Player : Charactor
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
         if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != Action.Rescue && _currentMental > 0)
         {
-            this.transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
-            if (GameMgr.Instance.CheckEmberTick()) // 작은 불 재생성
-            {
-                for (int i = 0; i < GameMgr.Instance.UsedEmberCount; i++) // 기존에 있던 작은불들 Active false
-                {
-                    GameMgr.Instance.Embers.GetChild(i).gameObject.SetActive(false);
-                }
-                GameMgr.Instance.UsedEmberCount = 0;
-                for (int i = 0; i < TileMgr.Instance.Fires.Count; i++) // 현재 남아있는 불들의 수만큼 작은불 재생성
-                {
-                    TileMgr.Instance.Fires[i].FindEmberArea();
-                }
-            }
+            transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+
+            // 플레이어 이동 시 작은 불 이동
+            if (hor != 0 || ver != 0)
+                TileMgr.Instance.MoveEmbers();
+
             if (hor != 0.0f) // 좌, 우 이동중이라면
             {
                 AddO2(-(UseO2 * Time.deltaTime));
-                GameMgr.Instance.EmberTime += Time.deltaTime / 2; // 작은불 재생성 시간 증가
                 _moveDir = new Vector3(hor, 0, 0); // 바라보는 방향 변경
             }
             if (ver != 0.0f) //상, 하 이동중이라면
-            {
                 AddO2(-(UseO2 * Time.deltaTime));
-                GameMgr.Instance.EmberTime += Time.deltaTime / 2; // 작은불 재생성 시간 증가
-            }
+
             //if (_currentTilePos != _tileLayout.WorldToCell(transform.position))
             //{
             //    SetFOV();
@@ -110,7 +98,7 @@ public class Player : Charactor
 
             Vector3 worldPos = transform.position;
             worldPos.y -= 100;
-            _currentTilePos = _tileLayout.WorldToCell(worldPos); // 현재 캐릭터의 타일맵 좌표 갱신
+            _currentTilePos = TileMgr.Instance.WorldToCell(worldPos); // 현재 캐릭터의 타일맵 좌표 갱신
         }
         if (hor == 0 && ver == 0) // 이동 종료 시
         {
@@ -237,64 +225,49 @@ public class Player : Charactor
     IEnumerator UseFireExtinguisher() // 소화기 사용 코드 
     {
         yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-        //좌표 값 변경으로 인해 수정해야 할 코드
+
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(mousePos); // 마우스의 타일맵 상 좌표
-        if (_currentTilePos.x - nPos.x < 2 &&
-            _currentTilePos.x - nPos.x > -2 &&
-            _currentTilePos.y - nPos.y < 2 &&
-            _currentTilePos.y - nPos.y > -2) // 누른 위치가 캐릭터 기준 2칸 이내라면
-        {
-            Vector3Int offset = Vector3Int.zero; // 소화기가 퍼져나갈 크기
-            if (mousePos.x > transform.position.x) // 마우스가 캐릭터보다 오른쪽에 있다면
-            {
-                offset.x = 1;
-            }
-            else if (mousePos.x < transform.position.x) // 마우스가 캐릭터보다 왼쪽에 있다면
-            {
-                offset.x = -1;
-            }
-            if (mousePos.y > transform.position.y) // 마우스가 캐릭터보다 위에 있다면
-            {
-                offset.y = 1;
-            }
-            else if (mousePos.y < transform.position.y) // 마우스가 캐릭터보다 아래 있다면
-            {
-                offset.y = -1;
-            }
-            if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire") // 탐색한 타일이 큰 불 타일이라면
-            {
-                GameMgr.Instance.Obstacle.SetTile(nPos, null); // 불 제거
-                                                               //TileMgr의 Fire 리스트 속 ID를 검색받아 타일제거를 해야합니다 웅연쿤 // 고맙다 과거의 나
-                                                               //이 아래부턴 소화기가 퍼져나간 곳의 불타일을 제거하는 코드
-                nPos.x += offset.x;
-                if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire")
-                {
-                    GameMgr.Instance.Obstacle.SetTile(nPos, null);
+        Vector3Int nPos = TileMgr.Instance.WorldToCell(mousePos); // 마우스의 타일맵 상 좌표
+
+        // 누른 위치가 캐릭터 기준 2칸 밖이면 종료
+        if (Mathf.Abs(_currentTilePos.x - nPos.x) > 2 || Mathf.Abs(_currentTilePos.y - nPos.y) > 2)
+            yield break;
+
+        int startX = (transform.position.x < mousePos.x) ? nPos.x : nPos.x-1;
+        int startY = (transform.position.y < mousePos.y) ? nPos.y : nPos.y-1;
+        int endX = startX + 1;
+        int endY = startY + 1;
+
+        // 불 존재 확인
+        bool existFire = false;
+        for (int y = startY; y <= endY; y++) {
+            for (int x = startX; x <= endX; x++) {
+                Vector3Int tPos = new Vector3Int(x, y, 0);
+                if (TileMgr.Instance.ExistFire(tPos)) {
+                    existFire = true;
+                    break;
                 }
-                nPos.x -= offset.x;
-                nPos.y += offset.y;
-                if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire")
-                {
-                    GameMgr.Instance.Obstacle.SetTile(nPos, null);
-                }
-                nPos.x += offset.x;
-                if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire")
-                {
-                    GameMgr.Instance.Obstacle.SetTile(nPos, null);
-                }
+            }
+
+            if (existFire) break;
+        }
+
+        if (!existFire)
+            yield break;
+
+        // 불 삭제
+        for (int y = startY; y <= endY; y++) {
+            for (int x = startX; x <= endX; x++) {
+                Vector3Int tPos = new Vector3Int(x, y, 0);
+                TileMgr.Instance.RemoveFire(tPos);
             }
         }
     }
 
     private void UseFireWall() // 방화벽 설치
     {
-        //좌표 단위가 변화되면서 수정해야할 코드
-        Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
-        if (GameMgr.Instance.Obstacle.GetTile(nPos) == null) // 설치할 위치에 장애물이 없다면 방화벽 설치
-        {
-            GameMgr.Instance.Obstacle.SetTile(nPos, FireWallTile);
-        }
+        Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
+        TileMgr.Instance.CreateFireWall(nPos);
     }
 
     private void UseStickyBomb() // 점착폭탄 설치
@@ -308,8 +281,8 @@ public class Player : Charactor
             Debug.Log(hit.transform.name);
             if (hit.transform.CompareTag("Wall")) // 레이캐스트 충돌대상이 벽이라면
             {
-                Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
-                GameMgr.Instance.Obstacle.SetTile(nPos, null); // 벽 제거
+                Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
+                TileMgr.Instance.RemoveWall(nPos);
             }
         }
     }
@@ -343,10 +316,8 @@ public class Player : Charactor
         }
     }
 
-    protected void RenderInteractArea(ref Vector3Int oPos)
-    {
-        Vector3 basePos = GameMgr.Instance.BackTile.CellToWorld(currentTilePos) + GameMgr.Instance.BackTile.cellSize/2.0f;
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - basePos; // 마우스 로컬 좌표
+    protected void RenderInteractArea(ref Vector3Int oPos) {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
         Vector3Int direction; // 캐릭터 기준 마우스 방향
         if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
             direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
@@ -354,34 +325,28 @@ public class Player : Charactor
             direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
 
         Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
-        if (nPos != oPos) // 기존의 렌더부분과 갱신된 부분이 다르면
-        {
-            GameMgr.Instance.BackTile.SetTileFlags(oPos, TileFlags.None);
-            GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1)); // 기존의 좌표 색 복구
-            GameMgr.Instance.BackTile.SetTileFlags(nPos, TileFlags.None);
-            GameMgr.Instance.BackTile.SetColor(nPos, new Color(0, 0, 1, 1)); // 새로운 좌표 색 변경
+        if (nPos != oPos) { // 기존의 렌더부분과 갱신된 부분이 다르면
+            TileMgr.Instance.SetTileColor(oPos, Color.white);   // 기존의 좌표 색 복구
+            TileMgr.Instance.SetTileColor(nPos, Color.blue);    // 새로운 좌표 색 변경
             oPos = nPos;
         }
     }
 
-    public override void AddHP(float value)
-    {
+    public override void AddHP(float value) {
         base.AddHP(value);
 
         if (CurrentHP <= 0 )
             _playerAct = Action.Retire;
     }
 
-    public override void AddO2(float value)
-    {
+    public override void AddO2(float value) {
         base.AddO2(value);
 
         if (CurrentO2 <= 0)
             _playerAct = Action.Retire;
     }
 
-    private void AddMental(int value)
-    {
+    private void AddMental(int value) {
         _currentMental += value;
         if(_currentMental <= 0)
         {

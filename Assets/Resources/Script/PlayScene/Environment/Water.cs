@@ -18,7 +18,7 @@ public class Water : MonoBehaviour {
     }
 
 	private void OnDestroy() {
-        TileMgr.Instance.Waters.Remove(position);
+        TileMgr.Instance.RemoveWater(position);
     }
 
 	void Update() {

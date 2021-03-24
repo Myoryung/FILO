@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System;
+using UnityEngine.Tilemaps;
 
-public class TileMgr // 하이어라키에 존재하지 않는 싱글톤이라 Unity 기능을 사용못합니다잉
-{   
+public class TileMgr {   
     private static TileMgr m_instance; // Singleton
-    public List<Fire> Fires; // 현재 생성된 Fire Instance의 Components
-    public List<Wall> Walls; // 현재 생성된 Wall Instance의 Components
-    public Dictionary<Vector3Int, Electric> Electrics;
-    public Dictionary<Vector3Int, Water> Waters;
-    public Dictionary<Vector3Int, RescueTarget> RescueTargets;
+
+    private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, PlayerSpawnTilemap;
+    private Tilemap EffectTilemap, WarningTilemap;
+
+    [SerializeField]
+    private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
+
+    private float EmberMoveTime = 0.0f;
+
+    Dictionary<Vector3Int, Stack<Color>> colors = new Dictionary<Vector3Int, Stack<Color>>();
 
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
 
@@ -39,16 +43,25 @@ public class TileMgr // 하이어라키에 존재하지 않는 싱글톤이라 U
     }
 
     public TileMgr() {
-        Fires = new List<Fire>();
-        Walls = new List<Wall>();
-        Electrics = new Dictionary<Vector3Int, Electric>();
-        Waters = new Dictionary<Vector3Int, Water>();
-        RescueTargets = new Dictionary<Vector3Int, RescueTarget>();
-
         m_interactiveObjects = new Dictionary<Vector3Int, InteractiveObject>();
+
+        //  Load Tilemap Object
+        GameObject Grid = GameObject.Find("Grid");
+        BackgroundTilemap = Grid.transform.Find("Background").gameObject.GetComponent<Tilemap>();
+        ObjectTilemap = Grid.transform.Find("Object").gameObject.GetComponent<Tilemap>();
+        EnvironmentTilemap = Grid.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
+        PlayerSpawnTilemap = Grid.transform.Find("PlayerSpawn").gameObject.GetComponent<Tilemap>();
+        EffectTilemap = Grid.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
+        WarningTilemap = Grid.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
+
+        // Load Prefab
+        FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
+        FireWallTile = Resources.Load<TileBase>("Tilemap/Object/FireWall");
+        ElectricTile = Resources.Load<TileBase>("Tilemap/Enviroment/Electric");
+        EffectTile = Resources.Load<TileBase>("Tilemap/Effect/Effect");
     }
 
-    public void SetInteractiveObject(Vector3Int pos, InteractiveObject obj) {
+	public void SetInteractiveObject(Vector3Int pos, InteractiveObject obj) {
         m_interactiveObjects.Remove(pos);
         m_interactiveObjects.Add(pos, obj);
 	}
@@ -56,5 +69,189 @@ public class TileMgr // 하이어라키에 존재하지 않는 싱글톤이라 U
         if (m_interactiveObjects.ContainsKey(pos))
             return m_interactiveObjects[pos];
         return null;
+    }
+
+    public void MoveEmbers() {
+        float currTime = Time.time;
+        if (currTime - EmberMoveTime < 2.0f)
+            return;
+
+        GameObject[] fireObjects = GameObject.FindGameObjectsWithTag("Fire");
+        foreach (GameObject fireObject in fireObjects) {
+            Fire fire = fireObject.GetComponent<Fire>();
+            fire.MoveEmber();
+        }
+
+        EmberMoveTime = currTime;
+    }
+
+    private void Electrify(Vector3Int electricPos) {
+        HashSet<Vector3Int> searchHistory = new HashSet<Vector3Int>();
+        Queue<Vector3Int> searchQueue = new Queue<Vector3Int>();
+
+        for (int y = -1; y <= 1; y++) {
+            for (int x = -1; x <= 1; x++) {
+                Vector3Int wPos = electricPos + new Vector3Int(x, y, 0);
+                if (ExistWater(wPos)) {
+                    searchQueue.Enqueue(wPos);
+                    searchHistory.Add(wPos);
+                }
+            }
+        }
+
+        while (searchQueue.Count > 0) {
+            Vector3Int currPos = searchQueue.Dequeue();
+            Water water = GetWater(currPos);
+            water.Electrify(electricPos);
+
+            for (int y = -1; y <= 1; y++) {
+                for (int x = -1; x <= 1; x++) {
+                    Vector3Int nextPos = currPos + new Vector3Int(x, y, 0);
+                    if (!searchHistory.Contains(nextPos) && ExistWater(nextPos)) {
+                        searchQueue.Enqueue(nextPos);
+                        searchHistory.Add(nextPos);
+                    }
+                }
+            }
+        }
+    }
+    private void Diselectrify(Vector3Int electricPos) {
+        HashSet<Vector3Int> searchHistory = new HashSet<Vector3Int>();
+        Queue<Vector3Int> searchQueue = new Queue<Vector3Int>();
+
+        for (int y = -1; y <= 1; y++) {
+            for (int x = -1; x <= 1; x++) {
+                Vector3Int wPos = electricPos + new Vector3Int(x, y, 0);
+                if (ExistWater(wPos)) {
+                    searchQueue.Enqueue(wPos);
+                    searchHistory.Add(wPos);
+                }
+            }
+        }
+
+        while (searchQueue.Count > 0) {
+            Vector3Int currPos = searchQueue.Dequeue();
+            Water water = GetWater(currPos);
+            water.RemoveElectric(electricPos);
+
+            for (int y = -1; y <= 1; y++) {
+                for (int x = -1; x <= 1; x++) {
+                    Vector3Int nextPos = currPos + new Vector3Int(x, y, 0);
+                    if (!searchHistory.Contains(nextPos) && ExistWater(nextPos)) {
+                        searchQueue.Enqueue(nextPos);
+                        searchHistory.Add(nextPos);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public Vector3Int WorldToCell(Vector3 pos) {
+        return BackgroundTilemap.WorldToCell(pos);
+    }
+    public Vector3 CellToWorld(Vector3Int pos) {
+        return BackgroundTilemap.CellToWorld(pos) + BackgroundTilemap.cellSize/2.0f;
+    }
+
+    public void SetEffect(Vector3Int pos, Color color) {
+        EffectTilemap.SetTile(pos, EffectTile);
+        EffectTilemap.SetTileFlags(pos, TileFlags.None);
+        EffectTilemap.SetColor(pos, color);
+    }
+    public void RemoveEffect(Vector3Int pos) {
+        EffectTilemap.SetTile(pos, null);
+    }
+
+    public void SetWarning(Vector3Int pos) {
+        WarningTilemap.SetTile(pos, EffectTile);
+        WarningTilemap.SetTileFlags(pos, TileFlags.None);
+        WarningTilemap.SetColor(pos, new Color(1, 0, 0, 0));
+    }
+    public void TurnWarning(Vector3Int pos, bool flag) {
+        if (WarningTilemap.GetTile(pos) == null) return;
+
+        Color color = WarningTilemap.GetColor(pos);
+        color.a = (flag) ? 0.5f : 0;
+        WarningTilemap.SetTileFlags(pos, TileFlags.None);
+        WarningTilemap.SetColor(pos, color);
+    }
+    public void RemoveWarning(Vector3Int pos) {
+        WarningTilemap.SetTile(pos, null);
+    }
+
+    public void CreateFire(Vector3Int pos) {
+        EnvironmentTilemap.SetTile(pos, FireTile);
+    }
+    public void CreateElectric(Vector3Int pos) {
+        EnvironmentTilemap.SetTile(pos, ElectricTile);
+        Electrify(pos);
+    }
+    public void CreateFireWall(Vector3Int pos) {
+        Debug.Log(pos + " 설치");
+        ObjectTilemap.SetTile(pos, FireWallTile);
+	}
+
+    public bool ExistObject(Vector3Int pos) {
+        return ObjectTilemap.GetTile(pos) != null;
+	}
+    public bool ExistEnvironment(Vector3Int pos) {
+        return EnvironmentTilemap.GetTile(pos) != null;
+	}
+    public bool ExistFire(Vector3Int pos) {
+        return ExistEnvironmentTile(pos, "Fire");
+    }
+    public bool ExistWater(Vector3Int pos) {
+        return ExistEnvironmentTile(pos, "Water");
+    }
+    public bool ExistElectric(Vector3Int pos) {
+        return ExistEnvironmentTile(pos, "Electric");
+    }
+    public bool ExistPlayerSpawn(Vector3Int pos) {
+        return PlayerSpawnTilemap.GetTile(pos) != null;
+	}
+
+    private Water GetWater(Vector3Int pos) {
+        return EnvironmentTilemap.GetInstantiatedObject(pos).GetComponent<Water>();
+    }
+
+    public void RemoveObject(Vector3Int pos) {
+        ObjectTilemap.SetTile(pos, null);
+    }
+    public void RemoveFire(Vector3Int pos) {
+        RemoveEnvironmentTile(pos, "Fire");
+    }
+    public void RemoveWater(Vector3Int pos) {
+        RemoveEnvironmentTile(pos, "Water");
+    }
+    public void RemoveElectric(Vector3Int pos) {
+        Diselectrify(pos);
+        RemoveEnvironmentTile(pos, "Electric");
+    }
+    public void RemoveWall(Vector3Int pos) {
+        RemoveObjectTile(pos, "Wall");
+    }
+
+    private bool ExistObjectTile(Vector3Int pos, string name) {
+        TileBase tile = ObjectTilemap.GetTile(pos);
+        if (tile != null && tile.name == name)
+            return true;
+        return false;
+    }
+    private bool ExistEnvironmentTile(Vector3Int pos, string name) {
+        TileBase tile = EnvironmentTilemap.GetTile(pos);
+        if (tile != null && tile.name == name)
+            return true;
+        return false;
+    }
+    private void RemoveObjectTile(Vector3Int pos, string name) {
+        TileBase tile = ObjectTilemap.GetTile(pos);
+        if (tile != null && tile.name == name)
+            ObjectTilemap.SetTile(pos, null);
+    }
+    private void RemoveEnvironmentTile(Vector3Int pos, string name) {
+        TileBase tile = EnvironmentTilemap.GetTile(pos);
+        if (tile != null && tile.name == name)
+            EnvironmentTilemap.SetTile(pos, null);
     }
 }

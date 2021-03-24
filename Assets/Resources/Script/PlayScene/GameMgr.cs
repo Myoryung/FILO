@@ -16,30 +16,19 @@ public class GameMgr : MonoBehaviour {
         }
     }
 
+    private Text _mentalText, _stateText, _charNameText;
 
     public int GameTurn = 0; // 게임 턴
-    public Player[] Comp_Players; // 사용할 캐릭터들의 Components
+    private List<Player> Players = new List<Player>(); // 사용할 캐릭터들의 Components
     private int _currentChar = 0; // 현재 사용중인 캐릭터의 번호
+
+    private Dictionary<Vector3Int, RescueTarget> RescueTargets = new Dictionary<Vector3Int, RescueTarget>();
 
     public int CurrentChar {
         get { return _currentChar; }
         set { _currentChar = value; }
     } // CurrentChar Property
-    private float _EmberTime = 0.0f; // 작은 불 생성 주기
-    public float EmberTime {
-        get { return _EmberTime; }
-        set { _EmberTime = value; }
-    } // 작은 불 생성 주기Property
-    private int _usedEmberCount = 0; // 현재 사용중인 작은 불의 숫자
-    public int UsedEmberCount {
-        get { return _usedEmberCount; }
-        set { _usedEmberCount = value; }
-    } //현재 사용중인 작은 불의 숫자 Property
-    public Transform Embers; // 작은 불의 부모 오브젝트의 Transform
-    public GameObject Ember; // 작은 불 Prefab
-    public Tilemap BackTile; // Background Tilemap
-    public Tilemap Obstacle; // Obstacel Tilemap
-    public Tilemap RescueTilemap; // RescueTarget Tilemap
+   
 
     [SerializeField]
     private Image    DisasterAlaram = null;
@@ -48,7 +37,7 @@ public class GameMgr : MonoBehaviour {
 
     [SerializeField]
     private Text _timerText = null; // 시계 UI
-    private int _minute; // 게임 상의 시간
+    private int GameTime; // 게임 상의 시간
 
     private int _stage = 0;
     private DisasterMgr disasterMgr;
@@ -58,7 +47,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        STAGE_SETUP, PLAYER_TURN, RESCUE_TARGET_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
+        STAGE_SETUP, SELECT_CHAR, STAGE_READY, PLAYER_TURN, RESCUE_TARGET_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
     }
     private GameState _currGameState = GameState.STAGE_SETUP;
     public GameState CurrGameState {
@@ -70,7 +59,7 @@ public class GameMgr : MonoBehaviour {
     private DisasterObject disasterObject = null;
     private bool bDisasterExist = false;
 
-
+    private GameObject SelectCanvas, PlayCanvas;
 
     private void Awake()
     {
@@ -86,22 +75,34 @@ public class GameMgr : MonoBehaviour {
 
     private void Update() {
         switch (CurrGameState) {
-        case GameState.STAGE_SETUP:         StageSetup();       break;
-        case GameState.PLAYER_TURN:         PlayerTurn();       break;
-        case GameState.RESCUE_TARGET_TURN:  RescueTargetTurn(); break;
-        case GameState.SPREAD_FIRE:         SpreadFire();       break;
-        case GameState.DISASTER_ALARM:      DisasterAlarm();    break;
-        case GameState.DISASTER_TURN:       DisasterTurn();     break;
-        case GameState.TURN_END:            TurnEnd();          break;
+        case GameState.STAGE_SETUP: StageSetup(); break;
+        case GameState.SELECT_CHAR: SelectChar(); break;
+        case GameState.STAGE_READY: StageReady(); break;
+        case GameState.PLAYER_TURN: PlayerTurn(); break;
+        case GameState.RESCUE_TARGET_TURN: RescueTargetTurn(); break;
+        case GameState.SPREAD_FIRE: SpreadFire(); break;
+        case GameState.DISASTER_ALARM: DisasterAlarm(); break;
+        case GameState.DISASTER_TURN: DisasterTurn(); break;
+        case GameState.TURN_END: TurnEnd(); break;
+        }
+
+        if (CurrentChar < Players.Count) {
+            Player player = Players[CurrentChar];
+            ChangeMentalText(player);
+            ChangeStateText(player);
+            ChangeNameText();
         }
     }
 
     private void StageSetup() {
+        // Load Canvas Object
+        GameObject canvas = GameObject.Find("UICanvas");
+        SelectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
+        PlayCanvas = canvas.transform.Find("PlayCanvas").gameObject;
 
-        for (int i = 0; i < 100; i++) // 작은 불 생성
-        {
-            Instantiate(Ember, Vector3.zero, Quaternion.identity, Embers);
-        }
+        SelectCanvas.SetActive(true);
+        PlayCanvas.SetActive(false);
+
         //for(int i=BackTile.cellBounds.xMin; i<BackTile.cellBounds.xMax; i++)
         //{
         //    for(int j=BackTile.cellBounds.yMin; j<BackTile.cellBounds.yMax; j++)
@@ -113,30 +114,59 @@ public class GameMgr : MonoBehaviour {
         //        }
         //    }
         //}
-        _minute = 1189; // 게임 상의 시간
 
         disasterMgr = new DisasterMgr(_stage);
+        StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+
+        GameTime = 1189; // 게임 상의 시간
+
+        _currGameState = GameState.SELECT_CHAR;
+    }
+    private void SelectChar() {
+        //TileMgr.Instance.ExistPlayerSpawn()
+        if (Input.GetMouseButtonUp(0)) {
+
+		}
+
+        Players.Add(GameObject.Find("Captain").GetComponent<Player>());
+        Players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
+        Players.Add(GameObject.Find("Nurse").GetComponent<Player>());
+        Players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+
+
+        _currGameState = GameState.STAGE_READY;
+    }
+    private void StageReady() {
+        PlayCanvas.SetActive(true);
+
+        // Load ID Card Text
+        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
+        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
+        _charNameText = GameObject.FindWithTag("NameText").GetComponent<Text>();
+
+        foreach (Player player in Players)
+            player.StageStartActive();
 
         _currGameState = GameState.PLAYER_TURN;
     }
     private void PlayerTurn() {
         if (bTurnEndClicked) {
             // 캐릭터들의 턴 종료 행동 함수 호출
-            for (int i = 0; i < Comp_Players.Length; i++)
-                Comp_Players[i].TurnEndActive();
+            for (int i = 0; i < Players.Count; i++)
+                Players[i].TurnEndActive();
             _currGameState = GameState.RESCUE_TARGET_TURN;
             bTurnEndClicked = false;
         }
     }
     private void RescueTargetTurn() {
         if (!bRescueTargetActive) {
-            foreach (var rt in TileMgr.Instance.RescueTargets.Values)
+            foreach (var rt in RescueTargets.Values)
                 rt.TurnEndActive();
             bRescueTargetActive = true;
         }
         else {
             bool moveDone = true;
-            foreach (var rt in TileMgr.Instance.RescueTargets.Values) {
+            foreach (var rt in RescueTargets.Values) {
                 if (!rt.IsMoveDone)
                     moveDone = false;
             }
@@ -149,8 +179,6 @@ public class GameMgr : MonoBehaviour {
     }
     private void SpreadFire() {
         // 큰 불 생성
-        for (int i = 0, count = TileMgr.Instance.Fires.Count; i< count; i++)
-            TileMgr.Instance.Fires[i].SpreadFire();
 
         _currGameState = GameState.DISASTER_ALARM;
     }
@@ -186,6 +214,9 @@ public class GameMgr : MonoBehaviour {
             if (disasterObject.IsActive) {
                 Destroy(disasterObject.gameObject);
                 disasterObject = null;
+
+                StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+
                 bDisasterExist = false;
                 _currGameState = GameState.TURN_END;
             }
@@ -193,24 +224,9 @@ public class GameMgr : MonoBehaviour {
     }
     private void TurnEnd() {
         GameTurn++;
-        _minute += 5;
-        _timerText.text = (_minute / 60).ToString() + " : " + (_minute % 60).ToString(); // 시계 UI 갱신
+        AddGameTime(5);
 
         _currGameState = GameState.PLAYER_TURN;
-    }
-
-
-    public bool CheckEmberTick()
-    {
-        if (_EmberTime > 2.0f) // 2초가 지나면 true 반환
-        {
-            _EmberTime = 0.0f;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     public void OnClickTurnEnd() {
@@ -221,4 +237,108 @@ public class GameMgr : MonoBehaviour {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;
 	}
+
+    private void AddGameTime(int minute) {
+        GameTime += minute;
+         _timerText.text = (GameTime / 60).ToString() + " : " + (GameTime % 60).ToString(); // 시계 UI 갱신
+    }
+
+    private void ChangeMentalText(Player player) {
+        if (_mentalText == null) return;
+
+        switch (player.Mental) {
+        case 4:
+            _mentalText.text = "아주좋음";
+            _mentalText.color = new Color(0, 1, 1);
+            break;
+        case 3:
+            _mentalText.text = "좋    음";
+            _mentalText.color = new Color(0.52f, 0.796f, 0.063f);
+            break;
+        case 2:
+            _mentalText.text = "보    통";
+            _mentalText.color = new Color(0.992f, 0.82f, 0.02f);
+            break;
+        case 1:
+            _mentalText.text = "나    쁨";
+            _mentalText.color = new Color(1, 0.5f, 0);
+            break;
+        default:
+            _mentalText.text = "패    닉";
+            _mentalText.color = new Color(0.8f, 0.353f, 0.353f);
+            break;
+        }
+    }
+    private void ChangeStateText(Player player) {
+        if (_stateText == null) return;
+
+        switch (player.Act) {
+        case Player.Action.Rescue:
+            _stateText.text = "구조중";
+            _stateText.color = new Color(1, 0.5f, 0);
+            break;
+        case Player.Action.Retire:
+            _stateText.text = "행동불능";
+            _stateText.color = new Color(0.35f, 0.35f, 0.35f);
+            break;
+        case Player.Action.Panic:
+            _stateText.text = "패    닉";
+            _stateText.color = new Color(0.8f, 0.35f, 0.35f);
+            break;
+        default:
+            _stateText.text = "정    상";
+            _stateText.color = new Color(1, 1, 1);
+            break;
+        }
+    }
+    public void ChangeNameText() {
+        if (_charNameText == null) return;
+
+        switch (CurrentChar) {
+        case 0:
+            _charNameText.text = "01. 주인공";
+            break;
+        case 1:
+            _charNameText.text = "02. 빅토르";
+            break;
+        case 2:
+            _charNameText.text = "03. 레  오";
+            break;
+        case 3:
+            _charNameText.text = "04. 시노에";
+            break;
+        }
+    }
+
+    public List<Player> GetAroundPlayers(Vector3Int pos, int range) {
+        List<Player> players = new List<Player>();
+
+        foreach (Player player in Players) {
+            if ((player.currentTilePos - pos).magnitude < range)
+                players.Add(player);
+        }
+        return players;
+    }
+    public int GetAroundPlayerCount(Vector3Int pos, int range) {
+        return GetAroundPlayers(pos, range).Count;
+    }
+    public List<Player> GetPlayersAt(Vector3Int pos) {
+        return GetAroundPlayers(pos, 1);
+    }
+
+    public void AddRescueTarget(Vector3Int pos, RescueTarget rt) {
+        RescueTargets.Add(pos, rt);
+	}
+    public RescueTarget GetRescueTargetAt(Vector3Int pos) {
+        if (RescueTargets.ContainsKey(pos))
+            return RescueTargets[pos];
+        return null;
+    }
+    public void MoveRescueTarget(Vector3Int oldPos, Vector3Int newPos) {
+        if (RescueTargets.ContainsKey(oldPos)) {
+            RescueTarget rt = RescueTargets[oldPos];
+            RescueTargets.Remove(oldPos);
+            RescueTargets.Add(newPos, rt);
+        }
+    }
 }

@@ -26,7 +26,9 @@ public class RescueTarget : Charactor {
     {
         base.Start();
 
-        switch(_RescueTargetState)
+        GameMgr.Instance.AddRescueTarget(TileMgr.Instance.WorldToCell(transform.position), this);
+
+        switch (_RescueTargetState)
         {
             case _state.Panic:
                 _rescueCount = 1;
@@ -85,7 +87,7 @@ public class RescueTarget : Charactor {
         yield return null;
 
         for (int i = 0; i < _panicMoveCount; i++) {
-            Vector3Int pPos = GameMgr.Instance.BackTile.WorldToCell(transform.position);
+            Vector3Int pPos = TileMgr.Instance.WorldToCell(transform.position);
             Vector3Int nPos;
 
             while (true) {
@@ -93,16 +95,14 @@ public class RescueTarget : Charactor {
                 int randy = Random.Range(-1, 2);
                 nPos = pPos + new Vector3Int(randx, randy, 0);
 
-                if (TileMgr.Instance.RescueTargets.ContainsKey(nPos))
+                if (GameMgr.Instance.GetRescueTargetAt(nPos) != null)
                     continue;
-
                 break;
             }
 
-            TileMgr.Instance.RescueTargets.Remove(pPos);
-            TileMgr.Instance.RescueTargets.Add(nPos, this);
+            GameMgr.Instance.MoveRescueTarget(pPos, nPos);
 
-            Vector3 arrivePos = GameMgr.Instance.BackTile.CellToWorld(nPos) + (GameMgr.Instance.BackTile.cellSize / 2);
+            Vector3 arrivePos = TileMgr.Instance.CellToWorld(nPos);
 
             float delta = _speed * Time.deltaTime;
             while (Vector3.Distance(arrivePos, transform.position) > delta) {

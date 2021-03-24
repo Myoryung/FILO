@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: e57f6f6f3e6e69948ab5e366774b7aa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b16c5bb61ee011e42bf6b895cad87cbd, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -95,7 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad06193026f359c4baa752751a0d25a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TFire: {fileID: 11400000, guid: 88fbbd2fb29fdda4e90f58916166d64d, type: 2}
+  EmberPrefab: {fileID: 511650357875400263, guid: 928d38f504aecbe40881fcdd121ce6fd,
+    type: 3}
 --- !u!61 &-3304742646036946181
 BoxCollider2D:
   m_ObjectHideFlags: 0

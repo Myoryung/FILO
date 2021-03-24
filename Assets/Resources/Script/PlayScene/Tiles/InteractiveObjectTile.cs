@@ -17,10 +17,10 @@ public class InteractiveObjectTile : Tile {
     [MenuItem("Assets/Create/Tiles/InteractiveObjectTile")]
     public static void CreateInteractiveObjectTile() {
         string path = EditorUtility.SaveFilePanelInProject("Save InteractiveObjectTile", "New InteractiveObjectTile", "asset", "Save InteractiveObjectTile", "Assets");
-        if (path == "") {
+        if (path == "")
             return;
-        }
-        AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<InteractiveObjectTile>(), path);
+
+        AssetDatabase.CreateAsset(CreateInstance<InteractiveObjectTile>(), path);
     }
 #endif
 }

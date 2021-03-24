@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99a4e1b8572dc5d4a97599f9ba2f7e4c, type: 3}
-  m_Name: Water
+  m_Script: {fileID: 11500000, guid: acb22b0a52ca32f41a3aecbc6156e8a2, type: 3}
+  m_Name: Wall
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: a3f22c020fc122440bc895df784aa1c1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fac38f4412a3e1644b200008ecf6043a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 1
-  m_InstancedGameObject: {fileID: 8880772214709725211, guid: c1fc4c40d6274a9499ada5e8b95b76de,
+  m_InstancedGameObject: {fileID: 8266654891535470065, guid: 5c0329fbc262c74439c3c9c90121fdc1,
     type: 3}
   m_Flags: 1
   m_ColliderType: 1

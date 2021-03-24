@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Nurse : Player
 {
@@ -34,35 +35,28 @@ public class Nurse : Player
         }
     }
 
-    IEnumerator Heal()
-    {
+    IEnumerator Heal() {
         Vector3Int oPos = Vector3Int.zero; // 갱신용 old Pos
-        while (true) // 클릭 작용시까지 반복
-        {
+        UI_Actives.SetActive(false); // UI 숨기기
+
+        while (true) { // 클릭 작용시까지 반복
             RenderInteractArea(ref oPos);
-            if (Input.GetMouseButtonDown(0))
-            {
-                GameMgr.Instance.BackTile.SetTileFlags(oPos, UnityEngine.Tilemaps.TileFlags.None);
-                GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1));
-                foreach(Player player in GameMgr.Instance.Comp_Players)
-                {
-                    if(player.currentTilePos == oPos)
-                    {
-                        player.AddHP(30.0f);
-                        player.AddO2(20.0f);
-                        AddO2(-15);
-                        break;
-                    }
+            if (Input.GetMouseButtonDown(0)) {
+                List<Player> players = GameMgr.Instance.GetPlayersAt(oPos);
+                foreach (Player player in players) {
+                    player.AddHP(30.0f);
+                    player.AddO2(20.0f);
+                    AddO2(-15);
+                    break;
                 }
                 break;
             }
-            else if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-            {
-                GameMgr.Instance.BackTile.SetTileFlags(oPos, UnityEngine.Tilemaps.TileFlags.None);
-                GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1));
+            else if (IsMoving)
                 break;
-            }
+
             yield return null;
         }
+
+        TileMgr.Instance.RemoveEffect(oPos);
     }
 }

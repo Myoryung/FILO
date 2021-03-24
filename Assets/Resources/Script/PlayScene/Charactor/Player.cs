@@ -12,13 +12,11 @@ public class Player : Charactor
     public GameObject UI_ToolBtns; // 도구 버튼 UI
     public GameObject FireWall; // 방화벽 Prefab
     public TileBase FireWallTile; // 타일맵에 적용할 방화벽
-    private Text _mentalText; // ID Card 멘탈 Text UI
-    private Text _stateText; // ID Card 상태 Text UI
 
     // 플레이어 스테이터스
     //안녕안녕?
-    protected enum _Act { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
-    protected _Act _playerAct; 
+    public enum Action { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
+    protected Action _playerAct; 
     private RescueTarget _rescueTarget; // 현재 구조중인 타겟
     [SerializeField]
     private int _playerNum = 0; // 캐릭터 번호
@@ -31,7 +29,6 @@ public class Player : Charactor
     private Vector3 _moveDir = Vector3.left; // 캐릭터가 바라보는 방향
 
     // 타일 충돌체크용 값
-    private GridLayout _tileLayout; // 타일맵 값 변경용 변수 (Tilemap::Background)
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
 
     // Local Component
@@ -47,9 +44,6 @@ public class Player : Charactor
     protected override void Start()
     {
         base.Start();
-        _tileLayout = GameMgr.Instance.BackTile.GetComponent<GridLayout>();
-        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
-        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
         //SetFOV();
@@ -69,32 +63,22 @@ public class Player : Charactor
         float ver = Input.GetAxisRaw("Vertical");
 
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != _Act.Rescue && _currentMental > 0)
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != Action.Rescue && _currentMental > 0)
         {
-            this.transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
-            if (GameMgr.Instance.CheckEmberTick()) // 작은 불 재생성
-            {
-                for (int i = 0; i < GameMgr.Instance.UsedEmberCount; i++) // 기존에 있던 작은불들 Active false
-                {
-                    GameMgr.Instance.Embers.GetChild(i).gameObject.SetActive(false);
-                }
-                GameMgr.Instance.UsedEmberCount = 0;
-                for (int i = 0; i < TileMgr.Instance.Fires.Count; i++) // 현재 남아있는 불들의 수만큼 작은불 재생성
-                {
-                    TileMgr.Instance.Fires[i].FindEmberArea();
-                }
-            }
+            transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+
+            // 플레이어 이동 시 작은 불 이동
+            if (hor != 0 || ver != 0)
+                TileMgr.Instance.MoveEmbers();
+
             if (hor != 0.0f) // 좌, 우 이동중이라면
             {
                 AddO2(-(UseO2 * Time.deltaTime));
-                GameMgr.Instance.EmberTime += Time.deltaTime / 2; // 작은불 재생성 시간 증가
                 _moveDir = new Vector3(hor, 0, 0); // 바라보는 방향 변경
             }
             if (ver != 0.0f) //상, 하 이동중이라면
-            {
                 AddO2(-(UseO2 * Time.deltaTime));
-                GameMgr.Instance.EmberTime += Time.deltaTime / 2; // 작은불 재생성 시간 증가
-            }
+
             //if (_currentTilePos != _tileLayout.WorldToCell(transform.position))
             //{
             //    SetFOV();
@@ -112,9 +96,7 @@ public class Player : Charactor
                 _body.rotation = Quaternion.identity; // y값 초기화
             }
 
-            Vector3 worldPos = transform.position;
-            worldPos.y -= 100;
-            _currentTilePos = _tileLayout.WorldToCell(worldPos); // 현재 캐릭터의 타일맵 좌표 갱신
+            _currentTilePos = TileMgr.Instance.WorldToCell(transform.position); // 현재 캐릭터의 타일맵 좌표 갱신
         }
         if (hor == 0 && ver == 0) // 이동 종료 시
         {
@@ -173,17 +155,20 @@ public class Player : Charactor
         }
     }
 
+    public virtual void StageStartActive() {
+	}
     public virtual void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
-        AddO2(10.0f);
-        if(_playerAct == _Act.Rescue) // 구조중이라면
+        if (_playerAct != Action.Panic) // 패닉 상태는 산소가 회복되지 않는다
+            AddO2(10.0f);
+
+        if(_playerAct == Action.Rescue) // 구조중이라면
         {
             _rescueTarget.RescueCount--; // 구조중인 대상의 남은 구조턴 감소
             if(_rescueTarget.RescueCount <= 0) // 구조턴 값이 0보다 작으면
             {
                 _rescueTarget.gameObject.SetActive(false); // 구조 대상 숨기기
-                _playerAct = _Act.Idle; // Idle 상태로 변경
-                ChangeStateText();
+                _playerAct = Action.Idle; // Idle 상태로 변경
             }
         }
     }
@@ -192,22 +177,44 @@ public class Player : Charactor
     {
         UI_Actives.SetActive(false);
     }
-
-    public void Rescue() // 구조 버튼 누를 시 호출되는 함수
+    public virtual void ActiveUltSkill() // 궁국기 virtual 함수
     {
-        Debug.Log("구조버튼 클릭");
-        int RescueLayer = 1 << LayerMask.NameToLayer("Rescue"); // 생존자의 Layer
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, _moveDir, 128, RescueLayer); // 레이캐스트 쏘기
-        if (hit)
-        {
-            if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
-            {
-                _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
-                _playerAct = _Act.Rescue; // 구조 상태로 변경
-                ChangeStateText();
-            }
-        }
+        UI_Actives.SetActive(false);
+    }
+
+    public virtual void StartRescue() // Rescue가 IEnumrator가 되며 버튼용 함수 추가
+    {
+        UI_Actives.SetActive(false);
+        StartCoroutine(Rescue());
+    }
+
+    IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
+    {
         UI_Actives.SetActive(false); // UI 숨기기
+
+        Vector3Int nPos = Vector3Int.zero;
+        while (true) {
+            RenderInteractArea(ref nPos); // 구조 영역선택
+            if (Input.GetMouseButtonDown(0)) {
+                int RescueLayer = 1 << LayerMask.NameToLayer("Rescue"); // 생존자의 Layer
+                RaycastHit2D hit = Physics2D.Raycast(TileMgr.Instance.CellToWorld(_currentTilePos),
+                    (Vector3)GetMouseDirectiontoTilemap(), 128, RescueLayer); // 레이캐스트 쏘기
+                if (hit) {
+                    if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
+                    {
+                        _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
+                        _playerAct = Action.Rescue; // 구조 상태로 변경
+                    }
+                }
+                break;
+            }
+            else if (IsMoving) // 움직일 시 취소
+                break;
+
+            yield return null;
+        }
+
+        TileMgr.Instance.RemoveEffect(nPos); // 구조 영역 선택한거 원상복구
     }
 
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
@@ -220,19 +227,18 @@ public class Player : Charactor
     {
         switch(toolnum)
         {
-            case 1: // FireExtinguisher
-                StopAllCoroutines();
-                StartCoroutine(UseFireExtinguisher());
-                break;
-            case 2: // StickyBomb
-                UseStickyBomb();
-                break;
-            case 3: // FireWall
-                UseFireWall();
-                break;
-            case 4: // SmokeAbsorption
-                break;
-            case 5: // O2Can
+        case 1: // FireExtinguisher
+            StartCoroutine(UseFireExtinguisher());
+            break;
+        case 2: // StickyBomb
+            StartCoroutine(UseStickyBomb());
+            break;
+        case 3: // FireWall
+            StartCoroutine(UseFireWall());
+            break;
+        case 4: // SmokeAbsorption
+            break;
+        case 5: // O2Can
                 UseO2Can();
                 break;
         }
@@ -241,83 +247,66 @@ public class Player : Charactor
     }
 
     IEnumerator UseFireExtinguisher() // 소화기 사용 코드 
-    {
-        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+     {
         //좌표 값 변경으로 인해 수정해야 할 코드
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(mousePos); // 마우스의 타일맵 상 좌표
-        if (_currentTilePos.x - nPos.x < 2 &&
-            _currentTilePos.x - nPos.x > -2 &&
-            _currentTilePos.y - nPos.y < 2 &&
-            _currentTilePos.y - nPos.y > -2) // 누른 위치가 캐릭터 기준 2칸 이내라면
-        {
-            Vector3Int offset = Vector3Int.zero; // 소화기가 퍼져나갈 크기
-            if (mousePos.x > transform.position.x) // 마우스가 캐릭터보다 오른쪽에 있다면
-            {
-                offset.x = 1;
-            }
-            else if (mousePos.x < transform.position.x) // 마우스가 캐릭터보다 왼쪽에 있다면
-            {
-                offset.x = -1;
-            }
-            if (mousePos.y > transform.position.y) // 마우스가 캐릭터보다 위에 있다면
-            {
-                offset.y = 1;
-            }
-            else if (mousePos.y < transform.position.y) // 마우스가 캐릭터보다 아래 있다면
-            {
-                offset.y = -1;
-            }
-            if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire") // 탐색한 타일이 큰 불 타일이라면
-            {
-                GameMgr.Instance.Obstacle.SetTile(nPos, null); // 불 제거
-                                                               //TileMgr의 Fire 리스트 속 ID를 검색받아 타일제거를 해야합니다 웅연쿤 // 고맙다 과거의 나
-                                                               //이 아래부턴 소화기가 퍼져나간 곳의 불타일을 제거하는 코드
-                nPos.x += offset.x;
-                if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire")
+        while (true) {
+            if (Input.GetMouseButton(0)) {
+                Vector3 localPos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 캐릭터 기준 로컬좌표
+                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)); // 타일맵에서 마우스 좌표
+                if (_currentTilePos.x - moustIntPos.x <= 2 &&
+                    _currentTilePos.x - moustIntPos.x >= -2 &&
+                    _currentTilePos.y - moustIntPos.y <= 2 &&
+                    _currentTilePos.y - moustIntPos.y >= -2) // 누른 위치가 캐릭터 기준 2칸 이내라면
                 {
-                    GameMgr.Instance.Obstacle.SetTile(nPos, null);
+                    Vector3Int offset = Vector3Int.zero; // 소화기가 퍼져나갈 크기
+                    offset.x = (localPos.x > 0) ? 1 : -1; // y축으로 퍼질 방향
+                    offset.y = (localPos.y > 0) ? 1 : -1; // x축으로 퍼질 방향
+                    Vector2 SpreadRange = new Vector2(2, 2); // 불 제거 범위
+                    for (int i = 0; Mathf.Abs(i) < SpreadRange.x; i+= offset.x) {
+                        for (int j = 0; Mathf.Abs(j) < SpreadRange.y; j+= offset.y) {
+                            Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
+                            TileMgr.Instance.RemoveFire(fPos);
+                        }
+                    }
                 }
-                nPos.x -= offset.x;
-                nPos.y += offset.y;
-                if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire")
-                {
-                    GameMgr.Instance.Obstacle.SetTile(nPos, null);
-                }
-                nPos.x += offset.x;
-                if (GameMgr.Instance.Obstacle.GetTile(nPos).name == "Fire")
-                {
-                    GameMgr.Instance.Obstacle.SetTile(nPos, null);
-                }
+                break;
             }
+            else if (IsMoving) // 움직이면 취소
+                break;
+            yield return null;
         }
     }
-
-    private void UseFireWall() // 방화벽 설치
+    IEnumerator UseFireWall() // 방화벽 설치
     {
-        //좌표 단위가 변화되면서 수정해야할 코드
-        Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
-        if (GameMgr.Instance.Obstacle.GetTile(nPos) == null) // 설치할 위치에 장애물이 없다면 방화벽 설치
-        {
-            GameMgr.Instance.Obstacle.SetTile(nPos, FireWallTile);
-        }
-    }
-
-    private void UseStickyBomb() // 점착폭탄 설치
-    {
-        //좌표 단위가 변화되면서 수정해야할 코드
-        int ObstacleLayer = 1 << LayerMask.NameToLayer("Obstacle"); // 장애물만 체크할 Layer
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, _moveDir, 128, ObstacleLayer); // 레이캐스트 발사=
-        if (hit)
-        {
-            Debug.Log("Ray hit");
-            Debug.Log(hit.transform.name);
-            if (hit.transform.CompareTag("Wall")) // 레이캐스트 충돌대상이 벽이라면
-            {
-                Vector3Int nPos = GameMgr.Instance.BackTile.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
-                GameMgr.Instance.Obstacle.SetTile(nPos, null); // 벽 제거
+        Vector3Int nPos = Vector3Int.zero;
+        while (true) {
+            RenderInteractArea(ref nPos);
+            if (Input.GetMouseButtonDown(0)) {
+                TileMgr.Instance.CreateFireWall(nPos);
+                break;
             }
+            else if (IsMoving)
+                break;
+            yield return null;
         }
+
+        TileMgr.Instance.RemoveEffect(nPos);
+    }
+    IEnumerator UseStickyBomb() // 점착폭탄 설치
+    {
+        Vector3Int nPos = Vector3Int.zero;
+        while (true) {
+            RenderInteractArea(ref nPos);
+            if (Input.GetMouseButtonDown(0)) {
+                TileMgr.Instance.RemoveWall(nPos);
+                break;
+            }
+            else if (IsMoving)
+                break;
+            yield return null;
+        }
+
+        TileMgr.Instance.RemoveEffect(nPos);
     }
 
     private void UseO2Can() // 산소캔 사용
@@ -347,104 +336,38 @@ public class Player : Charactor
             // TODO: 구조 종료
             break;
         }
-
-        ChangeMentalText(); // 멘탈 UI 변경
-        ChangeStateText(); // 상태 UI 변경
     }
 
-    protected void RenderInteractArea(ref Vector3Int oPos)
-    {
-        Vector3 basePos = GameMgr.Instance.BackTile.CellToWorld(currentTilePos) + GameMgr.Instance.BackTile.cellSize/2.0f;
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - basePos; // 마우스 로컬 좌표
-        Vector3Int direction; // 캐릭터 기준 마우스 방향
-        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
-            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
-        else
-            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
+    protected void RenderInteractArea(ref Vector3Int oPos) {
+        Vector3Int direction = GetMouseDirectiontoTilemap();
 
         Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
-        if (nPos != oPos) // 기존의 렌더부분과 갱신된 부분이 다르면
-        {
-            GameMgr.Instance.BackTile.SetTileFlags(oPos, TileFlags.None);
-            GameMgr.Instance.BackTile.SetColor(oPos, new Color(1, 1, 1, 1)); // 기존의 좌표 색 복구
-            GameMgr.Instance.BackTile.SetTileFlags(nPos, TileFlags.None);
-            GameMgr.Instance.BackTile.SetColor(nPos, new Color(0, 0, 1, 1)); // 새로운 좌표 색 변경
+        if (nPos != oPos) { // 기존의 렌더부분과 갱신된 부분이 다르면
+            TileMgr.Instance.RemoveEffect(oPos);            // 기존의 좌표 색 복구
+            TileMgr.Instance.SetEffect(nPos, Color.blue);   // 새로운 좌표 색 변경
             oPos = nPos;
         }
-    }
+    } // 
 
-    public void ChangeMentalText()
-    {
-        switch(_currentMental)
-        {
-            case 4:
-                _mentalText.text = "아주좋음";
-                _mentalText.color = new Color(0, 1, 1);
-                break;
-            case 3:
-                _mentalText.text = "좋    음";
-                _mentalText.color = new Color(0.52f, 0.796f, 0.063f);
-                break;
-            case 2:
-                _mentalText.text = "보    통";
-                _mentalText.color = new Color(0.992f, 0.82f, 0.02f);
-                break;
-            case 1:
-                _mentalText.text = "나    쁨";
-                _mentalText.color = new Color(1, 0.5f, 0);
-                break;
-            default:
-                _mentalText.text = "패    닉";
-                _mentalText.color = new Color(0.8f, 0.353f, 0.353f);
-                break;
-        }
-    }
-
-    public void ChangeStateText()
-    {
-        switch(_playerAct)
-        {
-            case _Act.Rescue:
-                _stateText.text = "구조중";
-                _stateText.color = new Color(1, 0.5f, 0);
-                break;
-            case _Act.Retire:
-                _stateText.text = "행동불능";
-                _stateText.color = new Color(0.35f, 0.35f, 0.35f);
-                break;
-            case _Act.Panic:
-                _stateText.text = "패    닉";
-                _stateText.color = new Color(0.8f, 0.35f, 0.35f);
-                break;
-            default:
-                _stateText.text = "정    상";
-                _stateText.color = new Color(1, 1, 1);
-                break;
-        }
-    }
-
-    public override void AddHP(float value)
-    {
+    public override void AddHP(float value) {
         base.AddHP(value);
 
         if (CurrentHP <= 0 )
-            _playerAct = _Act.Retire;
+            _playerAct = Action.Retire;
     }
 
-    public override void AddO2(float value)
-    {
+    public override void AddO2(float value) {
         base.AddO2(value);
 
         if (CurrentO2 <= 0)
-            _playerAct = _Act.Retire;
+            _playerAct = Action.Retire;
     }
 
-    private void AddMental(int value)
-    {
+    private void AddMental(int value) {
         _currentMental += value;
         if(_currentMental <= 0)
         {
-            _playerAct = _Act.Panic;
+            _playerAct = Action.Panic;
         }
         if(_currentMental > _maxMental)
         {
@@ -452,23 +375,25 @@ public class Player : Charactor
         }
     }
 
-    //private void SetFOV()
-    //{
-    //    GridLayout gridLayout = GameMgr.Instance.FogTile.GetComponent<GridLayout>();
-    //    Vector3Int nPos = gridLayout.WorldToCell(transform.position + (Vector3.left * 2000));
-    //    int count = 5 / 2;
-    //    for(int i= -count; i<=count; i++)
-    //    {
-    //        int checkArea = 0;
-    //        for(int j=0; j< 5 - Mathf.Abs(i); j++)
-    //        {
-    //            if(checkArea >= Mathf.Abs(i))
-    //            {
-    //                GameMgr.Instance.FogTile.SetTileFlags(nPos + new Vector3Int(checkArea, i, 0), TileFlags.None);
-    //                GameMgr.Instance.FogTile.SetColor(nPos + new Vector3Int(checkArea, i, 0), new Color(1, 1, 1, 0.0f));
-    //            }
-    //            checkArea++;
-    //        }
-    //    }
-    //}
+    public Action Act {
+        get { return _playerAct; }
+	}
+    public float Mental {
+        get { return _currentMental; }
+	}
+
+    protected bool IsMoving { // 현재 움직이는 상태인가 체크하는 함수
+        get { return (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0); }
+    }
+
+    private Vector3Int GetMouseDirectiontoTilemap() // 현재 캐릭터 기준으로 마우스가 어느 위치에 있는지 반환하는 함수
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
+        Vector3Int direction;
+        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
+            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
+        else
+            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
+        return direction;
+    }
 }

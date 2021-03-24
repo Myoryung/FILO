@@ -10,13 +10,7 @@ public class INO_Beacon : InteractiveObject {
     public override bool IsAvailable() {
         if (!base.IsAvailable()) return false;
 
-        int aroundPlayerCount = 0;
-        foreach (Player player in GameMgr.Instance.Comp_Players) {
-            if ((position-player.currentTilePos).magnitude < 2)
-                aroundPlayerCount++;
-        }
-
-        return aroundPlayerCount >= 2;
+        return GameMgr.Instance.GetAroundPlayerCount(position, 2) >= 2;
     }
 
     public override void Activate() {

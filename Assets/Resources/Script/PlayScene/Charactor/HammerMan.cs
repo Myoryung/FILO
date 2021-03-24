@@ -25,12 +25,13 @@ public class HammerMan : Player
 
     IEnumerator RescueHammer() {
         Vector3Int oPos = Vector3Int.zero; // 갱신용 old Pos
+        UI_Actives.SetActive(false); // UI 숨기기
 
         while (true) { // 클릭 작용시까지 반복
             RenderInteractArea(ref oPos);
             if (Input.GetMouseButtonDown(0))
             {
-                TileMgr.Instance.SetTileColor(oPos, Color.white);
+                TileMgr.Instance.RemoveEffect(oPos);
                 if (TileMgr.Instance.ExistObject(oPos)) { // 클릭 좌표에 장애물이 있다면 제거
                     TileMgr.Instance.RemoveObject(oPos);
                     AddO2(-10);
@@ -39,13 +40,14 @@ public class HammerMan : Player
                 }
                 break;
             }
-            else if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) {
-                TileMgr.Instance.SetTileColor(oPos, Color.white);
+            else if (IsMoving) {
                 break;
             }
 
             yield return null;
         }
+
+        TileMgr.Instance.RemoveEffect(oPos);
     }
 
     protected override void OnTriggerEnter2D(Collider2D other) {

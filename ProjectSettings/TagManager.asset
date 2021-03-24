@@ -16,6 +16,7 @@ TagManager:
   - MentalText
   - StateText
   - Beacon
+  - NameText
   layers:
   - Default
   - TransparentFX

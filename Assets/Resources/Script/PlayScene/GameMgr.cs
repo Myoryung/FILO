@@ -16,8 +16,7 @@ public class GameMgr : MonoBehaviour {
         }
     }
 
-    private Text _mentalText; // ID Card 멘탈 Text UI
-    private Text _stateText; // ID Card 상태 Text UI
+    private Text _mentalText, _stateText, _charNameText;
 
     public int GameTurn = 0; // 게임 턴
     private List<Player> Players = new List<Player>(); // 사용할 캐릭터들의 Components
@@ -91,6 +90,7 @@ public class GameMgr : MonoBehaviour {
             Player player = Players[CurrentChar];
             ChangeMentalText(player);
             ChangeStateText(player);
+            ChangeNameText();
         }
     }
 
@@ -114,11 +114,19 @@ public class GameMgr : MonoBehaviour {
         //        }
         //    }
         //}
+
+        disasterMgr = new DisasterMgr(_stage);
+        StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+
         GameTime = 1189; // 게임 상의 시간
 
         _currGameState = GameState.SELECT_CHAR;
     }
     private void SelectChar() {
+        //TileMgr.Instance.ExistPlayerSpawn()
+        if (Input.GetMouseButtonUp(0)) {
+
+		}
 
         Players.Add(GameObject.Find("Captain").GetComponent<Player>());
         Players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
@@ -134,8 +142,10 @@ public class GameMgr : MonoBehaviour {
         // Load ID Card Text
         _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
         _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
+        _charNameText = GameObject.FindWithTag("NameText").GetComponent<Text>();
 
-        disasterMgr = new DisasterMgr(_stage);
+        foreach (Player player in Players)
+            player.StageStartActive();
 
         _currGameState = GameState.PLAYER_TURN;
     }
@@ -204,6 +214,9 @@ public class GameMgr : MonoBehaviour {
             if (disasterObject.IsActive) {
                 Destroy(disasterObject.gameObject);
                 disasterObject = null;
+
+                StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+
                 bDisasterExist = false;
                 _currGameState = GameState.TURN_END;
             }
@@ -275,6 +288,24 @@ public class GameMgr : MonoBehaviour {
         default:
             _stateText.text = "정    상";
             _stateText.color = new Color(1, 1, 1);
+            break;
+        }
+    }
+    public void ChangeNameText() {
+        if (_charNameText == null) return;
+
+        switch (CurrentChar) {
+        case 0:
+            _charNameText.text = "01. 주인공";
+            break;
+        case 1:
+            _charNameText.text = "02. 빅토르";
+            break;
+        case 2:
+            _charNameText.text = "03. 레  오";
+            break;
+        case 3:
+            _charNameText.text = "04. 시노에";
             break;
         }
     }

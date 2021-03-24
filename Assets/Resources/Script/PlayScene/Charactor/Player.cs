@@ -96,9 +96,7 @@ public class Player : Charactor
                 _body.rotation = Quaternion.identity; // y값 초기화
             }
 
-            Vector3 worldPos = transform.position;
-            worldPos.y -= 100;
-            _currentTilePos = TileMgr.Instance.WorldToCell(worldPos); // 현재 캐릭터의 타일맵 좌표 갱신
+            _currentTilePos = TileMgr.Instance.WorldToCell(transform.position); // 현재 캐릭터의 타일맵 좌표 갱신
         }
         if (hor == 0 && ver == 0) // 이동 종료 시
         {
@@ -157,9 +155,13 @@ public class Player : Charactor
         }
     }
 
+    public virtual void StageStartActive() {
+	}
     public virtual void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
-        AddO2(10.0f);
+        if (_playerAct != Action.Panic) // 패닉 상태는 산소가 회복되지 않는다
+            AddO2(10.0f);
+
         if(_playerAct == Action.Rescue) // 구조중이라면
         {
             _rescueTarget.RescueCount--; // 구조중인 대상의 남은 구조턴 감소
@@ -175,21 +177,44 @@ public class Player : Charactor
     {
         UI_Actives.SetActive(false);
     }
-
-    public void Rescue() // 구조 버튼 누를 시 호출되는 함수
+    public virtual void ActiveUltSkill() // 궁국기 virtual 함수
     {
-        Debug.Log("구조버튼 클릭");
-        int RescueLayer = 1 << LayerMask.NameToLayer("Rescue"); // 생존자의 Layer
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, _moveDir, 128, RescueLayer); // 레이캐스트 쏘기
-        if (hit)
-        {
-            if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
-            {
-                _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
-                _playerAct = Action.Rescue; // 구조 상태로 변경
-            }
-        }
+        UI_Actives.SetActive(false);
+    }
+
+    public virtual void StartRescue() // Rescue가 IEnumrator가 되며 버튼용 함수 추가
+    {
+        UI_Actives.SetActive(false);
+        StartCoroutine(Rescue());
+    }
+
+    IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
+    {
         UI_Actives.SetActive(false); // UI 숨기기
+
+        Vector3Int nPos = Vector3Int.zero;
+        while (true) {
+            RenderInteractArea(ref nPos); // 구조 영역선택
+            if (Input.GetMouseButtonDown(0)) {
+                int RescueLayer = 1 << LayerMask.NameToLayer("Rescue"); // 생존자의 Layer
+                RaycastHit2D hit = Physics2D.Raycast(TileMgr.Instance.CellToWorld(_currentTilePos),
+                    (Vector3)GetMouseDirectiontoTilemap(), 128, RescueLayer); // 레이캐스트 쏘기
+                if (hit) {
+                    if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
+                    {
+                        _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
+                        _playerAct = Action.Rescue; // 구조 상태로 변경
+                    }
+                }
+                break;
+            }
+            else if (IsMoving) // 움직일 시 취소
+                break;
+
+            yield return null;
+        }
+
+        TileMgr.Instance.RemoveEffect(nPos); // 구조 영역 선택한거 원상복구
     }
 
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
@@ -202,19 +227,18 @@ public class Player : Charactor
     {
         switch(toolnum)
         {
-            case 1: // FireExtinguisher
-                StopAllCoroutines();
-                StartCoroutine(UseFireExtinguisher());
-                break;
-            case 2: // StickyBomb
-                UseStickyBomb();
-                break;
-            case 3: // FireWall
-                UseFireWall();
-                break;
-            case 4: // SmokeAbsorption
-                break;
-            case 5: // O2Can
+        case 1: // FireExtinguisher
+            StartCoroutine(UseFireExtinguisher());
+            break;
+        case 2: // StickyBomb
+            StartCoroutine(UseStickyBomb());
+            break;
+        case 3: // FireWall
+            StartCoroutine(UseFireWall());
+            break;
+        case 4: // SmokeAbsorption
+            break;
+        case 5: // O2Can
                 UseO2Can();
                 break;
         }
@@ -223,68 +247,66 @@ public class Player : Charactor
     }
 
     IEnumerator UseFireExtinguisher() // 소화기 사용 코드 
-    {
-        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int nPos = TileMgr.Instance.WorldToCell(mousePos); // 마우스의 타일맵 상 좌표
-
-        // 누른 위치가 캐릭터 기준 2칸 밖이면 종료
-        if (Mathf.Abs(_currentTilePos.x - nPos.x) > 2 || Mathf.Abs(_currentTilePos.y - nPos.y) > 2)
-            yield break;
-
-        int startX = (transform.position.x < mousePos.x) ? nPos.x : nPos.x-1;
-        int startY = (transform.position.y < mousePos.y) ? nPos.y : nPos.y-1;
-        int endX = startX + 1;
-        int endY = startY + 1;
-
-        // 불 존재 확인
-        bool existFire = false;
-        for (int y = startY; y <= endY; y++) {
-            for (int x = startX; x <= endX; x++) {
-                Vector3Int tPos = new Vector3Int(x, y, 0);
-                if (TileMgr.Instance.ExistFire(tPos)) {
-                    existFire = true;
-                    break;
+     {
+        //좌표 값 변경으로 인해 수정해야 할 코드
+        while (true) {
+            if (Input.GetMouseButton(0)) {
+                Vector3 localPos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 캐릭터 기준 로컬좌표
+                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)); // 타일맵에서 마우스 좌표
+                if (_currentTilePos.x - moustIntPos.x <= 2 &&
+                    _currentTilePos.x - moustIntPos.x >= -2 &&
+                    _currentTilePos.y - moustIntPos.y <= 2 &&
+                    _currentTilePos.y - moustIntPos.y >= -2) // 누른 위치가 캐릭터 기준 2칸 이내라면
+                {
+                    Vector3Int offset = Vector3Int.zero; // 소화기가 퍼져나갈 크기
+                    offset.x = (localPos.x > 0) ? 1 : -1; // y축으로 퍼질 방향
+                    offset.y = (localPos.y > 0) ? 1 : -1; // x축으로 퍼질 방향
+                    Vector2 SpreadRange = new Vector2(2, 2); // 불 제거 범위
+                    for (int i = 0; Mathf.Abs(i) < SpreadRange.x; i+= offset.x) {
+                        for (int j = 0; Mathf.Abs(j) < SpreadRange.y; j+= offset.y) {
+                            Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
+                            TileMgr.Instance.RemoveFire(fPos);
+                        }
+                    }
                 }
+                break;
             }
-
-            if (existFire) break;
-        }
-
-        if (!existFire)
-            yield break;
-
-        // 불 삭제
-        for (int y = startY; y <= endY; y++) {
-            for (int x = startX; x <= endX; x++) {
-                Vector3Int tPos = new Vector3Int(x, y, 0);
-                TileMgr.Instance.RemoveFire(tPos);
-            }
+            else if (IsMoving) // 움직이면 취소
+                break;
+            yield return null;
         }
     }
-
-    private void UseFireWall() // 방화벽 설치
+    IEnumerator UseFireWall() // 방화벽 설치
     {
-        Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
-        TileMgr.Instance.CreateFireWall(nPos);
+        Vector3Int nPos = Vector3Int.zero;
+        while (true) {
+            RenderInteractArea(ref nPos);
+            if (Input.GetMouseButtonDown(0)) {
+                TileMgr.Instance.CreateFireWall(nPos);
+                break;
+            }
+            else if (IsMoving)
+                break;
+            yield return null;
+        }
+
+        TileMgr.Instance.RemoveEffect(nPos);
     }
-
-    private void UseStickyBomb() // 점착폭탄 설치
+    IEnumerator UseStickyBomb() // 점착폭탄 설치
     {
-        //좌표 단위가 변화되면서 수정해야할 코드
-        int ObstacleLayer = 1 << LayerMask.NameToLayer("Obstacle"); // 장애물만 체크할 Layer
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, _moveDir, 128, ObstacleLayer); // 레이캐스트 발사=
-        if (hit)
-        {
-            Debug.Log("Ray hit");
-            Debug.Log(hit.transform.name);
-            if (hit.transform.CompareTag("Wall")) // 레이캐스트 충돌대상이 벽이라면
-            {
-                Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position) + new Vector3Int((int)_moveDir.x, 0, 0);
+        Vector3Int nPos = Vector3Int.zero;
+        while (true) {
+            RenderInteractArea(ref nPos);
+            if (Input.GetMouseButtonDown(0)) {
                 TileMgr.Instance.RemoveWall(nPos);
+                break;
             }
+            else if (IsMoving)
+                break;
+            yield return null;
         }
+
+        TileMgr.Instance.RemoveEffect(nPos);
     }
 
     private void UseO2Can() // 산소캔 사용
@@ -317,20 +339,15 @@ public class Player : Charactor
     }
 
     protected void RenderInteractArea(ref Vector3Int oPos) {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
-        Vector3Int direction; // 캐릭터 기준 마우스 방향
-        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
-            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
-        else
-            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
+        Vector3Int direction = GetMouseDirectiontoTilemap();
 
         Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
         if (nPos != oPos) { // 기존의 렌더부분과 갱신된 부분이 다르면
-            TileMgr.Instance.SetTileColor(oPos, Color.white);   // 기존의 좌표 색 복구
-            TileMgr.Instance.SetTileColor(nPos, Color.blue);    // 새로운 좌표 색 변경
+            TileMgr.Instance.RemoveEffect(oPos);            // 기존의 좌표 색 복구
+            TileMgr.Instance.SetEffect(nPos, Color.blue);   // 새로운 좌표 색 변경
             oPos = nPos;
         }
-    }
+    } // 
 
     public override void AddHP(float value) {
         base.AddHP(value);
@@ -365,23 +382,18 @@ public class Player : Charactor
         get { return _currentMental; }
 	}
 
-    //private void SetFOV()
-    //{
-    //    GridLayout gridLayout = GameMgr.Instance.FogTile.GetComponent<GridLayout>();
-    //    Vector3Int nPos = gridLayout.WorldToCell(transform.position + (Vector3.left * 2000));
-    //    int count = 5 / 2;
-    //    for(int i= -count; i<=count; i++)
-    //    {
-    //        int checkArea = 0;
-    //        for(int j=0; j< 5 - Mathf.Abs(i); j++)
-    //        {
-    //            if(checkArea >= Mathf.Abs(i))
-    //            {
-    //                GameMgr.Instance.FogTile.SetTileFlags(nPos + new Vector3Int(checkArea, i, 0), TileFlags.None);
-    //                GameMgr.Instance.FogTile.SetColor(nPos + new Vector3Int(checkArea, i, 0), new Color(1, 1, 1, 0.0f));
-    //            }
-    //            checkArea++;
-    //        }
-    //    }
-    //}
+    protected bool IsMoving { // 현재 움직이는 상태인가 체크하는 함수
+        get { return (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0); }
+    }
+
+    private Vector3Int GetMouseDirectiontoTilemap() // 현재 캐릭터 기준으로 마우스가 어느 위치에 있는지 반환하는 함수
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
+        Vector3Int direction;
+        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
+            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
+        else
+            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
+        return direction;
+    }
 }

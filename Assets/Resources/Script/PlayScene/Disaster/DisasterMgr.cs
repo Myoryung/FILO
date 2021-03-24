@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class DisasterMgr {
     private readonly List<Disaster> disasters = new List<Disaster>();
@@ -80,4 +82,47 @@ public class DisasterMgr {
 
         return disasterObject;
     }
+
+	public IEnumerator UpdateWillActiveDisasterArea() // 다음 재난 일어날 위치 Tilemap에 생성(1턴 후 자동삭제)
+	{
+		Disaster nextDis = GetWillActiveDisaster();
+		if (nextDis != null) // 다음 턴 재난이 없으면 실행되지 않음
+		{
+			Vector3Int minRange = Vector3Int.zero; // 좌측상단 xy측
+			Vector3Int maxRange = Vector3Int.zero; // 우측하단 xy측
+			switch (nextDis.type) {
+			case Disaster.DisasterType.FALLING_ROCK:
+				minRange = new Vector3Int(-1, -1, 0);
+				maxRange = new Vector3Int(1, 1, 0);
+				break;
+			case Disaster.DisasterType.FLASHOVER:
+				minRange = new Vector3Int(0, 0, 0);
+				maxRange = new Vector3Int(1, 1, 0);
+				break;
+			case Disaster.DisasterType.SHORT_CIRCUIT:
+				minRange = new Vector3Int(0, 0, 0);
+				maxRange = new Vector3Int(0, 0, 0);
+				break;
+			case Disaster.DisasterType.SMOKE:
+				minRange = new Vector3Int(-1, -1, 0);
+				maxRange = new Vector3Int(1, 1, 0);
+				break;
+			}
+
+            // 재난 범위에 타일 생성
+            for (int i = minRange.x; i <= maxRange.x; i++) {
+				for (int j = minRange.y; j <= maxRange.y; j++)
+                    TileMgr.Instance.SetWarning(nextDis.position + new Vector3Int(i, j, 0)); 
+			}
+
+			int checkTurn = GameMgr.Instance.GameTurn;
+			yield return new WaitUntil(() => GameMgr.Instance.CurrGameState == GameMgr.GameState.DISASTER_ALARM);
+
+            // 타일 삭제 부분
+            for (int i = minRange.x; i <= maxRange.x; i++) {
+				for (int j = minRange.y; j <= maxRange.y; j++)
+                    TileMgr.Instance.RemoveWarning(nextDis.position + new Vector3Int(i, j, 0));
+			}
+		}
+	}
 }

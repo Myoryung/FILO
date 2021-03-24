@@ -35,14 +35,13 @@ public class Nurse : Player
         }
     }
 
-    IEnumerator Heal()
-    {
+    IEnumerator Heal() {
         Vector3Int oPos = Vector3Int.zero; // 갱신용 old Pos
+        UI_Actives.SetActive(false); // UI 숨기기
+
         while (true) { // 클릭 작용시까지 반복
             RenderInteractArea(ref oPos);
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.SetTileColor(oPos, Color.white);
-
                 List<Player> players = GameMgr.Instance.GetPlayersAt(oPos);
                 foreach (Player player in players) {
                     player.AddHP(30.0f);
@@ -52,12 +51,12 @@ public class Nurse : Player
                 }
                 break;
             }
-            else if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) {
-                TileMgr.Instance.SetTileColor(oPos, Color.white);
+            else if (IsMoving)
                 break;
-            }
 
             yield return null;
         }
+
+        TileMgr.Instance.RemoveEffect(oPos);
     }
 }

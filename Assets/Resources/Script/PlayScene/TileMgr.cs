@@ -6,11 +6,14 @@ public class TileMgr {
     private static TileMgr m_instance; // Singleton
 
     private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, PlayerSpawnTilemap;
+    private Tilemap EffectTilemap, WarningTilemap;
 
     [SerializeField]
-    private TileBase FireTile = null, FireWallTile = null, ElectricTile = null;
+    private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
 
     private float EmberMoveTime = 0.0f;
+
+    Dictionary<Vector3Int, Stack<Color>> colors = new Dictionary<Vector3Int, Stack<Color>>();
 
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
 
@@ -46,14 +49,16 @@ public class TileMgr {
         GameObject Grid = GameObject.Find("Grid");
         BackgroundTilemap = Grid.transform.Find("Background").gameObject.GetComponent<Tilemap>();
         ObjectTilemap = Grid.transform.Find("Object").gameObject.GetComponent<Tilemap>();
-        //Object = Grid.transform.Find("Object").gameObject.GetComponent<Tilemap>();
         EnvironmentTilemap = Grid.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
         PlayerSpawnTilemap = Grid.transform.Find("PlayerSpawn").gameObject.GetComponent<Tilemap>();
+        EffectTilemap = Grid.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
+        WarningTilemap = Grid.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
-        FireWallTile = Resources.Load<TileBase>("Tilemap/Enviroment/FireWall");
+        FireWallTile = Resources.Load<TileBase>("Tilemap/Object/FireWall");
         ElectricTile = Resources.Load<TileBase>("Tilemap/Enviroment/Electric");
+        EffectTile = Resources.Load<TileBase>("Tilemap/Effect/Effect");
     }
 
 	public void SetInteractiveObject(Vector3Int pos, InteractiveObject obj) {
@@ -148,9 +153,31 @@ public class TileMgr {
     public Vector3 CellToWorld(Vector3Int pos) {
         return BackgroundTilemap.CellToWorld(pos) + BackgroundTilemap.cellSize/2.0f;
     }
-    public void SetTileColor(Vector3Int pos, Color color) {
-        BackgroundTilemap.SetTileFlags(pos, TileFlags.None);
-        BackgroundTilemap.SetColor(pos, color);
+
+    public void SetEffect(Vector3Int pos, Color color) {
+        EffectTilemap.SetTile(pos, EffectTile);
+        EffectTilemap.SetTileFlags(pos, TileFlags.None);
+        EffectTilemap.SetColor(pos, color);
+    }
+    public void RemoveEffect(Vector3Int pos) {
+        EffectTilemap.SetTile(pos, null);
+    }
+
+    public void SetWarning(Vector3Int pos) {
+        WarningTilemap.SetTile(pos, EffectTile);
+        WarningTilemap.SetTileFlags(pos, TileFlags.None);
+        WarningTilemap.SetColor(pos, new Color(1, 0, 0, 0));
+    }
+    public void TurnWarning(Vector3Int pos, bool flag) {
+        if (WarningTilemap.GetTile(pos) == null) return;
+
+        Color color = WarningTilemap.GetColor(pos);
+        color.a = (flag) ? 0.5f : 0;
+        WarningTilemap.SetTileFlags(pos, TileFlags.None);
+        WarningTilemap.SetColor(pos, color);
+    }
+    public void RemoveWarning(Vector3Int pos) {
+        WarningTilemap.SetTile(pos, null);
     }
 
     public void CreateFire(Vector3Int pos) {
@@ -161,6 +188,7 @@ public class TileMgr {
         Electrify(pos);
     }
     public void CreateFireWall(Vector3Int pos) {
+        Debug.Log(pos + " 설치");
         ObjectTilemap.SetTile(pos, FireWallTile);
 	}
 
@@ -179,6 +207,9 @@ public class TileMgr {
     public bool ExistElectric(Vector3Int pos) {
         return ExistEnvironmentTile(pos, "Electric");
     }
+    public bool ExistPlayerSpawn(Vector3Int pos) {
+        return PlayerSpawnTilemap.GetTile(pos) != null;
+	}
 
     private Water GetWater(Vector3Int pos) {
         return EnvironmentTilemap.GetInstantiatedObject(pos).GetComponent<Water>();

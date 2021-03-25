@@ -12,7 +12,7 @@ public class Player : Charactor
     public GameObject UI_ToolBtns; // 도구 버튼 UI
 
     // 플레이어 스테이터스
-    public enum Action { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
+    public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
     protected Action _playerAct; 
     private RescueTarget _rescueTarget; // 현재 구조중인 타겟
     [SerializeField]
@@ -60,7 +60,7 @@ public class Player : Charactor
         float ver = Input.GetAxisRaw("Vertical");
 
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != Action.Rescue && _currentMental > 0)
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0)
         {
             transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
 
@@ -150,15 +150,15 @@ public class Player : Charactor
         if (_playerAct != Action.Panic) // 패닉 상태는 산소가 회복되지 않는다
             AddO2(10.0f);
 
-        if(_playerAct == Action.Rescue) // 구조중이라면
+        if(_playerAct == Action.Carry) // 업는 중이라면
         {
-            _rescueTarget.RescueCount--; // 구조중인 대상의 남은 구조턴 감소
-            if(_rescueTarget.RescueCount <= 0) // 구조턴 값이 0보다 작으면
+            _rescueTarget.CarryCount--;
+            if (_rescueTarget.CarryCount <= 0) // 업는턴 값이 0보다 작으면
             {
-                _rescueTarget.gameObject.SetActive(false); // 구조 대상 숨기기
-                _playerAct = Action.Idle; // Idle 상태로 변경
+                _rescueTarget.TurnOffRender();
+				_playerAct = Action.Rescue; // Rescue 상태로 변경
             }
-        }
+		}
     }
 
     public virtual void ActiveSkill()
@@ -190,8 +190,10 @@ public class Player : Charactor
                 if (hit) {
                     if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
                     {
+                        Vector3Int tPos = TileMgr.Instance.WorldToCell(hit.transform.position);
+                        GameMgr.Instance.RemoveRescueTarget(tPos);
                         _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
-                        _playerAct = Action.Rescue; // 구조 상태로 변경
+                        _playerAct = Action.Carry; // 업는 상태로 변경
                     }
                 }
                 break;
@@ -320,7 +322,13 @@ public class Player : Charactor
             break;
 
         case "Beacon":
-            // TODO: 구조 종료
+            // 구조 종료
+            Debug.Log("충돌!");
+            if (_playerAct == Action.Rescue) {
+                Destroy(_rescueTarget.gameObject);
+                _rescueTarget = null;
+                _playerAct = Action.Idle;
+            }
             break;
         }
     }

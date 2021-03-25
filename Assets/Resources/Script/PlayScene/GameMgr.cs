@@ -272,8 +272,12 @@ public class GameMgr : MonoBehaviour {
         if (_stateText == null) return;
 
         switch (player.Act) {
+        case Player.Action.Carry:
+            _stateText.text = "업 는 중";
+            _stateText.color = new Color(1, 0.5f, 0);
+            break;
         case Player.Action.Rescue:
-            _stateText.text = "구조중";
+            _stateText.text = "구 조 중";
             _stateText.color = new Color(1, 0.5f, 0);
             break;
         case Player.Action.Retire:
@@ -328,6 +332,9 @@ public class GameMgr : MonoBehaviour {
     public void AddRescueTarget(Vector3Int pos, RescueTarget rt) {
         RescueTargets.Add(pos, rt);
 	}
+    public void RemoveRescueTarget(Vector3Int pos) {
+        RescueTargets.Remove(pos);
+    }
     public RescueTarget GetRescueTargetAt(Vector3Int pos) {
         if (RescueTargets.ContainsKey(pos))
             return RescueTargets[pos];

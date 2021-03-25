@@ -10,11 +10,8 @@ public class Player : Charactor
     public Image MTGage; // 멘탈
     public GameObject UI_Actives; // 행동 버튼 UI
     public GameObject UI_ToolBtns; // 도구 버튼 UI
-    public GameObject FireWall; // 방화벽 Prefab
-    public TileBase FireWallTile; // 타일맵에 적용할 방화벽
 
     // 플레이어 스테이터스
-    //안녕안녕?
     public enum Action { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
     protected Action _playerAct; 
     private RescueTarget _rescueTarget; // 현재 구조중인 타겟
@@ -79,10 +76,6 @@ public class Player : Charactor
             if (ver != 0.0f) //상, 하 이동중이라면
                 AddO2(-(UseO2 * Time.deltaTime));
 
-            //if (_currentTilePos != _tileLayout.WorldToCell(transform.position))
-            //{
-            //    SetFOV();
-            //}
             if((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
             {
                 _anim.SetBool("IsRunning", true); // 달리기 애니메이션 재생
@@ -132,26 +125,21 @@ public class Player : Charactor
 
     protected virtual void Activate() // 행동 들 (구조, 도구사용)
     {
-        if (GameMgr.Instance.CurrentChar == _playerNum) {
-            InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
-            if (interactiveObject != null && interactiveObject.IsAvailable())
-                ActivateInteractBtn(interactiveObject);
-            else
-                DeactivateInteractBtn();
-        }
+        if (GameMgr.Instance.CurrentChar != _playerNum) return;
 
-        if (Input.GetMouseButtonUp(1) && GameMgr.Instance.CurrentChar == _playerNum) // 마우스 우클릭 시 현재 조작중인 캐릭터의 버튼 UI 표시
-        {
-            if (UI_Actives.activeSelf == true || UI_ToolBtns.activeSelf == true) // 이미 켜져있었다면 UI 끄기
-            {
+        InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
+        if (interactiveObject != null && interactiveObject.IsAvailable())
+            ActivateInteractBtn(interactiveObject);
+        else
+            DeactivateInteractBtn();
+
+        if (Input.GetMouseButtonUp(1)) { // 마우스 우클릭 시 UI 표시
+            if (UI_Actives.activeSelf || UI_ToolBtns.activeSelf) { // 이미 켜져있었다면 UI 끄기
                 UI_Actives.SetActive(false);
                 UI_ToolBtns.SetActive(false);
-                
             }
-            else if (UI_Actives.activeSelf == false && UI_ToolBtns.activeSelf == false) // Active UI 보이기
-            {
+            else
                 UI_Actives.SetActive(true);
-            }
         }
     }
 
@@ -220,7 +208,6 @@ public class Player : Charactor
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
     {
         UI_ToolBtns.SetActive(true); // 도구 UI 보이기
-        Debug.Log("도구버튼 클릭");
     }
 
     public void UseTool(int toolnum) // 도구 UI의 버튼 누를 시 호출되는 함수

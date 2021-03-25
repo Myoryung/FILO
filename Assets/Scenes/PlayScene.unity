@@ -1510,8 +1510,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7274700534510155484}
   - {fileID: 1728357421201761293}
+  - {fileID: 7274700534510155484}
   - {fileID: 3160156809655150964}
   - {fileID: 7136588880983307128}
   m_Father: {fileID: 0}
@@ -6688,6 +6688,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1641030266}
   m_CullTransparentMesh: 0
+--- !u!1 &1705501796 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3478624997929221601, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1728357421201761292}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1708870341
 GameObject:
   m_ObjectHideFlags: 0
@@ -7527,6 +7533,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 4266554766673676318, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+        type: 3}
+    - target: {fileID: 3478624997198443496, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ActiveSkill
       objectReference: {fileID: 0}
     - target: {fileID: 3478624997493455472, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
         type: 3}
@@ -7566,7 +7578,7 @@ PrefabInstance:
     - target: {fileID: 3478624997493455472, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3478624997493455472, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
         type: 3}
@@ -7602,6 +7614,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1728357421201761295}
+    - target: {fileID: 3478624997587234251, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenToolBtns
+      objectReference: {fileID: 0}
+    - target: {fileID: 3478624997929221601, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+        type: 3}
+      propertyPath: m_Name
+      value: UI_Activate
       objectReference: {fileID: 0}
     - target: {fileID: 3478624997944185441, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
         type: 3}
@@ -7612,12 +7634,22 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1728357421201761295}
+    - target: {fileID: 3478624998223905366, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: StartRescue
       objectReference: {fileID: 0}
     - target: {fileID: 3478624998459581449, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4266554766673676318, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+        type: 3}
+      propertyPath: UI_Actives
+      value: 
+      objectReference: {fileID: 1705501796}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dfd4fc7ce2938ca43a066d7e2b3111a7, type: 3}
 --- !u!4 &1728357421201761293 stripped
@@ -7632,6 +7664,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1728357421201761292}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1728357421201761295 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4266554766673676318, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1728357421201761292}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728357421201761294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f3bce4806d78de41b903e00155ddc9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3160156809655150963
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7767,7 +7811,7 @@ PrefabInstance:
     - target: {fileID: 251350724613956088, guid: d17c8a80713583047bcb722b9fdbd1c9,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Rescue
+      value: StartRescue
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6264974564365178360, guid: d17c8a80713583047bcb722b9fdbd1c9, type: 3}
@@ -7858,9 +7902,6 @@ MonoBehaviour:
   MTGage: {fileID: 3160156809655150967}
   UI_Actives: {fileID: 3160156809655150966}
   UI_ToolBtns: {fileID: 3160156809655150970}
-  FireWall: {fileID: 7841991225187466614, guid: c0c7bd9e43ec7a447b4e2990b5befb02,
-    type: 3}
-  FireWallTile: {fileID: 11400000, guid: d997ec2becf2f80469d2e8829c8c6d3d, type: 2}
   _playerNum: 2
   _movespeed: 500
   _maxMental: 4
@@ -7890,7 +7931,7 @@ PrefabInstance:
     - target: {fileID: 9099260878793835378, guid: 3c6c6afb908ec5c469d4979e7ee4eb03,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Rescue
+      value: StartRescue
       objectReference: {fileID: 0}
     - target: {fileID: 9099260879072023365, guid: 3c6c6afb908ec5c469d4979e7ee4eb03,
         type: 3}
@@ -8091,9 +8132,6 @@ MonoBehaviour:
   MTGage: {fileID: 7136588880983307131}
   UI_Actives: {fileID: 7136588880983307130}
   UI_ToolBtns: {fileID: 7136588880983307134}
-  FireWall: {fileID: 7841991225187466614, guid: c0c7bd9e43ec7a447b4e2990b5befb02,
-    type: 3}
-  FireWallTile: {fileID: 11400000, guid: d997ec2becf2f80469d2e8829c8c6d3d, type: 2}
   _playerNum: 3
   _movespeed: 500
   _maxMental: 4
@@ -8105,6 +8143,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 658436941}
     m_Modifications:
+    - target: {fileID: 573911847038007050, guid: b0985a1440cd88f478283634b438381d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: StartRescue
+      objectReference: {fileID: 0}
     - target: {fileID: 573911847331991340, guid: b0985a1440cd88f478283634b438381d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8143,7 +8186,7 @@ PrefabInstance:
     - target: {fileID: 573911847331991340, guid: b0985a1440cd88f478283634b438381d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 573911847331991340, guid: b0985a1440cd88f478283634b438381d,
         type: 3}

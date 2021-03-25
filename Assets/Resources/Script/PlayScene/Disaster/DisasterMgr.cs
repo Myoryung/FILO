@@ -18,10 +18,10 @@ public class DisasterMgr {
     private void LoadStage(int stage) {
         // XML Load
         XmlDocument doc = new XmlDocument();
-        TextAsset textAsset = (TextAsset)Resources.Load("Disaster/Stage" + stage);
+        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
         doc.LoadXml(textAsset.text);
 
-        XmlNodeList disasterNodes = doc.SelectNodes("Disasters/Disaster");
+        XmlNodeList disasterNodes = doc.SelectNodes("Stage/Disasters/Disaster");
         foreach (XmlNode disasterNode in disasterNodes) {
             Disaster.DisasterType type = Disaster.StringToType(disasterNode.SelectSingleNode("Type").InnerText);
 

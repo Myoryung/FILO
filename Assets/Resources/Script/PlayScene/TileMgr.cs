@@ -71,6 +71,33 @@ public class TileMgr {
         return null;
     }
 
+    public void SpreadFire() {
+        GameObject[] FireObjects = GameObject.FindGameObjectsWithTag("Fire");
+        Dictionary<Vector3Int, float> createProb = new Dictionary<Vector3Int, float>();
+
+        // 확률 계산
+        foreach (GameObject FireObject in FireObjects) {
+            Fire fire = FireObject.GetComponent<Fire>();
+
+            for (int y = -1; y <= 1; y++) {
+                for (int x = -1; x <= 1; x++) {
+                    Vector3Int tPos = fire.TilePos + new Vector3Int(x, y, 0);
+                    if (!createProb.ContainsKey(tPos))
+                        createProb.Add(tPos, 0.0f);
+                    createProb[tPos] += 0.1f;
+                }
+			}
+        }
+
+        // 불 생성
+        foreach (Vector3Int pos in createProb.Keys) {
+            if (ExistObject(pos) || ExistEnvironment(pos)) continue;
+
+            float prob = Random.Range(0.0f, 1.0f);
+            if (prob <= createProb[pos])
+                CreateFire(pos);
+        }
+    }
     public void MoveEmbers() {
         float currTime = Time.time;
         if (currTime - EmberMoveTime < 2.0f)
@@ -188,7 +215,6 @@ public class TileMgr {
         Electrify(pos);
     }
     public void CreateFireWall(Vector3Int pos) {
-        Debug.Log(pos + " 설치");
         ObjectTilemap.SetTile(pos, FireWallTile);
 	}
 

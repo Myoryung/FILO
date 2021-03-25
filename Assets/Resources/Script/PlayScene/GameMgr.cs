@@ -178,8 +178,7 @@ public class GameMgr : MonoBehaviour {
         }
     }
     private void SpreadFire() {
-        // 큰 불 생성
-
+        TileMgr.Instance.SpreadFire();
         _currGameState = GameState.DISASTER_ALARM;
     }
     private void DisasterAlarm() {

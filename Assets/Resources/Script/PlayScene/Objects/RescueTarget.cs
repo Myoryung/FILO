@@ -10,16 +10,15 @@ public class RescueTarget : Charactor {
     private enum _state { Panic, Static }
     private _state _RescueTargetState;
 
-    protected int _rescueCount = 0;
+    protected int _carryCount = 1;
 
     private int _panicMoveCount = 2;
     private float _speed = 100.0f;
     private bool _moveDone = false;
 
-    public int RescueCount
-    {
-        get { return _rescueCount; }
-        set { _rescueCount = value; }
+    public int CarryCount {
+        get { return _carryCount; }
+        set { _carryCount = value; }
     }
 
     protected override void Start()
@@ -27,16 +26,6 @@ public class RescueTarget : Charactor {
         base.Start();
 
         GameMgr.Instance.AddRescueTarget(TileMgr.Instance.WorldToCell(transform.position), this);
-
-        switch (_RescueTargetState)
-        {
-            case _state.Panic:
-                _rescueCount = 1;
-                break;
-            case _state.Static:
-                _rescueCount = 2;
-                break;
-        }
     }
 
     public void TurnEndActive() {
@@ -48,26 +37,9 @@ public class RescueTarget : Charactor {
             _moveDone = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Fire"))
-        {
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (other.CompareTag("Fire") || other.CompareTag("Ember"))
             AddHP(-25.0f);
-            if(CurrentHP / MaxHP < 0.5f && _RescueTargetState == _state.Panic)
-            {
-                _rescueCount++;
-                _RescueTargetState = _state.Static;
-            }
-        }
-        else if (other.CompareTag("Ember"))
-        {
-            AddHP(-25.0f);
-            if (CurrentHP / MaxHP < 0.5f && _RescueTargetState == _state.Panic)
-            {
-                _rescueCount++;
-                _RescueTargetState = _state.Static;
-            }
-        }
     }
 
     public void ActiveSmileMark()
@@ -119,10 +91,25 @@ public class RescueTarget : Charactor {
     {
         base.AddHP(value);
 
-        if (CurrentHP <= 0)
+        float hpRate = CurrentHP / MaxHP;
+        if (hpRate <= 0)
             Destroy(gameObject);
+        else if (hpRate <= 0.5) {
+            _carryCount = 2;
+            _RescueTargetState = _state.Static;
+        }
+        else
+            _carryCount = 1;
     }
     public bool IsMoveDone {
         get { return _moveDone; }
 	}
+
+    public void TurnOffRender() {
+        Transform rt = gameObject.transform.Find("RescueTarget");
+        Transform canvas = gameObject.transform.Find("Canvas");
+        rt.GetComponent<SpriteRenderer>().enabled = false;
+        canvas.gameObject.SetActive(false);
+
+    }
 }

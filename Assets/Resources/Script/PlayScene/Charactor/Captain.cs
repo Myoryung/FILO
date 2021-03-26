@@ -15,8 +15,6 @@ public class Captain : Player {
     }
 
     public override void ActiveSkill() {
-        base.ActiveSkill();
-
         if (OldPos != currentTilePos) {
             TurnOffWarning();
             TurnOnWarning();

@@ -17,7 +17,6 @@ public class Rescuer : Player
     public override void ActiveSkill()
     {
         base.ActiveSkill();
-        Debug.Log("구조맨 스킬 사용");
         int range = 5;
         int offset = -(range / 2);
         Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position);

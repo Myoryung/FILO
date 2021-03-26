@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Fire : MonoBehaviour {
-    private Vector3Int TilePos;
+    private Vector3Int tilePos;
 
     [SerializeField]
     private GameObject EmberPrefab = null;
@@ -11,7 +11,7 @@ public class Fire : MonoBehaviour {
     private List<Vector3Int> EmberArea = new List<Vector3Int>();
     
     private void Start() {
-        TilePos = TileMgr.Instance.WorldToCell(transform.position);
+        tilePos = TileMgr.Instance.WorldToCell(transform.position);
 
         transform.Translate(0, 0, -1);
         Ember = Instantiate(EmberPrefab, transform);
@@ -39,4 +39,8 @@ public class Fire : MonoBehaviour {
         Ember.transform.position = TileMgr.Instance.CellToWorld(nPos);
         Ember.SetActive(true);
     }
+
+    public Vector3Int TilePos {
+        get { return tilePos; }
+	}
 }

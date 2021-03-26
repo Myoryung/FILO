@@ -1,0 +1,62 @@
+<Stage>
+  <Disasters>
+    <Disaster>
+      <Type>FALLING_ROCK</Type>
+      <Point>1,2</Point>
+      <Turn>1</Turn>
+    </Disaster>
+
+    <Disaster>
+      <Type>SHORT_CIRCUIT</Type>
+      <Point>5,0</Point>
+      <Turn>2</Turn>
+    </Disaster>
+
+    <Disaster>
+      <Type>FLASHOVER</Type>
+      <Point>5,0</Point>
+      <Turn>3</Turn>
+    </Disaster>
+
+    <Disaster>
+      <Type>SMOKE</Type>
+      <Point>5,0</Point>
+      <Turn>4</Turn>
+    </Disaster>
+  </Disasters>
+
+  <Goals>
+    <Goal>
+      <Type>DEADLINE</Type>
+      <StartTime>17:40</StartTime>
+      <EndTime>18:20</EndTime>
+    </Goal>
+    
+    <Goal>
+      <Type>RESCUE_SURVIVOR</Type>
+      <Count>5</Count>
+    </Goal>
+    
+    <Goal>
+      <Type>EXTINGUISH</Type>
+      <Area>
+        <StartPoint>5,0</StartPoint>
+        <EndPoint>6,2</EndPoint>
+      </Area>
+      <Area>
+        <StartPoint>5,0</StartPoint>
+        <EndPoint>6,2</EndPoint>
+      </Area>
+    </Goal>
+    
+    <Goal>
+      <Type>ARRIVE</Type>
+      <Point>2,0</Point>
+    </Goal>
+    
+    <Goal>
+      <Type>RESCUE_SPECIFIC_SURVIVOR</Type>
+      <Point>5,2</Point>
+    </Goal>
+  </Goals>
+</Stage>

@@ -10,12 +10,9 @@ public class Player : Charactor
     public Image MTGage; // 멘탈
     public GameObject UI_Actives; // 행동 버튼 UI
     public GameObject UI_ToolBtns; // 도구 버튼 UI
-    public GameObject FireWall; // 방화벽 Prefab
-    public TileBase FireWallTile; // 타일맵에 적용할 방화벽
 
     // 플레이어 스테이터스
-    //안녕안녕?
-    public enum Action { Idle, Walk, Run, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
+    public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
     protected Action _playerAct; 
     private RescueTarget _rescueTarget; // 현재 구조중인 타겟
     [SerializeField]
@@ -63,7 +60,7 @@ public class Player : Charactor
         float ver = Input.GetAxisRaw("Vertical");
 
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && CurrentHP > 0.0f && _playerAct != Action.Rescue && _currentMental > 0)
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0)
         {
             transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
 
@@ -79,10 +76,6 @@ public class Player : Charactor
             if (ver != 0.0f) //상, 하 이동중이라면
                 AddO2(-(UseO2 * Time.deltaTime));
 
-            //if (_currentTilePos != _tileLayout.WorldToCell(transform.position))
-            //{
-            //    SetFOV();
-            //}
             if((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
             {
                 _anim.SetBool("IsRunning", true); // 달리기 애니메이션 재생
@@ -132,26 +125,21 @@ public class Player : Charactor
 
     protected virtual void Activate() // 행동 들 (구조, 도구사용)
     {
-        if (GameMgr.Instance.CurrentChar == _playerNum) {
-            InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
-            if (interactiveObject != null && interactiveObject.IsAvailable())
-                ActivateInteractBtn(interactiveObject);
-            else
-                DeactivateInteractBtn();
-        }
+        if (GameMgr.Instance.CurrentChar != _playerNum) return;
 
-        if (Input.GetMouseButtonUp(1) && GameMgr.Instance.CurrentChar == _playerNum) // 마우스 우클릭 시 현재 조작중인 캐릭터의 버튼 UI 표시
-        {
-            if (UI_Actives.activeSelf == true || UI_ToolBtns.activeSelf == true) // 이미 켜져있었다면 UI 끄기
-            {
+        InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
+        if (interactiveObject != null && interactiveObject.IsAvailable())
+            ActivateInteractBtn(interactiveObject);
+        else
+            DeactivateInteractBtn();
+
+        if (Input.GetMouseButtonUp(1)) { // 마우스 우클릭 시 UI 표시
+            if (UI_Actives.activeSelf || UI_ToolBtns.activeSelf) { // 이미 켜져있었다면 UI 끄기
                 UI_Actives.SetActive(false);
                 UI_ToolBtns.SetActive(false);
-                
             }
-            else if (UI_Actives.activeSelf == false && UI_ToolBtns.activeSelf == false) // Active UI 보이기
-            {
+            else
                 UI_Actives.SetActive(true);
-            }
         }
     }
 
@@ -162,15 +150,15 @@ public class Player : Charactor
         if (_playerAct != Action.Panic) // 패닉 상태는 산소가 회복되지 않는다
             AddO2(10.0f);
 
-        if(_playerAct == Action.Rescue) // 구조중이라면
+        if(_playerAct == Action.Carry) // 업는 중이라면
         {
-            _rescueTarget.RescueCount--; // 구조중인 대상의 남은 구조턴 감소
-            if(_rescueTarget.RescueCount <= 0) // 구조턴 값이 0보다 작으면
+            _rescueTarget.CarryCount--;
+            if (_rescueTarget.CarryCount <= 0) // 업는턴 값이 0보다 작으면
             {
-                _rescueTarget.gameObject.SetActive(false); // 구조 대상 숨기기
-                _playerAct = Action.Idle; // Idle 상태로 변경
+                _rescueTarget.TurnOffRender();
+				_playerAct = Action.Rescue; // Rescue 상태로 변경
             }
-        }
+		}
     }
 
     public virtual void ActiveSkill()
@@ -202,8 +190,10 @@ public class Player : Charactor
                 if (hit) {
                     if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
                     {
+                        Vector3Int tPos = TileMgr.Instance.WorldToCell(hit.transform.position);
+                        GameMgr.Instance.RemoveRescueTarget(tPos);
                         _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
-                        _playerAct = Action.Rescue; // 구조 상태로 변경
+                        _playerAct = Action.Carry; // 업는 상태로 변경
                     }
                 }
                 break;
@@ -220,7 +210,6 @@ public class Player : Charactor
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
     {
         UI_ToolBtns.SetActive(true); // 도구 UI 보이기
-        Debug.Log("도구버튼 클릭");
     }
 
     public void UseTool(int toolnum) // 도구 UI의 버튼 누를 시 호출되는 함수
@@ -333,7 +322,13 @@ public class Player : Charactor
             break;
 
         case "Beacon":
-            // TODO: 구조 종료
+            // 구조 종료
+            Debug.Log("충돌!");
+            if (_playerAct == Action.Rescue) {
+                Destroy(_rescueTarget.gameObject);
+                _rescueTarget = null;
+                _playerAct = Action.Idle;
+            }
             break;
         }
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class DisasterMgr {
     private readonly List<Disaster> disasters = new List<Disaster>();
@@ -12,20 +11,13 @@ public class DisasterMgr {
     public static readonly Object Flashover     = Resources.Load("Prefabs/Disaster/Disaster_Flashover");
     public static readonly Object Smoke         = Resources.Load("Prefabs/Disaster/Disaster_Smoke");
 
-    public DisasterMgr(int stage) {
-        LoadStage(stage);
-	}
-    private void LoadStage(int stage) {
-        // XML Load
-        XmlDocument doc = new XmlDocument();
-        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
-        doc.LoadXml(textAsset.text);
-
-        XmlNodeList disasterNodes = doc.SelectNodes("Stage/Disasters/Disaster");
+    public DisasterMgr(XmlNode disastersNode) {
+        // Load XML
+        XmlNodeList disasterNodes = disastersNode.SelectNodes("Disaster");
         foreach (XmlNode disasterNode in disasterNodes) {
             Disaster.DisasterType type = Disaster.StringToType(disasterNode.SelectSingleNode("Type").InnerText);
 
-			string[] pointStr = disasterNode.SelectSingleNode("Point").InnerText.Replace(" ", "").Split(',');
+            string[] pointStr = disasterNode.SelectSingleNode("Point").InnerText.Replace(" ", "").Split(',');
             int x = int.Parse(pointStr[0]);
             int y = int.Parse(pointStr[1]);
             Vector3Int point = new Vector3Int(x, y, 0);

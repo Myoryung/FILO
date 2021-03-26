@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps; // Tilemap용
 using UnityEngine.UI; // UI 용
+using System.Xml;
 
 public class GameMgr : MonoBehaviour {
     private static GameMgr _instance; // Singleton
@@ -35,12 +35,9 @@ public class GameMgr : MonoBehaviour {
     [SerializeField]
     private Text    DisasterAlaramText = null;
 
-    [SerializeField]
-    private Text _timerText = null; // 시계 UI
-    private int GameTime; // 게임 상의 시간
-
     private int _stage = 0;
     private DisasterMgr disasterMgr;
+    private GoalMgr goalMgr;
 
     public int stage {
         get { return _stage; }
@@ -101,7 +98,12 @@ public class GameMgr : MonoBehaviour {
         PlayCanvas = canvas.transform.Find("PlayCanvas").gameObject;
 
         SelectCanvas.SetActive(true);
-        PlayCanvas.SetActive(false);
+        PlayCanvas.GetComponent<Canvas>().enabled = false;
+
+        // Load ID Card Text
+        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
+        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
+        _charNameText = GameObject.FindWithTag("NameText").GetComponent<Text>();
 
         //for(int i=BackTile.cellBounds.xMin; i<BackTile.cellBounds.xMax; i++)
         //{
@@ -115,10 +117,18 @@ public class GameMgr : MonoBehaviour {
         //    }
         //}
 
-        disasterMgr = new DisasterMgr(_stage);
-        StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+        // Load XML
+        XmlDocument doc = new XmlDocument();
+        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
+        doc.LoadXml(textAsset.text);
 
-        GameTime = 1189; // 게임 상의 시간
+        XmlNode disastersNode = doc.SelectSingleNode("Stage/Disasters");
+        XmlNode goalsNode = doc.SelectSingleNode("Stage/Goals");
+
+        disasterMgr = new DisasterMgr(disastersNode);
+        goalMgr = new GoalMgr(goalsNode);
+
+        StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
 
         _currGameState = GameState.SELECT_CHAR;
     }
@@ -137,12 +147,7 @@ public class GameMgr : MonoBehaviour {
         _currGameState = GameState.STAGE_READY;
     }
     private void StageReady() {
-        PlayCanvas.SetActive(true);
-
-        // Load ID Card Text
-        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
-        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
-        _charNameText = GameObject.FindWithTag("NameText").GetComponent<Text>();
+        PlayCanvas.GetComponent<Canvas>().enabled = true;
 
         foreach (Player player in Players)
             player.StageStartActive();
@@ -223,7 +228,7 @@ public class GameMgr : MonoBehaviour {
     }
     private void TurnEnd() {
         GameTurn++;
-        AddGameTime(5);
+        goalMgr.TurnEnd();
 
         _currGameState = GameState.PLAYER_TURN;
     }
@@ -236,11 +241,6 @@ public class GameMgr : MonoBehaviour {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;
 	}
-
-    private void AddGameTime(int minute) {
-        GameTime += minute;
-         _timerText.text = (GameTime / 60).ToString() + " : " + (GameTime % 60).ToString(); // 시계 UI 갱신
-    }
 
     private void ChangeMentalText(Player player) {
         if (_mentalText == null) return;

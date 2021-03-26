@@ -13,8 +13,6 @@ public class TileMgr {
 
     private float EmberMoveTime = 0.0f;
 
-    Dictionary<Vector3Int, Stack<Color>> colors = new Dictionary<Vector3Int, Stack<Color>>();
-
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
 
     private static readonly List<Dictionary<Vector3Int, Vector3Int>> DoorPairs = new List<Dictionary<Vector3Int, Vector3Int>>(){

@@ -52,6 +52,7 @@
     <Goal>
       <Type>ARRIVE</Type>
       <Point>2,0</Point>
+      <Point>3,1</Point>
     </Goal>
     
     <Goal>

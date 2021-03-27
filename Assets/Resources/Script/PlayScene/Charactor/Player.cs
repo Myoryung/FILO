@@ -64,10 +64,6 @@ public class Player : Charactor
         {
             transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
 
-            // 플레이어 이동 시 작은 불 이동
-            if (hor != 0 || ver != 0)
-                TileMgr.Instance.MoveEmbers();
-
             if (hor != 0.0f) // 좌, 우 이동중이라면
             {
                 AddO2(-(UseO2 * Time.deltaTime));
@@ -90,6 +86,8 @@ public class Player : Charactor
             }
 
             _currentTilePos = TileMgr.Instance.WorldToCell(transform.position); // 현재 캐릭터의 타일맵 좌표 갱신
+            if (hor != 0 || ver != 0)
+                GameMgr.Instance.OnMovePlayer(currentTilePos);
         }
         if (hor == 0 && ver == 0) // 이동 종료 시
         {

@@ -352,6 +352,11 @@ public class GameMgr : MonoBehaviour {
             RescueTargets.Add(newPos, rt);
         }
     }
+
+    public void OnMovePlayer(Vector3Int playerTilePos) {
+        TileMgr.Instance.MoveEmbers();
+        goalMgr.CheckArriveAt(playerTilePos);
+    }
     public void Rescue() {
         goalMgr.Rescue();
 	}

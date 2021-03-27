@@ -8,6 +8,7 @@ public class GoalMgr {
     private G_Deadline deadline = null;
     private G_RescueSurvivor rescueSurvivor = null;
     private G_Extinguish extinguish = null;
+    private G_Arrive arrive = null;
 
     private GameObject GoalTextPrefab = Resources.Load<GameObject>("Prefabs/GoalText");
     private GameObject StageGoals = GameObject.Find("UICanvas/PlayCanvas/TopLeftUI/StageGoals");
@@ -38,6 +39,8 @@ public class GoalMgr {
                 goalObject = extinguish;
                 break;
             case Goal.GoalType.ARRIVE:
+                arrive = new G_Arrive(textObject, goalNode);
+                goalObject = arrive;
                 break;
             case Goal.GoalType.RESCUE_SPECIFIC_SURVIVOR:
                 break;
@@ -62,6 +65,10 @@ public class GoalMgr {
     public void CheckFireInArea() {
         if (extinguish != null)
             extinguish.CheckFireInArea();
+    }
+    public void CheckArriveAt(Vector3Int pos) {
+        if (arrive != null)
+            arrive.CheckArriveAt(pos);
     }
     public void TurnEnd() {
         if (deadline != null)

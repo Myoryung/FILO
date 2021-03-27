@@ -133,7 +133,6 @@ public class GameMgr : MonoBehaviour {
         goalMgr = new GoalMgr(goalsNode);
 
         StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
-        goalMgr.SetSurvivorNum(survivors.Values.Count);
 
         _currGameState = GameState.SELECT_CHAR;
     }
@@ -336,9 +335,10 @@ public class GameMgr : MonoBehaviour {
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {
         survivors.Add(pos, survivor);
-	}
-    public void RemoveSurvivor(Vector3Int pos) {
-        survivors.Remove(pos);
+        if (survivor.IsImportant)
+            goalMgr.OnAddImportantSurvivor();
+        else
+            goalMgr.OnAddSurvivor();
     }
     public Survivor GetSurvivorAt(Vector3Int pos) {
         if (survivors.ContainsKey(pos))
@@ -357,7 +357,25 @@ public class GameMgr : MonoBehaviour {
         TileMgr.Instance.MoveEmbers();
         goalMgr.CheckArriveAt(playerTilePos);
     }
-    public void Rescue() {
-        goalMgr.Rescue();
-	}
+    public void OnCarrySurvivor(Vector3Int pos) {
+        survivors.Remove(pos);
+    }
+    public void OnRescueSurvivor(Survivor survivor) {
+        if (survivor.IsImportant)
+            goalMgr.OnRescueImportantSurvivor();
+        else
+            goalMgr.OnRescueSurvivor();
+        Destroy(survivor.gameObject);
+    }
+    public void OnDieSurvivor(Survivor survivor) {
+        Vector3Int tilePos = TileMgr.Instance.WorldToCell(survivor.transform.position);
+        survivors.Remove(tilePos);
+
+        if (survivor.IsImportant)
+            goalMgr.OnDieImportantSurvivor();
+        else
+            goalMgr.OnDieSurvivor();
+
+        Destroy(survivor.gameObject);
+    }
 }

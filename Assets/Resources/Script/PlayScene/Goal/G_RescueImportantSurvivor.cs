@@ -2,24 +2,24 @@
 using UnityEngine.UI;
 using System.Xml;
 
-public class G_RescueSurvivor : Goal {
+public class G_RescueImportantSurvivor : Goal {
     private int survivorNum = 0;
     private int goalRescueCount, rescueCount = 0;
 
-    public G_RescueSurvivor(GameObject textObject, XmlNode goalNode) : base(GoalType.RESCUE_SURVIVOR, textObject) {
+    public G_RescueImportantSurvivor(GameObject textObject, XmlNode goalNode) : base(GoalType.RESCUE_IMPORTANT_SURVIVOR, textObject) {
         // Load XML
         string countStr = goalNode.SelectSingleNode("Count").InnerText;
 
         goalRescueCount = int.Parse(countStr);
 
         // Set Text
-        ExplanationText.text = "생존자 구조";
+        ExplanationText.text = "중요 생존자 구조";
         StatusText.text = string.Format("{0} / {1}", rescueCount, goalRescueCount);
     }
 
     public void IncreaseSurvivorNum() {
         survivorNum++;
-    }
+	}
     public void OnRescueSurvivor() {
         survivorNum--;
         rescueCount++;

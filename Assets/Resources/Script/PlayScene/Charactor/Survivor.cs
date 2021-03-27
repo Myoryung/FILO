@@ -11,6 +11,9 @@ public class Survivor : Charactor {
     [SerializeField]
     private State state;
 
+    [SerializeField]
+    private bool isImportant = false;
+
     protected int _carryCount = 1;
 
     private const int _panicMoveCount = 2;
@@ -25,7 +28,6 @@ public class Survivor : Charactor {
     protected override void Start()
     {
         base.Start();
-
         GameMgr.Instance.AddSurvivor(TileMgr.Instance.WorldToCell(transform.position), this);
     }
 
@@ -89,7 +91,7 @@ public class Survivor : Charactor {
 
         float hpRate = CurrentHP / MaxHP;
         if (hpRate <= 0)
-            Destroy(gameObject);
+            GameMgr.Instance.OnDieSurvivor(this);
         else if (hpRate <= 0.5) {
             _carryCount = 2;
             state = State.Static;
@@ -99,6 +101,9 @@ public class Survivor : Charactor {
     }
     public bool IsMoveDone {
         get { return _moveDone; }
+	}
+    public bool IsImportant {
+        get { return isImportant; }
 	}
 
     public void TurnOffRender() {

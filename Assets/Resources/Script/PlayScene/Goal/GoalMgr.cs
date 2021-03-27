@@ -9,6 +9,7 @@ public class GoalMgr {
     private G_RescueSurvivor rescueSurvivor = null;
     private G_Extinguish extinguish = null;
     private G_Arrive arrive = null;
+    private G_RescueImportantSurvivor rescueImportantSurvivor = null;
 
     private GameObject GoalTextPrefab = Resources.Load<GameObject>("Prefabs/GoalText");
     private GameObject StageGoals = GameObject.Find("UICanvas/PlayCanvas/TopLeftUI/StageGoals");
@@ -42,7 +43,9 @@ public class GoalMgr {
                 arrive = new G_Arrive(textObject, goalNode);
                 goalObject = arrive;
                 break;
-            case Goal.GoalType.RESCUE_SPECIFIC_SURVIVOR:
+            case Goal.GoalType.RESCUE_IMPORTANT_SURVIVOR:
+                rescueImportantSurvivor = new G_RescueImportantSurvivor(textObject, goalNode);
+                goalObject = rescueSurvivor;
                 break;
             }
 
@@ -74,17 +77,32 @@ public class GoalMgr {
         if (deadline != null)
             deadline.TurnEnd();
     }
-    public void Rescue() {
+    public void OnRescueSurvivor() {
         if (rescueSurvivor != null)
-            rescueSurvivor.Rescue();
+            rescueSurvivor.OnRescueSurvivor();
+    }
+    public void OnRescueImportantSurvivor() {
+        OnRescueSurvivor();
+        if (rescueImportantSurvivor != null)
+            rescueImportantSurvivor.OnRescueSurvivor();
+    }
+    public void OnDieSurvivor() {
+        if (rescueSurvivor != null)
+            rescueSurvivor.OnDieSurvivor();
+    }
+    public void OnDieImportantSurvivor() {
+        OnDieSurvivor();
+        if (rescueImportantSurvivor != null)
+            rescueImportantSurvivor.OnDieSurvivor();
     }
 
-    public void SetSurvivorNum(int num) {
-        rescueSurvivor.SetSurvivorNum(num);
+    public void OnAddSurvivor() {
+        if (rescueSurvivor != null)
+            rescueSurvivor.IncreaseSurvivorNum();
     }
-
-    // 시간 지남
-    // 구조함
-    // 불 없앰, 불 생김
-    // 대원 이동
+    public void OnAddImportantSurvivor() {
+        OnAddSurvivor();
+        if (rescueImportantSurvivor != null)
+            rescueImportantSurvivor.IncreaseSurvivorNum();
+    }
 }

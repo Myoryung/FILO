@@ -182,7 +182,7 @@ public class Player : Charactor
             if (Input.GetMouseButtonDown(0)) {
                 Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos);
                 if (survivor != null) {
-                    GameMgr.Instance.RemoveSurvivor(nPos);
+                    GameMgr.Instance.OnCarrySurvivor(nPos);
                     _rescuingSurvivor = survivor;
                     _playerAct = Action.Carry; // 업는 상태로 변경
                 }
@@ -313,9 +313,8 @@ public class Player : Charactor
         case "Beacon":
             // 구조 종료
             if (_playerAct == Action.Rescue) {
-                Destroy(_rescuingSurvivor.gameObject);
+                GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
                 _rescuingSurvivor = null;
-                GameMgr.Instance.Rescue();
                 _playerAct = Action.Idle;
             }
             break;

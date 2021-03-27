@@ -56,8 +56,8 @@
     </Goal>
     
     <Goal>
-      <Type>RESCUE_SPECIFIC_SURVIVOR</Type>
-      <Point>5,2</Point>
+      <Type>RESCUE_IMPORTANT_SURVIVOR</Type>
+      <Count>1</Count>
     </Goal>
   </Goals>
 </Stage>

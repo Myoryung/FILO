@@ -117,6 +117,7 @@ public class GameMgr : MonoBehaviour {
         //    }
         //}
 
+        
         // Load XML
         XmlDocument doc = new XmlDocument();
         TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
@@ -129,6 +130,7 @@ public class GameMgr : MonoBehaviour {
         goalMgr = new GoalMgr(goalsNode);
 
         StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+        goalMgr.SetSurvivorNum(RescueTargets.Values.Count);
 
         _currGameState = GameState.SELECT_CHAR;
     }
@@ -347,4 +349,7 @@ public class GameMgr : MonoBehaviour {
             RescueTargets.Add(newPos, rt);
         }
     }
+    public void Rescue() {
+        goalMgr.Rescue();
+	}
 }

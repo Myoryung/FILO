@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class GoalMgr {
     private List<Goal> goals = new List<Goal>();
-    private G_Deadline deadline;
+    private G_Deadline deadline = null;
+    private G_RescueSurvivor rescueSurvivor = null;
 
     private GameObject GoalTextPrefab = Resources.Load<GameObject>("Prefabs/GoalText");
     private GameObject StageGoals = GameObject.Find("UICanvas/PlayCanvas/TopLeftUI/StageGoals");
@@ -28,6 +29,8 @@ public class GoalMgr {
                 goalObject = deadline;
                 break;
             case Goal.GoalType.RESCUE_SURVIVOR:
+                rescueSurvivor = new G_RescueSurvivor(textObject, goalNode);
+                goalObject = rescueSurvivor;
                 break;
             case Goal.GoalType.EXTINGUISH:
                 break;
@@ -53,11 +56,17 @@ public class GoalMgr {
         return false;
 	}
 
-    public int GetStartTime() {
-        return deadline.StartTime;
-    }
     public void TurnEnd() {
-        deadline.TurnEnd();
+        if (deadline != null)
+            deadline.TurnEnd();
+    }
+    public void Rescue() {
+        if (rescueSurvivor != null)
+            rescueSurvivor.Rescue();
+    }
+
+    public void SetSurvivorNum(int num) {
+        rescueSurvivor.SetSurvivorNum(num);
     }
 
     // 시간 지남

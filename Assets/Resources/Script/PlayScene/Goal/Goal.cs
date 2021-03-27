@@ -30,4 +30,5 @@ public abstract class Goal {
 
 	public abstract bool IsSatisfied();
 	public abstract bool IsImpossible();
+	protected abstract void RefreshText();
 }

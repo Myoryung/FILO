@@ -323,10 +323,10 @@ public class Player : Charactor
 
         case "Beacon":
             // 구조 종료
-            Debug.Log("충돌!");
             if (_playerAct == Action.Rescue) {
                 Destroy(_rescueTarget.gameObject);
                 _rescueTarget = null;
+                GameMgr.Instance.Rescue();
                 _playerAct = Action.Idle;
             }
             break;

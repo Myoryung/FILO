@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 3323957302167147797}
   - component: {fileID: 1164801945246083997}
   - component: {fileID: 690249383186143760}
-  m_Layer: 9
-  m_Name: Door
+  m_Layer: 0
+  m_Name: INO_Door
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

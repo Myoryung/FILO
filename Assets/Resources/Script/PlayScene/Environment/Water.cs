@@ -4,7 +4,9 @@ using UnityEngine;
 public class Water : MonoBehaviour {
     public Sprite WaterSprite, WaterElectricSprite;
     private SpriteRenderer spriteRenderer;
-    private HashSet<Vector3Int> originElectrics;
+    private BoxCollider2D boxCollider;
+
+    private HashSet<Vector3Int> originElectrics = new HashSet<Vector3Int>();
     private Vector3Int _position;
     public Vector3Int position {
         set { _position = value; }
@@ -13,8 +15,8 @@ public class Water : MonoBehaviour {
 
 
     private void Start() {
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        originElectrics = new HashSet<Vector3Int>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
     }
 
 	private void OnDestroy() {
@@ -27,6 +29,7 @@ public class Water : MonoBehaviour {
     public void Electrify(Vector3Int originPos) {
         if (originElectrics.Count == 0) {
             tag = "Water(Electric)";
+            boxCollider.isTrigger = true;
             spriteRenderer.sprite = WaterElectricSprite;
         }
         originElectrics.Add(originPos);
@@ -35,6 +38,7 @@ public class Water : MonoBehaviour {
         originElectrics.Remove(originPos);
         if (originElectrics.Count == 0) {
             tag = "Water";
+            boxCollider.isTrigger = false;
             spriteRenderer.sprite = WaterSprite;
         }
     }

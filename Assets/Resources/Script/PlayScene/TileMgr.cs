@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 public class TileMgr {   
     private static TileMgr m_instance; // Singleton
 
-    private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, PlayerSpawnTilemap;
+    private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, SpawnTilemap;
     private Tilemap EffectTilemap, WarningTilemap;
 
     [SerializeField]
@@ -49,7 +49,7 @@ public class TileMgr {
         BackgroundTilemap = Grid.transform.Find("Background").gameObject.GetComponent<Tilemap>();
         ObjectTilemap = Grid.transform.Find("Object").gameObject.GetComponent<Tilemap>();
         EnvironmentTilemap = Grid.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
-        PlayerSpawnTilemap = Grid.transform.Find("PlayerSpawn").gameObject.GetComponent<Tilemap>();
+        SpawnTilemap = Grid.transform.Find("Spawn").gameObject.GetComponent<Tilemap>();
         EffectTilemap = Grid.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
         WarningTilemap = Grid.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
 
@@ -234,7 +234,8 @@ public class TileMgr {
         return ExistEnvironmentTile(pos, "Electric");
     }
     public bool ExistPlayerSpawn(Vector3Int pos) {
-        return PlayerSpawnTilemap.GetTile(pos) != null;
+        //return SpawnTilemap.GetTile(pos) != null;
+        return false;
 	}
 
     private Water GetWater(Vector3Int pos) {

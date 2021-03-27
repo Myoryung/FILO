@@ -4,15 +4,19 @@ using UnityEngine;
 
 public abstract class InteractiveObject : MonoBehaviour
 {
-    protected Vector3Int _position;
-    public Vector3Int position {
-        set { _position = value; }
-        get { return _position; }
+    protected Vector3Int position;
+    public Vector3Int Position {
+        get { return position; }
 	}
     private bool IsBeenUsed = false;
 
+	private void Start() {
+        position = TileMgr.Instance.WorldToCell(transform.position);
+        TileMgr.Instance.SetInteractiveObject(Position, this);
+    }
+
 	private void OnDestroy() {
-        TileMgr.Instance.SetInteractiveObject(position, null);
+        TileMgr.Instance.SetInteractiveObject(Position, null);
     }
 
     public virtual bool IsAvailable() {

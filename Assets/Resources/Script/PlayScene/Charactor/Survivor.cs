@@ -4,15 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 
-public class RescueTarget : Charactor {
+public class Survivor : Charactor {
     public GameObject SmileMark;
 
-    private enum _state { Panic, Static }
-    private _state _RescueTargetState;
+    private enum State { Panic, Static }
+    [SerializeField]
+    private State state;
 
     protected int _carryCount = 1;
 
-    private int _panicMoveCount = 2;
+    private const int _panicMoveCount = 2;
     private float _speed = 100.0f;
     private bool _moveDone = false;
 
@@ -25,21 +26,16 @@ public class RescueTarget : Charactor {
     {
         base.Start();
 
-        GameMgr.Instance.AddRescueTarget(TileMgr.Instance.WorldToCell(transform.position), this);
+        GameMgr.Instance.AddSurvivor(TileMgr.Instance.WorldToCell(transform.position), this);
     }
 
     public void TurnEndActive() {
-        if (GameMgr.Instance.GameTurn % 1 == 0 && _RescueTargetState == _state.Panic) {
+        if (GameMgr.Instance.GameTurn % 1 == 0 && state == State.Panic) {
             _moveDone = false;
             StartCoroutine(Move());
         }
         else
             _moveDone = true;
-    }
-
-    protected virtual void OnTriggerEnter2D(Collider2D other) {
-        if (other.CompareTag("Fire") || other.CompareTag("Ember"))
-            AddHP(-25.0f);
     }
 
     public void ActiveSmileMark()
@@ -67,12 +63,12 @@ public class RescueTarget : Charactor {
                 int randy = Random.Range(-1, 2);
                 nPos = pPos + new Vector3Int(randx, randy, 0);
 
-                if (GameMgr.Instance.GetRescueTargetAt(nPos) != null)
+                if (GameMgr.Instance.GetSurvivorAt(nPos) != null)
                     continue;
                 break;
             }
 
-            GameMgr.Instance.MoveRescueTarget(pPos, nPos);
+            GameMgr.Instance.OnMoveSurvivor(pPos, nPos);
 
             Vector3 arrivePos = TileMgr.Instance.CellToWorld(nPos);
 
@@ -96,7 +92,7 @@ public class RescueTarget : Charactor {
             Destroy(gameObject);
         else if (hpRate <= 0.5) {
             _carryCount = 2;
-            _RescueTargetState = _state.Static;
+            state = State.Static;
         }
         else
             _carryCount = 1;
@@ -106,10 +102,9 @@ public class RescueTarget : Charactor {
 	}
 
     public void TurnOffRender() {
-        Transform rt = gameObject.transform.Find("RescueTarget");
-        Transform canvas = gameObject.transform.Find("Canvas");
-        rt.GetComponent<SpriteRenderer>().enabled = false;
-        canvas.gameObject.SetActive(false);
-
+        Transform sprite = gameObject.transform.Find("Sprite");
+        Transform ui = gameObject.transform.Find("UI");
+        sprite.GetComponent<SpriteRenderer>().enabled = false;
+        ui.gameObject.SetActive(false);
     }
 }

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 3915269453944888740}
   - component: {fileID: 3052751290308937675}
   - component: {fileID: -1978806090260989149}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Disaster_Flashover
-  m_TagString: Wall
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -71,15 +71,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: d96a1c6401b460747b7fc7e2ba77bddb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1000, y: 1000}
+  m_Size: {x: 128, y: 128}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &-1978806090260989149
@@ -94,5 +94,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073828e9d2c6c8649a368eb01d8ee040, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos: {x: 0, y: 0, z: 0}
-  fireTile: {fileID: 11400000, guid: 88fbbd2fb29fdda4e90f58916166d64d, type: 2}

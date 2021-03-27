@@ -14,7 +14,7 @@ public class Player : Charactor
     // 플레이어 스테이터스
     public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
     protected Action _playerAct; 
-    private RescueTarget _rescueTarget; // 현재 구조중인 타겟
+    private Survivor _rescuingSurvivor; // 현재 구조중인 생존자
     [SerializeField]
     private int _playerNum = 0; // 캐릭터 번호
     [SerializeField]
@@ -150,10 +150,10 @@ public class Player : Charactor
 
         if(_playerAct == Action.Carry) // 업는 중이라면
         {
-            _rescueTarget.CarryCount--;
-            if (_rescueTarget.CarryCount <= 0) // 업는턴 값이 0보다 작으면
+            _rescuingSurvivor.CarryCount--;
+            if (_rescuingSurvivor.CarryCount <= 0) // 업는턴 값이 0보다 작으면
             {
-                _rescueTarget.TurnOffRender();
+                _rescuingSurvivor.TurnOffRender();
 				_playerAct = Action.Rescue; // Rescue 상태로 변경
             }
 		}
@@ -176,27 +176,19 @@ public class Player : Charactor
 
     IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
     {
-        UI_Actives.SetActive(false); // UI 숨기기
-
         Vector3Int nPos = Vector3Int.zero;
         while (true) {
             RenderInteractArea(ref nPos); // 구조 영역선택
             if (Input.GetMouseButtonDown(0)) {
-                int RescueLayer = 1 << LayerMask.NameToLayer("Rescue"); // 생존자의 Layer
-                RaycastHit2D hit = Physics2D.Raycast(TileMgr.Instance.CellToWorld(_currentTilePos),
-                    (Vector3)GetMouseDirectiontoTilemap(), 128, RescueLayer); // 레이캐스트 쏘기
-                if (hit) {
-                    if (hit.transform.CompareTag("RescueTarget")) // 레이캐스트 충돌 대상이 구조대상이라면
-                    {
-                        Vector3Int tPos = TileMgr.Instance.WorldToCell(hit.transform.position);
-                        GameMgr.Instance.RemoveRescueTarget(tPos);
-                        _rescueTarget = hit.transform.GetComponent<RescueTarget>(); // 생존자 값 저장
-                        _playerAct = Action.Carry; // 업는 상태로 변경
-                    }
+                Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos);
+                if (survivor != null) {
+                    GameMgr.Instance.RemoveSurvivor(nPos);
+                    _rescuingSurvivor = survivor;
+                    _playerAct = Action.Carry; // 업는 상태로 변경
                 }
                 break;
             }
-            else if (IsMoving) // 움직일 시 취소
+            else if (Input.GetMouseButtonDown(1) || IsMoving) // 움직일 시 취소
                 break;
 
             yield return null;
@@ -258,7 +250,7 @@ public class Player : Charactor
                 }
                 break;
             }
-            else if (IsMoving) // 움직이면 취소
+            else if (Input.GetMouseButtonDown(1) || IsMoving) // 움직이면 취소
                 break;
             yield return null;
         }
@@ -272,7 +264,7 @@ public class Player : Charactor
                 TileMgr.Instance.CreateFireWall(nPos);
                 break;
             }
-            else if (IsMoving)
+            else if (Input.GetMouseButtonDown(1) || IsMoving)
                 break;
             yield return null;
         }
@@ -288,7 +280,7 @@ public class Player : Charactor
                 TileMgr.Instance.RemoveWall(nPos);
                 break;
             }
-            else if (IsMoving)
+            else if (Input.GetMouseButtonDown(1) || IsMoving)
                 break;
             yield return null;
         }
@@ -301,29 +293,28 @@ public class Player : Charactor
         AddO2(45.0f);
     }
 
-    protected virtual void OnTriggerEnter2D(Collider2D other) { // 충돌체크
+    protected override void OnTriggerEnter2D(Collider2D other) {
+        base.OnTriggerEnter2D(other);
+
         switch (other.tag) {
-        case "Fire": // 큰 불
-            AddHP(-25.0f); // 체력 감소
-            AddMental(-2); // 멘탈 감소
+        case "Fire":
+            AddMental(-2);
             break;
 
-        case "Ember": // 작은 불
-            AddHP(-10.0f); // 체력 감소
+        case "Ember":
             AddMental(-1); // 멘탈 감소
             break;
 
         case "Electric":
         case "Water(Electric)":
-            AddHP(-35.0f); // 체력 감소
             AddMental(-2); // 멘탈 감소
             break;
 
         case "Beacon":
             // 구조 종료
             if (_playerAct == Action.Rescue) {
-                Destroy(_rescueTarget.gameObject);
-                _rescueTarget = null;
+                Destroy(_rescuingSurvivor.gameObject);
+                _rescuingSurvivor = null;
                 GameMgr.Instance.Rescue();
                 _playerAct = Action.Idle;
             }

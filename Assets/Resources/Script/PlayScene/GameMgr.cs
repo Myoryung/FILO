@@ -22,7 +22,7 @@ public class GameMgr : MonoBehaviour {
     private List<Player> Players = new List<Player>(); // 사용할 캐릭터들의 Components
     private int _currentChar = 0; // 현재 사용중인 캐릭터의 번호
 
-    private Dictionary<Vector3Int, RescueTarget> RescueTargets = new Dictionary<Vector3Int, RescueTarget>();
+    private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
     public int CurrentChar {
         get { return _currentChar; }
@@ -44,14 +44,14 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        STAGE_SETUP, SELECT_CHAR, STAGE_READY, PLAYER_TURN, RESCUE_TARGET_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
+        STAGE_SETUP, SELECT_CHAR, STAGE_READY, PLAYER_TURN, SURVIVOR_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
     }
     private GameState _currGameState = GameState.STAGE_SETUP;
     public GameState CurrGameState {
         get { return _currGameState; }
     }
     private bool bTurnEndClicked = false;
-    private bool bRescueTargetActive = false;
+    private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
     private DisasterObject disasterObject = null;
     private bool bDisasterExist = false;
@@ -76,7 +76,7 @@ public class GameMgr : MonoBehaviour {
         case GameState.SELECT_CHAR: SelectChar(); break;
         case GameState.STAGE_READY: StageReady(); break;
         case GameState.PLAYER_TURN: PlayerTurn(); break;
-        case GameState.RESCUE_TARGET_TURN: RescueTargetTurn(); break;
+        case GameState.SURVIVOR_TURN: SurvivorTurn(); break;
         case GameState.SPREAD_FIRE: SpreadFire(); break;
         case GameState.DISASTER_ALARM: DisasterAlarm(); break;
         case GameState.DISASTER_TURN: DisasterTurn(); break;
@@ -133,7 +133,7 @@ public class GameMgr : MonoBehaviour {
         goalMgr = new GoalMgr(goalsNode);
 
         StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
-        goalMgr.SetSurvivorNum(RescueTargets.Values.Count);
+        goalMgr.SetSurvivorNum(survivors.Values.Count);
 
         _currGameState = GameState.SELECT_CHAR;
     }
@@ -164,25 +164,25 @@ public class GameMgr : MonoBehaviour {
             // 캐릭터들의 턴 종료 행동 함수 호출
             for (int i = 0; i < Players.Count; i++)
                 Players[i].TurnEndActive();
-            _currGameState = GameState.RESCUE_TARGET_TURN;
+            _currGameState = GameState.SURVIVOR_TURN;
             bTurnEndClicked = false;
         }
     }
-    private void RescueTargetTurn() {
-        if (!bRescueTargetActive) {
-            foreach (var rt in RescueTargets.Values)
-                rt.TurnEndActive();
-            bRescueTargetActive = true;
+    private void SurvivorTurn() {
+        if (!bSurvivorActive) {
+            foreach (Survivor survivor in survivors.Values)
+                survivor.TurnEndActive();
+            bSurvivorActive = true;
         }
         else {
             bool moveDone = true;
-            foreach (var rt in RescueTargets.Values) {
-                if (!rt.IsMoveDone)
+            foreach (Survivor survivor in survivors.Values) {
+                if (!survivor.IsMoveDone)
                     moveDone = false;
             }
 
             if (moveDone) {
-                bRescueTargetActive = false;
+                bSurvivorActive = false;
                 _currGameState = GameState.SPREAD_FIRE;
             }
         }
@@ -334,25 +334,25 @@ public class GameMgr : MonoBehaviour {
         return GetAroundPlayers(pos, 1);
     }
 
-    public void AddRescueTarget(Vector3Int pos, RescueTarget rt) {
-        RescueTargets.Add(pos, rt);
+    public void AddSurvivor(Vector3Int pos, Survivor survivor) {
+        survivors.Add(pos, survivor);
 	}
-    public void RemoveRescueTarget(Vector3Int pos) {
-        RescueTargets.Remove(pos);
+    public void RemoveSurvivor(Vector3Int pos) {
+        survivors.Remove(pos);
     }
-    public RescueTarget GetRescueTargetAt(Vector3Int pos) {
-        if (RescueTargets.ContainsKey(pos))
-            return RescueTargets[pos];
+    public Survivor GetSurvivorAt(Vector3Int pos) {
+        if (survivors.ContainsKey(pos))
+            return survivors[pos];
         return null;
     }
-    public void MoveRescueTarget(Vector3Int oldPos, Vector3Int newPos) {
-        if (RescueTargets.ContainsKey(oldPos)) {
-            RescueTarget rt = RescueTargets[oldPos];
-            RescueTargets.Remove(oldPos);
-            RescueTargets.Add(newPos, rt);
+
+    public void OnMoveSurvivor(Vector3Int oldPos, Vector3Int newPos) {
+        if (survivors.ContainsKey(oldPos)) {
+            Survivor survivor = survivors[oldPos];
+            survivors.Remove(oldPos);
+            survivors.Add(newPos, survivor);
         }
     }
-
     public void OnMovePlayer(Vector3Int playerTilePos) {
         TileMgr.Instance.MoveEmbers();
         goalMgr.CheckArriveAt(playerTilePos);

@@ -8,7 +8,7 @@
 
     <Disaster>
       <Type>SHORT_CIRCUIT</Type>
-      <Point>5,0</Point>
+      <Point>7,-2</Point>
       <Turn>2</Turn>
     </Disaster>
 
@@ -20,7 +20,7 @@
 
     <Disaster>
       <Type>SMOKE</Type>
-      <Point>5,0</Point>
+      <Point>3,0</Point>
       <Turn>4</Turn>
     </Disaster>
   </Disasters>

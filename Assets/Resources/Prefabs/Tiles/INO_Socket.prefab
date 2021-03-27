@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 5102152427263259370}
   - component: {fileID: 8702458771584240738}
   - component: {fileID: 3362229048820440379}
-  m_Layer: 9
-  m_Name: Socket
+  m_Layer: 0
+  m_Name: INO_Socket
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,4 +121,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace87910b36e48945bf405c35231114d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  electricTile: {fileID: 11400000, guid: 58ec45b770f4b1d4fbac32b9d888ee18, type: 2}
+  electricTile: {fileID: 0}

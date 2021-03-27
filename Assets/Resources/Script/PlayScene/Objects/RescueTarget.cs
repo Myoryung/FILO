@@ -37,7 +37,7 @@ public class RescueTarget : Charactor {
             _moveDone = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D other) {
+    protected virtual void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Fire") || other.CompareTag("Ember"))
             AddHP(-25.0f);
     }

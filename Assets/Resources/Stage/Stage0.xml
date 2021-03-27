@@ -40,12 +40,12 @@
     <Goal>
       <Type>EXTINGUISH</Type>
       <Area>
-        <StartPoint>5,0</StartPoint>
-        <EndPoint>6,2</EndPoint>
+        <LT>5,0</LT>
+        <RB>6,2</RB>
       </Area>
       <Area>
-        <StartPoint>5,0</StartPoint>
-        <EndPoint>6,2</EndPoint>
+        <LT>7,0</LT>
+        <RB>7,2</RB>
       </Area>
     </Goal>
     

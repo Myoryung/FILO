@@ -47,8 +47,7 @@ public class G_Deadline : Goal {
     }
     protected override void RefreshText() {
         timerText.text = string.Format("{0,2}:{1:00}", (currTime / 60), (currTime % 60));
-        if (currTime > endTime) {
+        if (currTime > endTime)
             StatusText.text = "실패";
-		}
     }
 }

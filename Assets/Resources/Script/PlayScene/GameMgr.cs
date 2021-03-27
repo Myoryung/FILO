@@ -89,6 +89,9 @@ public class GameMgr : MonoBehaviour {
             ChangeStateText(player);
             ChangeNameText();
         }
+
+        if (TileMgr.Instance.IsChangedFire())
+            goalMgr.CheckFireInArea();
     }
 
     private void StageSetup() {

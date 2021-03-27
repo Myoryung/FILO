@@ -12,6 +12,7 @@ public class TileMgr {
     private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
 
     private float EmberMoveTime = 0.0f;
+    private bool isChangedFire = false;
 
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
 
@@ -207,6 +208,7 @@ public class TileMgr {
 
     public void CreateFire(Vector3Int pos) {
         EnvironmentTilemap.SetTile(pos, FireTile);
+        isChangedFire = true;
     }
     public void CreateElectric(Vector3Int pos) {
         EnvironmentTilemap.SetTile(pos, ElectricTile);
@@ -244,6 +246,7 @@ public class TileMgr {
     }
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");
+        isChangedFire = true;
     }
     public void RemoveWater(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Water");
@@ -278,4 +281,10 @@ public class TileMgr {
         if (tile != null && tile.name == name)
             EnvironmentTilemap.SetTile(pos, null);
     }
+
+    public bool IsChangedFire() {
+        bool temp = isChangedFire;
+        isChangedFire = false;
+        return temp;
+	}
 }

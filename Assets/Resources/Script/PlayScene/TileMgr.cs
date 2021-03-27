@@ -97,8 +97,8 @@ public class TileMgr {
         }
     }
     public void MoveEmbers() {
-        float currTime = Time.time;
-        if (currTime - EmberMoveTime < 2.0f)
+        EmberMoveTime += Time.deltaTime;
+        if (EmberMoveTime < 2.0f)
             return;
 
         GameObject[] fireObjects = GameObject.FindGameObjectsWithTag("Fire");
@@ -107,7 +107,7 @@ public class TileMgr {
             fire.MoveEmber();
         }
 
-        EmberMoveTime = currTime;
+        EmberMoveTime = 0.0f;
     }
 
     private void Electrify(Vector3Int electricPos) {

@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2318029569258208163}
   - component: {fileID: 2170857204130907435}
   - component: {fileID: 4471091132635269497}
-  m_Layer: 9
-  m_Name: Sprinkler
+  m_Layer: 0
+  m_Name: INO_Sprinkler
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

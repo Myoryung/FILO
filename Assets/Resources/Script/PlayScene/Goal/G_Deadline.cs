@@ -27,10 +27,10 @@ public class G_Deadline : Goal {
         RefreshText();
 
         ExplanationText.text = "제한시간";
-        StatusText.text = "~ " + endTimeStr;
+        StatusText.text = string.Format("~ {0}", endTimeStr);
     }
 
-    public void TurnEnd() {
+    public void OnTurnEnd() {
         currTime += 5;
         RefreshText();
     }
@@ -45,8 +45,9 @@ public class G_Deadline : Goal {
     public override bool IsImpossible() {
         return !IsSatisfied();
     }
-
-    private void RefreshText() {
-        timerText.text = (currTime / 60) + " : " + (currTime % 60);
+    protected override void RefreshText() {
+        timerText.text = string.Format("{0,2}:{1:00}", (currTime / 60), (currTime % 60));
+        if (currTime > endTime)
+            StatusText.text = "실패";
     }
 }

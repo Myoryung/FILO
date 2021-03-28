@@ -35,7 +35,7 @@ public class HammerMan : Player
                 if (TileMgr.Instance.ExistObject(oPos)) { // 클릭 좌표에 장애물이 있다면 제거
                     TileMgr.Instance.RemoveObject(oPos);
                     AddO2(-10);
-                    if (GameMgr.Instance.GetRescueTargetAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
+                    if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
                         _playerAct = Action.Panic; // 턴제한 추가 필요
                 }
                 break;

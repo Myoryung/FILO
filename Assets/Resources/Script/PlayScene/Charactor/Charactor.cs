@@ -24,6 +24,30 @@ public abstract class Charactor : MonoBehaviour {
         _currentHp = _maxHp;
     }
 
+    protected virtual void OnTriggerEnter2D(Collider2D other) {
+        switch (other.tag) {
+        case "Fire":
+            AddHP(-25.0f);
+            break;
+
+        case "Ember":
+            AddHP(-10.0f);
+            break;
+
+        case "Electric":
+        case "Water(Electric)":
+            AddHP(-35.0f);
+            break;
+
+        case "Disaster_FallingRock":
+            AddHP(-40);
+            break;
+        case "Disaster_Smoke":
+            AddO2(-30);
+            break;
+        }
+    }
+
     public virtual void AddHP(float value) {
         _currentHp += value;
 

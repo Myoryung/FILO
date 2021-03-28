@@ -5,13 +5,14 @@ using UnityEngine.Tilemaps;
 public class TileMgr {   
     private static TileMgr m_instance; // Singleton
 
-    private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, PlayerSpawnTilemap;
+    private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, SpawnTilemap;
     private Tilemap EffectTilemap, WarningTilemap;
 
     [SerializeField]
     private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
 
     private float EmberMoveTime = 0.0f;
+    private bool isChangedFire = false;
 
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
 
@@ -48,7 +49,7 @@ public class TileMgr {
         BackgroundTilemap = Grid.transform.Find("Background").gameObject.GetComponent<Tilemap>();
         ObjectTilemap = Grid.transform.Find("Object").gameObject.GetComponent<Tilemap>();
         EnvironmentTilemap = Grid.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
-        PlayerSpawnTilemap = Grid.transform.Find("PlayerSpawn").gameObject.GetComponent<Tilemap>();
+        SpawnTilemap = Grid.transform.Find("Spawn").gameObject.GetComponent<Tilemap>();
         EffectTilemap = Grid.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
         WarningTilemap = Grid.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
 
@@ -97,8 +98,8 @@ public class TileMgr {
         }
     }
     public void MoveEmbers() {
-        float currTime = Time.time;
-        if (currTime - EmberMoveTime < 2.0f)
+        EmberMoveTime += Time.deltaTime;
+        if (EmberMoveTime < 2.0f)
             return;
 
         GameObject[] fireObjects = GameObject.FindGameObjectsWithTag("Fire");
@@ -107,7 +108,7 @@ public class TileMgr {
             fire.MoveEmber();
         }
 
-        EmberMoveTime = currTime;
+        EmberMoveTime = 0.0f;
     }
 
     private void Electrify(Vector3Int electricPos) {
@@ -207,6 +208,7 @@ public class TileMgr {
 
     public void CreateFire(Vector3Int pos) {
         EnvironmentTilemap.SetTile(pos, FireTile);
+        isChangedFire = true;
     }
     public void CreateElectric(Vector3Int pos) {
         EnvironmentTilemap.SetTile(pos, ElectricTile);
@@ -232,7 +234,8 @@ public class TileMgr {
         return ExistEnvironmentTile(pos, "Electric");
     }
     public bool ExistPlayerSpawn(Vector3Int pos) {
-        return PlayerSpawnTilemap.GetTile(pos) != null;
+        //return SpawnTilemap.GetTile(pos) != null;
+        return false;
 	}
 
     private Water GetWater(Vector3Int pos) {
@@ -244,6 +247,7 @@ public class TileMgr {
     }
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");
+        isChangedFire = true;
     }
     public void RemoveWater(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Water");
@@ -278,4 +282,10 @@ public class TileMgr {
         if (tile != null && tile.name == name)
             EnvironmentTilemap.SetTile(pos, null);
     }
+
+    public bool IsChangedFire() {
+        bool temp = isChangedFire;
+        isChangedFire = false;
+        return temp;
+	}
 }

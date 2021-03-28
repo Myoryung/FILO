@@ -7,7 +7,7 @@ public class INO_DoorController : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        INO_Door door = (INO_Door)TileMgr.Instance.GetInteractiveObject(TileMgr.GetDoorPos(position));
+        INO_Door door = (INO_Door)TileMgr.Instance.GetInteractiveObject(TileMgr.GetDoorPos(Position));
         if (door != null)
             door.Activate();
     }

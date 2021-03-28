@@ -8,7 +8,7 @@
 
     <Disaster>
       <Type>SHORT_CIRCUIT</Type>
-      <Point>5,0</Point>
+      <Point>7,-2</Point>
       <Turn>2</Turn>
     </Disaster>
 
@@ -20,43 +20,35 @@
 
     <Disaster>
       <Type>SMOKE</Type>
-      <Point>5,0</Point>
+      <Point>3,0</Point>
       <Turn>4</Turn>
     </Disaster>
   </Disasters>
 
   <Goals>
-    <Goal>
-      <Type>DEADLINE</Type>
-      <StartTime>17:40</StartTime>
-      <EndTime>18:20</EndTime>
-    </Goal>
-    
-    <Goal>
-      <Type>RESCUE_SURVIVOR</Type>
-      <Count>5</Count>
-    </Goal>
-    
-    <Goal>
-      <Type>EXTINGUISH</Type>
-      <Area>
-        <StartPoint>5,0</StartPoint>
-        <EndPoint>6,2</EndPoint>
-      </Area>
-      <Area>
-        <StartPoint>5,0</StartPoint>
-        <EndPoint>6,2</EndPoint>
-      </Area>
-    </Goal>
-    
-    <Goal>
-      <Type>ARRIVE</Type>
-      <Point>2,0</Point>
-    </Goal>
-    
-    <Goal>
-      <Type>RESCUE_SPECIFIC_SURVIVOR</Type>
-      <Point>5,2</Point>
-    </Goal>
+    <Main>
+      <Goal>
+        <Type>DEADLINE</Type>
+        <StartTime>17:40</StartTime>
+        <EndTime>18:00</EndTime>
+      </Goal>
+
+      <Goal>
+        <Type>RESCUE_SURVIVOR</Type>
+        <Count>5</Count>
+      </Goal>
+    </Main>
+    <Sub>
+      <Goal>
+        <Type>ARRIVE</Type>
+        <Point>2,0</Point>
+        <Point>3,1</Point>
+      </Goal>
+
+      <Goal>
+        <Type>RESCUE_IMPORTANT_SURVIVOR</Type>
+        <Count>1</Count>
+      </Goal>
+    </Sub>
   </Goals>
 </Stage>

@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2637000119305822334}
   - component: {fileID: 1915055821671915254}
   - component: {fileID: 2535296086448079773}
-  m_Layer: 9
-  m_Name: CircuitBreaker
+  m_Layer: 0
+  m_Name: INO_CircuitBreaker
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

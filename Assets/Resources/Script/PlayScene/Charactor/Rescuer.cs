@@ -23,9 +23,9 @@ public class Rescuer : Player
         for(int i = offset; i < range + offset; i++) {
             for(int j = offset; j < range + offset; j++) {
                 Vector3Int targetPos = nPos + new Vector3Int(i, j, 0);
-                RescueTarget rt = GameMgr.Instance.GetRescueTargetAt(targetPos);
-                if (rt != null)
-                    rt.ActiveSmileMark();
+                Survivor survivor = GameMgr.Instance.GetSurvivorAt(targetPos);
+                if (survivor != null)
+                    survivor.ActiveSmileMark();
             }
         }
     }

@@ -10,6 +10,8 @@ public abstract class DisasterObject : MonoBehaviour {
     private float accumTime = 0;
     private int spriteIndex = 0;
 
+    BoxCollider2D boxCollider;
+
     private bool bActive = false;
     private Vector3Int _pos;
     public Vector3Int Pos {
@@ -19,8 +21,12 @@ public abstract class DisasterObject : MonoBehaviour {
 
     // Start is called before the first frame update
     protected virtual void Start() {
-        spriteRenderer = this.GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprites[0];
+
+        boxCollider = GetComponent<BoxCollider2D>();
+        if (boxCollider != null)
+            boxCollider.enabled = false;
     }
 
     // Update is called once per frame
@@ -38,7 +44,12 @@ public abstract class DisasterObject : MonoBehaviour {
             spriteRenderer.sprite = sprites[spriteIndex];
     }
 
-    protected abstract void Active();
+    protected virtual void Active() {
+        if (boxCollider != null) {
+            boxCollider.enabled = true;
+            boxCollider.isTrigger = true;
+        }
+    }
 
     public bool IsActive {
         get { return bActive; }

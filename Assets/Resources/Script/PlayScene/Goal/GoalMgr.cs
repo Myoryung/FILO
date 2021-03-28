@@ -59,10 +59,24 @@ public class GoalMgr {
 	}
 
     public bool IsAllSatisfied() {
-        return false;
+        bool isSatisfied = true;
+        foreach (Goal goal in goals) {
+            if (!goal.IsSatisfied()) {
+                isSatisfied = false;
+                break;
+            }
+		}
+        return isSatisfied;
 	}
     public bool IsImpossible() {
-        return false;
+        bool isImpossible = false;
+        foreach (Goal goal in goals) {
+            if (goal.IsImpossible()) {
+                isImpossible = true;
+                break;
+            }
+        }
+        return isImpossible;
 	}
 
     public void CheckFireInArea() {
@@ -73,9 +87,9 @@ public class GoalMgr {
         if (arrive != null)
             arrive.CheckArriveAt(pos);
     }
-    public void TurnEnd() {
+    public void OnTurnEnd() {
         if (deadline != null)
-            deadline.TurnEnd();
+            deadline.OnTurnEnd();
     }
     public void OnRescueSurvivor() {
         if (rescueSurvivor != null)

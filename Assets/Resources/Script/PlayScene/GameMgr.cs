@@ -29,11 +29,11 @@ public class GameMgr : MonoBehaviour {
         set { _currentChar = value; }
     } // CurrentChar Property
    
+    private GameObject disasterAlaram = null;
+    private Text disasterAlaramText = null;
 
-    [SerializeField]
-    private Image    DisasterAlaram = null;
-    [SerializeField]
-    private Text    DisasterAlaramText = null;
+    private GameObject stageEnd = null;
+    private Text stageEndText = null;
 
     private int _stage = 0;
     private DisasterMgr disasterMgr;
@@ -44,19 +44,23 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        STAGE_SETUP, SELECT_CHAR, STAGE_READY, PLAYER_TURN, SURVIVOR_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END
+        STAGE_SETUP, SELECT_CHAR, STAGE_READY,
+        PLAYER_TURN, SURVIVOR_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END,
+        STAGE_END
     }
     private GameState _currGameState = GameState.STAGE_SETUP;
     public GameState CurrGameState {
         get { return _currGameState; }
     }
+
+    private bool bStagePlaying = false;
     private bool bTurnEndClicked = false;
     private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
     private DisasterObject disasterObject = null;
     private bool bDisasterExist = false;
 
-    private GameObject SelectCanvas, PlayCanvas;
+    private GameObject selectCanvas, playCanvas;
 
     private void Awake()
     {
@@ -81,46 +85,49 @@ public class GameMgr : MonoBehaviour {
         case GameState.DISASTER_ALARM: DisasterAlarm(); break;
         case GameState.DISASTER_TURN: DisasterTurn(); break;
         case GameState.TURN_END: TurnEnd(); break;
+        case GameState.STAGE_END: StageEnd(); break;
         }
 
-        if (CurrentChar < Players.Count) {
-            Player player = Players[CurrentChar];
-            ChangeMentalText(player);
-            ChangeStateText(player);
-            ChangeNameText();
-        }
+        if (bStagePlaying) {
+            if (CurrentChar < Players.Count) {
+                Player player = Players[CurrentChar];
+                ChangeMentalText(player);
+                ChangeStateText(player);
+                ChangeNameText();
+            }
 
-        if (TileMgr.Instance.IsChangedFire())
-            goalMgr.CheckFireInArea();
+            if (TileMgr.Instance.IsChangedFire())
+                goalMgr.CheckFireInArea();
+
+            if (goalMgr.IsAllSatisfied() || goalMgr.IsImpossible()) {
+                _currGameState = GameState.STAGE_END;
+                stageEnd.SetActive(true);
+                stageEndText.text = (goalMgr.IsAllSatisfied()) ? "스테이지 클리어" : "스테이지 실패";
+                bStagePlaying = false;
+            }
+        }
     }
 
     private void StageSetup() {
         // Load Canvas Object
         GameObject canvas = GameObject.Find("UICanvas");
-        SelectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
-        PlayCanvas = canvas.transform.Find("PlayCanvas").gameObject;
+        selectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
+        playCanvas = canvas.transform.Find("PlayCanvas").gameObject;
 
-        SelectCanvas.SetActive(true);
-        PlayCanvas.GetComponent<Canvas>().enabled = false;
+        selectCanvas.SetActive(true);
+        playCanvas.GetComponent<Canvas>().enabled = false;
 
-        // Load ID Card Text
-        _mentalText = GameObject.FindWithTag("MentalText").GetComponent<Text>();
-        _stateText = GameObject.FindWithTag("StateText").GetComponent<Text>();
-        _charNameText = GameObject.FindWithTag("NameText").GetComponent<Text>();
+        // Load UI
+        _mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
+        _stateText = playCanvas.transform.Find("PlayerCard/CurrentState").GetComponent<Text>();
+        _charNameText = playCanvas.transform.Find("PlayerCard/Player_KorName").GetComponent<Text>();
 
-        //for(int i=BackTile.cellBounds.xMin; i<BackTile.cellBounds.xMax; i++)
-        //{
-        //    for(int j=BackTile.cellBounds.yMin; j<BackTile.cellBounds.yMax; j++)
-        //    {
-        //        Vector3Int nPos = new Vector3Int(i, j, 0);
-        //        if (BackTile.GetTile(nPos) != null)
-        //        {
-        //            FogTile.SetTile(nPos, BlackFog);
-        //        }
-        //    }
-        //}
+        disasterAlaram = playCanvas.transform.Find("MiddleUI/DisasterAlarm").gameObject;
+        disasterAlaramText = disasterAlaram.transform.Find("Text").GetComponent<Text>();
 
-        
+        stageEnd = playCanvas.transform.Find("MiddleUI/StageEnd").gameObject;
+        stageEndText = stageEnd.transform.Find("Text").GetComponent<Text>();
+
         // Load XML
         XmlDocument doc = new XmlDocument();
         TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
@@ -151,10 +158,12 @@ public class GameMgr : MonoBehaviour {
         _currGameState = GameState.STAGE_READY;
     }
     private void StageReady() {
-        PlayCanvas.GetComponent<Canvas>().enabled = true;
+        playCanvas.GetComponent<Canvas>().enabled = true;
 
         foreach (Player player in Players)
             player.StageStartActive();
+
+        bStagePlaying = true;
 
         _currGameState = GameState.PLAYER_TURN;
     }
@@ -194,8 +203,8 @@ public class GameMgr : MonoBehaviour {
         if (!bDisasterAlarmPopup) {
             Disaster disaster = disasterMgr.GetWillActiveDisaster();
             if (disaster != null) {
-                DisasterAlaramText.text = disaster.type.ToString();
-                DisasterAlaram.gameObject.SetActive(true);
+                disasterAlaramText.text = disaster.type.ToString();
+                disasterAlaram.SetActive(true);
                 bDisasterAlarmPopup = true;
             }
             else
@@ -203,7 +212,7 @@ public class GameMgr : MonoBehaviour {
         }
         else {
             if (bDisasterAlarmClicked) {
-                DisasterAlaram.gameObject.SetActive(false);
+                disasterAlaram.SetActive(false);
                 _currGameState = GameState.DISASTER_TURN;
                 bDisasterAlarmClicked = false;
                 bDisasterAlarmPopup = false;
@@ -232,10 +241,13 @@ public class GameMgr : MonoBehaviour {
     }
     private void TurnEnd() {
         GameTurn++;
-        goalMgr.TurnEnd();
+        goalMgr.OnTurnEnd();
 
         _currGameState = GameState.PLAYER_TURN;
     }
+    private void StageEnd() {
+
+	}
 
     public void OnClickTurnEnd() {
         if (CurrGameState == GameState.PLAYER_TURN)

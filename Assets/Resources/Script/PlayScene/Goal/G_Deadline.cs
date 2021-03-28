@@ -30,7 +30,7 @@ public class G_Deadline : Goal {
         StatusText.text = string.Format("~ {0}", endTimeStr);
     }
 
-    public void TurnEnd() {
+    public void OnTurnEnd() {
         currTime += 5;
         RefreshText();
     }

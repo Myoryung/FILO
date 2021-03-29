@@ -17,9 +17,11 @@ public class GameMgr : MonoBehaviour {
     }
 
     private Text _mentalText, _stateText, _charNameText;
+    private Text timerText = null;
 
     public int GameTurn = 0; // 게임 턴
-    private List<Player> Players = new List<Player>(); // 사용할 캐릭터들의 Components
+    private int currTime = 0;
+    private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
     private int _currentChar = 0; // 현재 사용중인 캐릭터의 번호
 
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
@@ -54,11 +56,13 @@ public class GameMgr : MonoBehaviour {
     }
 
     private bool bStagePlaying = false;
-    private bool bTurnEndClicked = false;
+    private bool bTurnEndClicked = false, bStageEndClicked = false;
     private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
     private DisasterObject disasterObject = null;
     private bool bDisasterExist = false;
+    private bool isAllPlayerInSafetyArea = false;
+    private bool bStageEndSetup = false;
 
     private GameObject selectCanvas, playCanvas;
 
@@ -89,8 +93,8 @@ public class GameMgr : MonoBehaviour {
         }
 
         if (bStagePlaying) {
-            if (CurrentChar < Players.Count) {
-                Player player = Players[CurrentChar];
+            if (CurrentChar < players.Count) {
+                Player player = players[CurrentChar];
                 ChangeMentalText(player);
                 ChangeStateText(player);
                 ChangeNameText();
@@ -99,16 +103,30 @@ public class GameMgr : MonoBehaviour {
             if (TileMgr.Instance.IsChangedFire())
                 goalMgr.CheckFireInArea();
 
-            if (goalMgr.IsAllSatisfied() || goalMgr.IsImpossible()) {
+            if (goalMgr.IsImpossible())
                 _currGameState = GameState.STAGE_END;
-                stageEnd.SetActive(true);
-                stageEndText.text = (goalMgr.IsAllSatisfied()) ? "스테이지 클리어" : "스테이지 실패";
-                bStagePlaying = false;
-            }
         }
     }
 
     private void StageSetup() {
+        // Load XML
+        XmlDocument doc = new XmlDocument();
+        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
+        doc.LoadXml(textAsset.text);
+        XmlNode stageNode = doc.SelectSingleNode("Stage");
+
+        string startTimeStr = stageNode.SelectSingleNode("StartTime").InnerText;
+        string[] startTimeTokens = startTimeStr.Split(':');
+        currTime = int.Parse(startTimeTokens[0])*60 + int.Parse(startTimeTokens[1]);
+
+        XmlNode disastersNode = stageNode.SelectSingleNode("Disasters");
+        XmlNode goalsNode = stageNode.SelectSingleNode("Goals");
+
+        disasterMgr = new DisasterMgr(disastersNode);
+        goalMgr = new GoalMgr(goalsNode);
+
+        StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+
         // Load Canvas Object
         GameObject canvas = GameObject.Find("UICanvas");
         selectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
@@ -128,18 +146,8 @@ public class GameMgr : MonoBehaviour {
         stageEnd = playCanvas.transform.Find("MiddleUI/StageEnd").gameObject;
         stageEndText = stageEnd.transform.Find("Text").GetComponent<Text>();
 
-        // Load XML
-        XmlDocument doc = new XmlDocument();
-        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
-        doc.LoadXml(textAsset.text);
-
-        XmlNode disastersNode = doc.SelectSingleNode("Stage/Disasters");
-        XmlNode goalsNode = doc.SelectSingleNode("Stage/Goals");
-
-        disasterMgr = new DisasterMgr(disastersNode);
-        goalMgr = new GoalMgr(goalsNode);
-
-        StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
+        timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
+        ChangeTimerText();
 
         _currGameState = GameState.SELECT_CHAR;
     }
@@ -149,10 +157,10 @@ public class GameMgr : MonoBehaviour {
 
 		}
 
-        Players.Add(GameObject.Find("Captain").GetComponent<Player>());
-        Players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
-        Players.Add(GameObject.Find("Nurse").GetComponent<Player>());
-        Players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+        players.Add(GameObject.Find("Captain").GetComponent<Player>());
+        players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
+        players.Add(GameObject.Find("Nurse").GetComponent<Player>());
+        players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
 
 
         _currGameState = GameState.STAGE_READY;
@@ -160,7 +168,7 @@ public class GameMgr : MonoBehaviour {
     private void StageReady() {
         playCanvas.GetComponent<Canvas>().enabled = true;
 
-        foreach (Player player in Players)
+        foreach (Player player in players)
             player.StageStartActive();
 
         bStagePlaying = true;
@@ -170,10 +178,14 @@ public class GameMgr : MonoBehaviour {
     private void PlayerTurn() {
         if (bTurnEndClicked) {
             // 캐릭터들의 턴 종료 행동 함수 호출
-            for (int i = 0; i < Players.Count; i++)
-                Players[i].TurnEndActive();
+            for (int i = 0; i < players.Count; i++)
+                players[i].TurnEndActive();
             _currGameState = GameState.SURVIVOR_TURN;
             bTurnEndClicked = false;
+        }
+        else if (bStageEndClicked) {
+            _currGameState = GameState.STAGE_END;
+            bStageEndClicked = false;
         }
     }
     private void SurvivorTurn() {
@@ -241,16 +253,27 @@ public class GameMgr : MonoBehaviour {
     }
     private void TurnEnd() {
         GameTurn++;
-        goalMgr.OnTurnEnd();
+        currTime += 5;
+        ChangeTimerText();
+        goalMgr.OnTurnEnd(currTime);
 
         _currGameState = GameState.PLAYER_TURN;
     }
     private void StageEnd() {
-
-	}
+        if (!bStageEndSetup) {
+            stageEnd.SetActive(true);
+            stageEndText.text = (goalMgr.IsAllSatisfied()) ? "임무 성공" : "임무 실패";
+            bStagePlaying = false;
+            bStageEndSetup = true;
+        }
+    }
 
     public void OnClickTurnEnd() {
-        if (CurrGameState == GameState.PLAYER_TURN)
+        if (CurrGameState != GameState.PLAYER_TURN) return;
+
+        if (isAllPlayerInSafetyArea && goalMgr.IsAllSatisfied())
+            bStageEndClicked = true;
+        else
             bTurnEndClicked = true;
     }
     public void OnClickDisasterAlarm() {
@@ -328,11 +351,19 @@ public class GameMgr : MonoBehaviour {
             break;
         }
     }
+    public void ChangeTimerText() {
+        if (timerText == null) return;
+
+        if (isAllPlayerInSafetyArea && goalMgr.IsAllSatisfied())
+            timerText.text = "임무 종료";
+        else
+            timerText.text = string.Format("{0,2}:{1:00}", (currTime / 60), (currTime % 60));
+    }
 
     public List<Player> GetAroundPlayers(Vector3Int pos, int range) {
         List<Player> players = new List<Player>();
 
-        foreach (Player player in Players) {
+        foreach (Player player in this.players) {
             if ((player.currentTilePos - pos).magnitude < range)
                 players.Add(player);
         }
@@ -369,6 +400,26 @@ public class GameMgr : MonoBehaviour {
         TileMgr.Instance.MoveEmbers();
         goalMgr.CheckArriveAt(playerTilePos);
     }
+    public void OnEnterSafetyArea() {
+        bool isAllPlayerInSafetyArea = true;
+
+        foreach (Player player in players) {
+            if (!player.IsInSafetyArea) {
+                isAllPlayerInSafetyArea = false;
+                break;
+            }
+        }
+
+        if (isAllPlayerInSafetyArea) {
+            this.isAllPlayerInSafetyArea = isAllPlayerInSafetyArea;
+            ChangeTimerText();
+        }
+	}
+    public void OnExitSafetyArea() {
+        isAllPlayerInSafetyArea = false;
+        ChangeTimerText();
+    }
+
     public void OnCarrySurvivor(Vector3Int pos) {
         survivors.Remove(pos);
     }

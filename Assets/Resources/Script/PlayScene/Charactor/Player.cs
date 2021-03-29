@@ -27,6 +27,7 @@ public class Player : Charactor
 
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
+    private bool isInSafetyArea = false;
 
     // Local Component
     private Animator _anim; // 캐릭터 애니메이션
@@ -311,6 +312,9 @@ public class Player : Charactor
             break;
 
         case "Beacon":
+            isInSafetyArea = true;
+            GameMgr.Instance.OnEnterSafetyArea();
+
             // 구조 종료
             if (_playerAct == Action.Rescue) {
                 GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
@@ -321,7 +325,16 @@ public class Player : Charactor
         }
     }
 
-    protected void RenderInteractArea(ref Vector3Int oPos) {
+	protected void OnTriggerExit2D(Collider2D collision) {
+		switch (collision.tag) {
+        case "Beacon":
+            isInSafetyArea = false;
+            GameMgr.Instance.OnExitSafetyArea();
+            break;
+		}
+	}
+
+	protected void RenderInteractArea(ref Vector3Int oPos) {
         Vector3Int direction = GetMouseDirectiontoTilemap();
 
         Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
@@ -363,6 +376,9 @@ public class Player : Charactor
 	}
     public float Mental {
         get { return _currentMental; }
+	}
+    public bool IsInSafetyArea {
+        get { return isInSafetyArea; }
 	}
 
     protected bool IsMoving { // 현재 움직이는 상태인가 체크하는 함수

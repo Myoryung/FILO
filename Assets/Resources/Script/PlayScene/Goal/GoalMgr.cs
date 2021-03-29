@@ -111,10 +111,11 @@ public class GoalMgr {
         if (arrive != null)
             arrive.CheckArriveAt(pos);
     }
-    public void OnTurnEnd() {
+    public void OnTurnEnd(int currTime) {
         if (deadline != null)
-            deadline.OnTurnEnd();
+            deadline.OnTurnEnd(currTime);
     }
+
     public void OnRescueSurvivor() {
         if (rescueSurvivor != null)
             rescueSurvivor.OnRescueSurvivor();
@@ -133,7 +134,6 @@ public class GoalMgr {
         if (rescueImportantSurvivor != null)
             rescueImportantSurvivor.OnDieSurvivor();
     }
-
     public void OnAddSurvivor() {
         if (rescueSurvivor != null)
             rescueSurvivor.IncreaseSurvivorNum();

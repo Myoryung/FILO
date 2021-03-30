@@ -51,4 +51,11 @@
       </Goal>
     </Sub>
   </Goals>
+
+  <Floors>
+    <FloorSize>3</FloorSize>
+    <MinFloor>2</MinFloor>
+    <MaxFloor>4</MaxFloor>
+    <StartFloor>2</StartFloor>
+  </Floors>
 </Stage>

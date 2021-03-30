@@ -321,10 +321,10 @@ public class GameMgr : MonoBehaviour {
             _charNameText.text = "02. 빅토르";
             break;
         case 2:
-            _charNameText.text = "03. 레  오";
+            _charNameText.text = "03. 시노에";
             break;
         case 3:
-            _charNameText.text = "04. 시노에";
+            _charNameText.text = "04. 레  오";
             break;
         }
     }

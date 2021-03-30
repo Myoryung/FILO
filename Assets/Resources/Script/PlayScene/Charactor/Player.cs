@@ -23,7 +23,6 @@ public class Player : Charactor
     [SerializeField]
     private float _maxMental = 0; // 최대 멘탈
     private float _currentMental = 0; // 현재 멘탈
-    private Vector3 _moveDir = Vector3.left; // 캐릭터가 바라보는 방향
 
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
@@ -33,6 +32,7 @@ public class Player : Charactor
     private Animator _anim; // 캐릭터 애니메이션
     [SerializeField]
     private Transform _body = null; // 캐릭터 이미지의 Transform
+    private Rigidbody2D rbody = null;
     
     public Vector3Int currentTilePos
     {
@@ -42,8 +42,10 @@ public class Player : Charactor
     protected override void Start()
     {
         base.Start();
+
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
+        rbody = GetComponent<Rigidbody2D>();
         //SetFOV();
     }
     // Update is called once per frame
@@ -63,25 +65,26 @@ public class Player : Charactor
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
         if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0)
         {
-            transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
-
-            if (hor != 0.0f) // 좌, 우 이동중이라면
+            //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+            float diaMove = 1.0f;
+            if (hor != 0.0f && ver != 0.0f)
             {
-                AddO2(-(UseO2 * Time.deltaTime));
-                _moveDir = new Vector3(hor, 0, 0); // 바라보는 방향 변경
+                diaMove = Mathf.Sqrt(2) / 2;
+                AddO2(-(UseO2 * Time.deltaTime * diaMove));
             }
-            if (ver != 0.0f) //상, 하 이동중이라면
+            else if (hor != 0.0f || ver != 0.0f) // 좌, 우 이동중이라면
                 AddO2(-(UseO2 * Time.deltaTime));
+            rbody.velocity = new Vector3(hor * _movespeed, ver * _movespeed, 0.0f) * diaMove;
 
-            if((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
+            if ((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
             {
                 _anim.SetBool("IsRunning", true); // 달리기 애니메이션 재생
             }
-            if(_moveDir.x > 0) // 바라보는 방향이 우측이라면
+            if(hor > 0) // 바라보는 방향이 우측이라면
             {
                 _body.rotation = new Quaternion(0, 180.0f, 0, this.transform.rotation.w); // 우측으로 이미지 회전
             }
-            else if(_moveDir.x < 0) // 좌측이라면
+            else if(hor < 0) // 좌측이라면
             {
                 _body.rotation = Quaternion.identity; // y값 초기화
             }
@@ -348,8 +351,11 @@ public class Player : Charactor
     public override void AddHP(float value) {
         base.AddHP(value);
 
-        if (CurrentHP <= 0 )
+        if (CurrentHP <= 0)
+        {
             _playerAct = Action.Retire;
+            rbody.velocity = Vector2.zero;
+        }
     }
 
     public override void AddO2(float value) {
@@ -364,6 +370,7 @@ public class Player : Charactor
         if(_currentMental <= 0)
         {
             _playerAct = Action.Panic;
+            rbody.velocity = Vector2.zero;
         }
         if(_currentMental > _maxMental)
         {

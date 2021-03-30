@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Xml;
 
 public class TileMgr {   
     private static TileMgr m_instance; // Singleton
@@ -14,6 +15,9 @@ public class TileMgr {
     private float EmberMoveTime = 0.0f;
     private bool isChangedFire = false;
 
+    private List<GameObject> Floors;
+
+    private readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
 
     private static readonly List<Dictionary<Vector3Int, Vector3Int>> DoorPairs = new List<Dictionary<Vector3Int, Vector3Int>>(){
@@ -42,16 +46,29 @@ public class TileMgr {
     }
 
     public TileMgr() {
+        Floors = new List<GameObject>();
         m_interactiveObjects = new Dictionary<Vector3Int, InteractiveObject>();
 
+        // Load XML
+        XmlDocument doc = new XmlDocument();
+        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + GameMgr.Instance.stage);
+        doc.LoadXml(textAsset.text);
+
+        XmlNode floorNode = doc.SelectSingleNode("Stage/Floors");
+        FloorSize = int.Parse(floorNode.SelectSingleNode("FloorSize").InnerText);
+        MinFloor = int.Parse(floorNode.SelectSingleNode("MinFloor").InnerText);
+        MaxFloor = int.Parse(floorNode.SelectSingleNode("MaxFloor").InnerText);
+        StartFloor = int.Parse(floorNode.SelectSingleNode("StartFloor").InnerText);
+
+        GameObject ParentFloor = GameObject.Find("Floor");
+        for(int i=MinFloor;i<=MaxFloor;i++)
+        {
+            Object floorPath = Resources.Load("Stage/Stage" + GameMgr.Instance.stage + "/Floor" + i);
+            Floors.Add((GameObject)MonoBehaviour.Instantiate(floorPath, Vector3.zero, Quaternion.identity, ParentFloor.transform));
+            Floors[i - MinFloor].name = "Floor" + i;
+        }
         //  Load Tilemap Object
-        GameObject Grid = GameObject.Find("Grid");
-        BackgroundTilemap = Grid.transform.Find("Background").gameObject.GetComponent<Tilemap>();
-        ObjectTilemap = Grid.transform.Find("Object").gameObject.GetComponent<Tilemap>();
-        EnvironmentTilemap = Grid.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
-        SpawnTilemap = Grid.transform.Find("Spawn").gameObject.GetComponent<Tilemap>();
-        EffectTilemap = Grid.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
-        WarningTilemap = Grid.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
+        SwitchFloorTilemap(Floors[StartFloor - MinFloor]);
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
@@ -281,6 +298,16 @@ public class TileMgr {
         TileBase tile = EnvironmentTilemap.GetTile(pos);
         if (tile != null && tile.name == name)
             EnvironmentTilemap.SetTile(pos, null);
+    }
+    private void SwitchFloorTilemap(GameObject obj)
+    {
+        BackgroundTilemap = obj.transform.Find("Background").gameObject.GetComponent<Tilemap>();
+        ObjectTilemap = obj.transform.Find("Object").gameObject.GetComponent<Tilemap>();
+        EnvironmentTilemap = obj.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
+        SpawnTilemap = obj.transform.Find("Spawn").gameObject.GetComponent<Tilemap>();
+        EffectTilemap = obj.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
+        WarningTilemap = obj.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
+        obj.SetActive(true);
     }
 
     public bool IsChangedFire() {

@@ -19,6 +19,7 @@ TagManager:
   - Survivor
   - Disaster_Smoke
   - Disaster_FallingRock
+  - RescueTarget
   layers:
   - Default
   - TransparentFX
@@ -33,7 +34,7 @@ TagManager:
   - FogOfWarMain
   - FogOfWarSec
   - Electric
-  - 
+  - OperatorOverlapable
   - 
   - 
   - 

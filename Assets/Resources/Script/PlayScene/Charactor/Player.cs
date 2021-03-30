@@ -32,6 +32,7 @@ public class Player : Charactor
     private Animator _anim; // 캐릭터 애니메이션
     [SerializeField]
     private Transform _body = null; // 캐릭터 이미지의 Transform
+    private Rigidbody2D rbody = null;
     
     public Vector3Int currentTilePos
     {
@@ -41,8 +42,10 @@ public class Player : Charactor
     protected override void Start()
     {
         base.Start();
+
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
+        rbody = GetComponent<Rigidbody2D>();
         //SetFOV();
     }
     // Update is called once per frame
@@ -62,7 +65,8 @@ public class Player : Charactor
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
         if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0)
         {
-            transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+            //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+            rbody.velocity = new Vector3(hor * _movespeed, ver * _movespeed, 0.0f);
 
             if (hor != 0.0f) // 좌, 우 이동중이라면
             {

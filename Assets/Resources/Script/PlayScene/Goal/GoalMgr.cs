@@ -26,16 +26,18 @@ public class GoalMgr {
             
             mainGoals.Add(goal);
         }
+		GameObject end = StageGoals.transform.Find("End").gameObject;
+        end.transform.localPosition = new Vector3(0, -17 + -45f*mainGoals.Count + -19.5f, 0);
 
         // Load Sub Goal
         XmlNodeList subGoalNodes = goalsNode.SelectNodes("Sub/Goal");
         GameObject subStart = StageGoals.transform.Find("SubStart").gameObject;
-        GameObject end = StageGoals.transform.Find("End").gameObject;
-        float subStartY = -17 + -45f*mainGoals.Count;
+        GameObject subEnd = StageGoals.transform.Find("SubEnd").gameObject;
+        float subStartY = -30 + -34 + -17 + -45f*mainGoals.Count;
 
         if (subGoalNodes.Count == 0) {
             subStart.SetActive(false);
-            end.transform.localPosition = new Vector3(0, subStartY + -19.5f, 0);
+            subEnd.SetActive(false);
         }
         else {
             subStart.transform.localPosition = new Vector3(0, subStartY + -17, 0);
@@ -49,7 +51,7 @@ public class GoalMgr {
                 subGoals.Add(goal);
             }
 
-            end.transform.localPosition = new Vector3(0, subStartY + -34 + -45f*subGoals.Count + -19.5f, 0);
+            subEnd.transform.localPosition = new Vector3(0, subStartY + -34 + -45f*subGoals.Count + -19.5f, 0);
         }
     }
     private Goal CreateGoal(GameObject textObject, XmlNode goalNode) {

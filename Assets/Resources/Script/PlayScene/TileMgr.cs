@@ -253,6 +253,9 @@ public class TileMgr {
     public bool ExistElectric(Vector3Int pos) {
         return ExistEnvironmentTile(pos, "Electric");
     }
+    public bool ExistTempWall(Vector3Int pos) {
+        return ExistObjectTile(pos, "TempWall");
+    }
     public bool ExistPlayerSpawn(Vector3Int pos) {
         //return SpawnTilemap.GetTile(pos) != null;
         return false;
@@ -262,9 +265,6 @@ public class TileMgr {
         return EnvironmentTilemap.GetInstantiatedObject(pos).GetComponent<Water>();
     }
 
-    public void RemoveObject(Vector3Int pos) {
-        ObjectTilemap.SetTile(pos, null);
-    }
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");
         isChangedFire = true;
@@ -276,8 +276,8 @@ public class TileMgr {
         Diselectrify(pos);
         RemoveEnvironmentTile(pos, "Electric");
     }
-    public void RemoveWall(Vector3Int pos) {
-        RemoveObjectTile(pos, "Wall");
+    public void RemoveTempWall(Vector3Int pos) {
+        RemoveObjectTile(pos, "TempWall");
     }
 
     private bool ExistObjectTile(Vector3Int pos, string name) {

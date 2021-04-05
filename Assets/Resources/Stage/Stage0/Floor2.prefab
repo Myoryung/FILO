@@ -477,6 +477,15 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 2
       m_AllTileFlags: 1073741825
+  - first: {x: -4, y: 1, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 8
+      m_TileSpriteIndex: 1
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 1
+      m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - m_RefCount: 1
@@ -496,12 +505,20 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 1
+<<<<<<< HEAD
     m_Data: {fileID: 11400000, guid: e3619be7437d6be488cdce5681762696, type: 2}
+=======
+    m_Data: {fileID: 11400000, guid: 79a1d977994eb064b9e7aa916a3ac515, type: 2}
+>>>>>>> 730fc65... Add: 가벽 구현
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 1
+<<<<<<< HEAD
     m_Data: {fileID: 21300000, guid: f051d2ff341141742b4b1ec8221ee5c9, type: 3}
+=======
+    m_Data: {fileID: 21300000, guid: ac61a32cf91098a4ba533033e8ed7e7e, type: 3}
+>>>>>>> 730fc65... Add: 가벽 구현
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: c75d1114532d65a4ab129392a8dbe27d, type: 3}
   - m_RefCount: 1
@@ -542,7 +559,11 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 1
+<<<<<<< HEAD
     m_Data: {fileID: 3699098530845879797, guid: 5911e30a3604b164fa3ecca9fa1368d4,
+=======
+    m_Data: {fileID: 8266654891535470065, guid: 2037424f13357ec4f9dd3a0f8e4050ca,
+>>>>>>> 730fc65... Add: 가벽 구현
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 7841991225187466614, guid: c0c7bd9e43ec7a447b4e2990b5befb02,
@@ -2875,7 +2896,11 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 16
+<<<<<<< HEAD
     m_Data: {r: 0.75120217, g: 0.32849935, b: 0.4509479, a: 1}
+=======
+    m_Data: {r: 0.82876104, g: 0.38223773, b: 0.5239825, a: 1}
+>>>>>>> 730fc65... Add: 가벽 구현
   m_TileObjectToInstantiateArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}

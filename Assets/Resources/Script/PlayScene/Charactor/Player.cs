@@ -288,7 +288,7 @@ public class Player : Charactor
         while (true) {
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.RemoveWall(nPos);
+                TileMgr.Instance.RemoveTempWall(nPos);
                 break;
             }
             else if (Input.GetMouseButtonDown(1) || IsMoving)

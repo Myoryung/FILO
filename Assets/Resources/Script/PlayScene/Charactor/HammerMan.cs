@@ -32,8 +32,8 @@ public class HammerMan : Player
             if (Input.GetMouseButtonDown(0))
             {
                 TileMgr.Instance.RemoveEffect(oPos);
-                if (TileMgr.Instance.ExistObject(oPos)) { // 클릭 좌표에 장애물이 있다면 제거
-                    TileMgr.Instance.RemoveObject(oPos);
+                if (TileMgr.Instance.ExistTempWall(oPos)) { // 클릭 좌표에 장애물이 있다면 제거
+                    TileMgr.Instance.RemoveTempWall(oPos);
                     AddO2(-10);
                     if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
                         _playerAct = Action.Panic; // 턴제한 추가 필요

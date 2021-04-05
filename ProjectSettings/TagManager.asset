@@ -20,6 +20,7 @@ TagManager:
   - Disaster_Smoke
   - Disaster_FallingRock
   - RescueTarget
+  - TempWall
   layers:
   - Default
   - TransparentFX

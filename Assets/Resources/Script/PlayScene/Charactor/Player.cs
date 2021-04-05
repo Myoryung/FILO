@@ -24,6 +24,8 @@ public class Player : Charactor
     private float _maxMental = 0; // 최대 멘탈
     private float _currentMental = 0; // 현재 멘탈
 
+    private const float O2_ADDED_PER_TURN = 10.0f; // 턴 종료시마다 회복되는 산소량
+
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
     private bool isInSafetyArea = false;
@@ -150,8 +152,12 @@ public class Player : Charactor
 	}
     public virtual void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
-        if (_playerAct != Action.Panic) // 패닉 상태는 산소가 회복되지 않는다
-            AddO2(10.0f);
+        if (_playerAct != Action.Panic) { // 패닉 상태는 산소가 회복되지 않는다
+            if (IsInSafetyArea)
+                AddO2(O2_ADDED_PER_TURN * 2.0f);
+            else
+                AddO2(O2_ADDED_PER_TURN);
+        }
 
         if(_playerAct == Action.Carry) // 업는 중이라면
         {

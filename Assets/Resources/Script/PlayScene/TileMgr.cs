@@ -14,11 +14,14 @@ public class TileMgr {
 
     private float EmberMoveTime = 0.0f;
     private bool isChangedFire = false;
+    private int _currentFloor;
 
     private List<GameObject> Floors;
 
     private readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
     private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
+    private Dictionary<int, Stair> UpStairs = new Dictionary<int, Stair>();
+    private Dictionary<int, Stair> DownStairs = new Dictionary<int, Stair>();
 
     private static readonly List<Dictionary<Vector3Int, Vector3Int>> DoorPairs = new List<Dictionary<Vector3Int, Vector3Int>>(){
         new Dictionary<Vector3Int, Vector3Int>(){
@@ -59,6 +62,7 @@ public class TileMgr {
         MinFloor = int.Parse(floorNode.SelectSingleNode("MinFloor").InnerText);
         MaxFloor = int.Parse(floorNode.SelectSingleNode("MaxFloor").InnerText);
         StartFloor = int.Parse(floorNode.SelectSingleNode("StartFloor").InnerText);
+        _currentFloor = StartFloor;
 
         GameObject ParentFloor = GameObject.Find("Floor");
         for(int i=MinFloor;i<=MaxFloor;i++)
@@ -68,7 +72,7 @@ public class TileMgr {
             Floors[i - MinFloor].name = "Floor" + i;
         }
         //  Load Tilemap Object
-        SwitchFloorTilemap(Floors[StartFloor - MinFloor]);
+        SwitchFloorTilemap(StartFloor, 0);
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
@@ -188,8 +192,7 @@ public class TileMgr {
             }
         }
     }
-
-
+    
     public Vector3Int WorldToCell(Vector3 pos) {
         return BackgroundTilemap.WorldToCell(pos);
     }
@@ -299,14 +302,34 @@ public class TileMgr {
         if (tile != null && tile.name == name)
             EnvironmentTilemap.SetTile(pos, null);
     }
-    private void SwitchFloorTilemap(GameObject obj)
+    public void SetStair(int floor, bool isUp, Stair stair)
     {
+        if (isUp) UpStairs.Add(floor, stair);
+        else DownStairs.Add(floor, stair);
+    }
+    public GameObject GetFloor(int idx){
+        return Floors[idx];
+    }
+    public Stair GetStair(int floor, bool isTargetUpStair)
+    {
+        if (isTargetUpStair && UpStairs.ContainsKey(floor)) return UpStairs[floor];
+        else if (!isTargetUpStair && DownStairs.ContainsKey(floor)) return DownStairs[floor];
+        else return null;
+    }
+    public int GetCurrentFloor(){
+        return _currentFloor;
+    }
+    public void SwitchFloorTilemap(int idx, int flag)
+    {
+        Floors[idx - MinFloor].SetActive(false);
+        GameObject obj = Floors[idx + flag - MinFloor];
         BackgroundTilemap = obj.transform.Find("Background").gameObject.GetComponent<Tilemap>();
         ObjectTilemap = obj.transform.Find("Object").gameObject.GetComponent<Tilemap>();
         EnvironmentTilemap = obj.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
         SpawnTilemap = obj.transform.Find("Spawn").gameObject.GetComponent<Tilemap>();
         EffectTilemap = obj.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
         WarningTilemap = obj.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
+        _currentFloor = idx + flag;
         obj.SetActive(true);
     }
 
@@ -315,4 +338,10 @@ public class TileMgr {
         isChangedFire = false;
         return temp;
 	}
+    
+    public int CurrentFloor
+    {
+        get { return _currentFloor; }
+        set { _currentFloor = value; }
+    }
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2908436749388982862}
   - component: {fileID: 1610023040801510598}
   - component: {fileID: 3925764480203937940}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FireWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -51,7 +51,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 36a74452e8b55bc48be32fa34e84c44a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

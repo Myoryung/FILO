@@ -18,7 +18,14 @@ public class GameMgr : MonoBehaviour {
 
     private Text _mentalText, _stateText, _charNameText;
     private Text timerText = null;
+    private Image _fadeImage = null;
 
+    public enum LoadingState { Begin, Stay, End}
+    private LoadingState _loadingState;
+    public LoadingState CurrentLoadingState{
+        get { return _loadingState; }
+        set { _loadingState = value; }
+    }
     public int GameTurn = 0; // 게임 턴
     private int currTime = 0;
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
@@ -136,6 +143,8 @@ public class GameMgr : MonoBehaviour {
         playCanvas.GetComponent<Canvas>().enabled = false;
 
         // Load UI
+        _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
+
         _mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
         _stateText = playCanvas.transform.Find("PlayerCard/CurrentState").GetComponent<Text>();
         _charNameText = playCanvas.transform.Find("PlayerCard/Player_KorName").GetComponent<Text>();
@@ -358,6 +367,24 @@ public class GameMgr : MonoBehaviour {
             timerText.text = "임무 종료";
         else
             timerText.text = string.Format("{0,2}:{1:00}", (currTime / 60), (currTime % 60));
+    }
+    public IEnumerator StartLoading(){
+        float alpha = 0.0f;
+        while(alpha <= 1.0f)
+        {
+            _fadeImage.color = new Color(1,1,1,alpha);
+            alpha += Time.deltaTime;
+            yield return null;
+        }
+        _loadingState = LoadingState.Stay;
+        yield return new WaitUntil(() => _loadingState == LoadingState.End);
+        while (alpha >= 0.0f)
+        {
+            _fadeImage.color = new Color(1, 1, 1, alpha);
+            alpha -= Time.deltaTime;
+            yield return null;
+        }
+        _loadingState = LoadingState.Begin;
     }
 
     public List<Player> GetAroundPlayers(Vector3Int pos, int range) {

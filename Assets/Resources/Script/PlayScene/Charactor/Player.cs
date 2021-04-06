@@ -31,9 +31,10 @@ public class Player : Charactor
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
     private bool isInSafetyArea = false, isInFire = false, isInElectric = false, isInGas = false;
+    private float startTimeInFire = 0, startTimeInElectric = 0;
 
-    // Local Component
-    private Animator _anim; // 캐릭터 애니메이션
+	// Local Component
+	private Animator _anim; // 캐릭터 애니메이션
     [SerializeField]
     private Transform _body = null; // 캐릭터 이미지의 Transform
     private Rigidbody2D rbody = null;
@@ -62,8 +63,16 @@ public class Player : Charactor
             Activate();
         }
 
-        if (isInFire || isInElectric)
+
+        float currTime = Time.time;
+        if (isInFire && currTime - startTimeInFire >= 2.0f) {
             AddHP(-5);
+            startTimeInFire = currTime;
+        }
+        if (isInElectric && currTime - startTimeInElectric >= 2.0f) {
+            AddHP(-5);
+            startTimeInElectric = currTime;
+        }
     }
 
     protected virtual void Move()
@@ -342,6 +351,7 @@ public class Player : Charactor
 
         switch (other.tag) {
         case "Fire":
+            startTimeInFire = Time.time;
             isInFire = true;
             AddMental(-2);
             break;
@@ -352,6 +362,7 @@ public class Player : Charactor
 
         case "Electric":
         case "Water(Electric)":
+            startTimeInElectric = Time.time;
             isInElectric = true;
             AddMental(-2); // 멘탈 감소
             break;

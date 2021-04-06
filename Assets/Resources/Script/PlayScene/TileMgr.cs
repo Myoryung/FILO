@@ -92,44 +92,47 @@ public class TileMgr {
     }
 
     public void SpreadFire() {
-        GameObject[] FireObjects = GameObject.FindGameObjectsWithTag("Fire");
-        Dictionary<Vector3Int, float> createProb = new Dictionary<Vector3Int, float>();
+        foreach (GameObject floor in Floors) {
+            SwitchFloorTilemap(floor);
 
-        // 확률 계산
-        foreach (GameObject FireObject in FireObjects) {
-            Fire fire = FireObject.GetComponent<Fire>();
+            Fire[] fires = EnvironmentTilemap.GetComponentsInChildren<Fire>();
+            Dictionary<Vector3Int, float> createProb = new Dictionary<Vector3Int, float>();
 
-            for (int y = -1; y <= 1; y++) {
-                for (int x = -1; x <= 1; x++) {
-                    Vector3Int tPos = fire.TilePos + new Vector3Int(x, y, 0);
-                    if (!createProb.ContainsKey(tPos))
-                        createProb.Add(tPos, 0.0f);
-                    createProb[tPos] += 0.1f;
-                }
-			}
-        }
+            // 확률 계산
+            foreach (Fire fire in fires) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int x = -1; x <= 1; x++) {
+                        Vector3Int tPos = fire.TilePos + new Vector3Int(x, y, 0);
+                        if (!createProb.ContainsKey(tPos))
+                            createProb.Add(tPos, 0.0f);
+                        createProb[tPos] += 0.1f;
+                    }
+			    }
+            }
 
-        // 불 생성
-        foreach (Vector3Int pos in createProb.Keys) {
-            if (ExistObject(pos) || ExistEnvironment(pos)) continue;
+            // 불 생성
+            foreach (Vector3Int pos in createProb.Keys) {
+                if (ExistObject(pos) || ExistEnvironment(pos)) continue;
 
-            float prob = Random.Range(0.0f, 1.0f);
-            if (prob <= createProb[pos])
-                CreateFire(pos);
+                float prob = Random.Range(0.0f, 1.0f);
+                if (prob <= createProb[pos])
+                    CreateFire(pos);
+            }
         }
     }
     public void MoveEmbers() {
         EmberMoveTime += Time.deltaTime;
         if (EmberMoveTime < 2.0f)
             return;
-
-        GameObject[] fireObjects = GameObject.FindGameObjectsWithTag("Fire");
-        foreach (GameObject fireObject in fireObjects) {
-            Fire fire = fireObject.GetComponent<Fire>();
-            fire.MoveEmber();
-        }
-
         EmberMoveTime = 0.0f;
+
+        foreach (GameObject floor in Floors) {
+            SwitchFloorTilemap(floor);
+
+            Fire[] fires = EnvironmentTilemap.GetComponentsInChildren<Fire>();
+            foreach (Fire fire in fires)
+                fire.MoveEmber();
+        }
     }
 
     private void Electrify(Vector3Int electricPos) {

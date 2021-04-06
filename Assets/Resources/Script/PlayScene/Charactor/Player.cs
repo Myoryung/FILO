@@ -12,7 +12,7 @@ public class Player : Charactor
     public GameObject UI_ToolBtns; // 도구 버튼 UI
 
     // 플레이어 스테이터스
-    public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire } // 캐릭터 행동 상태 종류
+    public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire, MoveFloor } // 캐릭터 행동 상태 종류
     protected Action _playerAct; 
     private Survivor _rescuingSurvivor; // 현재 구조중인 생존자
     [SerializeField]
@@ -62,10 +62,11 @@ public class Player : Charactor
         float hor = Input.GetAxisRaw("Horizontal"); // 가속도 없이 Raw값 사용
         float ver = Input.GetAxisRaw("Vertical");
 
-        //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0)
+        //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+        ////구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0 && _playerAct != Action.MoveFloor)
         {
-            //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+
             float diaMove = 1.0f;
             if (hor != 0.0f && ver != 0.0f)
             {
@@ -76,27 +77,27 @@ public class Player : Charactor
                 AddO2(-(UseO2 * Time.deltaTime));
             rbody.velocity = new Vector3(hor * _movespeed, ver * _movespeed, 0.0f) * diaMove;
 
-            if ((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
-            {
-                _anim.SetBool("IsRunning", true); // 달리기 애니메이션 재생
-            }
-            if(hor > 0) // 바라보는 방향이 우측이라면
-            {
-                _body.rotation = new Quaternion(0, 180.0f, 0, this.transform.rotation.w); // 우측으로 이미지 회전
-            }
-            else if(hor < 0) // 좌측이라면
-            {
-                _body.rotation = Quaternion.identity; // y값 초기화
-            }
+            //if ((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
+            //{
+            //    //_anim.SetBool("IsRunning", true); // 달리기 애니메이션 재생
+            //}
+            //if (hor > 0) // 바라보는 방향이 우측이라면
+            //{
+            //    _body.rotation = new Quaternion(0, 180.0f, 0, this.transform.rotation.w); // 우측으로 이미지 회전
+            //}
+            //else if (hor < 0) // 좌측이라면
+            //{
+            //    _body.rotation = Quaternion.identity; // y값 초기화
+            //}
 
             _currentTilePos = TileMgr.Instance.WorldToCell(transform.position); // 현재 캐릭터의 타일맵 좌표 갱신
             if (hor != 0 || ver != 0)
                 GameMgr.Instance.OnMovePlayer(currentTilePos);
         }
-        if (hor == 0 && ver == 0) // 이동 종료 시
-        {
-            _anim.SetBool("IsRunning", false); // 달리기 애니메이션 종료
-        }
+        //if (hor == 0 && ver == 0) // 이동 종료 시
+        //{
+        //    //_anim.SetBool("IsRunning", false); // 달리기 애니메이션 종료
+        //}
     }
 
     protected InteractiveObject SearchAroundInteractiveObject(Vector3Int pos) {
@@ -325,6 +326,10 @@ public class Player : Charactor
                 _playerAct = Action.Idle;
             }
             break;
+        case "Portal":
+                Stair target = other.GetComponent<Stair>();
+                StartCoroutine(ChangeFloor(target.Flag, target.PortalPosition));
+            break;
         }
     }
 
@@ -336,6 +341,19 @@ public class Player : Charactor
             break;
 		}
 	}
+
+    IEnumerator ChangeFloor(int flag, Vector3Int Pos){
+        Action oldAct = _playerAct;
+        _playerAct = Action.MoveFloor;
+        rbody.velocity = Vector2.zero;
+        StartCoroutine(GameMgr.Instance.StartLoading());
+        yield return new WaitUntil(() => GameMgr.Instance.CurrentLoadingState
+                                        == GameMgr.LoadingState.Stay);
+        TileMgr.Instance.SwitchFloorTilemap(TileMgr.Instance.GetCurrentFloor(), flag);
+        transform.position = TileMgr.Instance.CellToWorld(Pos + Vector3Int.down);
+        GameMgr.Instance.CurrentLoadingState = GameMgr.LoadingState.End;
+        _playerAct = oldAct;
+    }
 
 	protected void RenderInteractArea(ref Vector3Int oPos) {
         Vector3Int direction = GetMouseDirectiontoTilemap();

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Xml;
 
-public class TileMgr {   
+public class TileMgr {
     private static TileMgr m_instance; // Singleton
 
     private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, SpawnTilemap;
@@ -13,8 +13,11 @@ public class TileMgr {
     private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
 
     private float EmberMoveTime = 0.0f;
+<<<<<<< HEAD
     private bool isChangedFire = false;
     private int _currentFloor;
+=======
+>>>>>>> 28227f5... Del: 화재진압 목표 삭제
 
     private List<GameObject> Floors;
 
@@ -65,8 +68,7 @@ public class TileMgr {
         _currentFloor = StartFloor;
 
         GameObject ParentFloor = GameObject.Find("Floor");
-        for(int i=MinFloor;i<=MaxFloor;i++)
-        {
+        for (int i = MinFloor; i<=MaxFloor; i++) {
             Object floorPath = Resources.Load("Stage/Stage" + GameMgr.Instance.stage + "/Floor" + i);
             Floors.Add((GameObject)MonoBehaviour.Instantiate(floorPath, Vector3.zero, Quaternion.identity, ParentFloor.transform));
             Floors[i - MinFloor].name = "Floor" + i;
@@ -81,10 +83,10 @@ public class TileMgr {
         EffectTile = Resources.Load<TileBase>("Tilemap/Effect/Effect");
     }
 
-	public void SetInteractiveObject(Vector3Int pos, InteractiveObject obj) {
+    public void SetInteractiveObject(Vector3Int pos, InteractiveObject obj) {
         m_interactiveObjects.Remove(pos);
         m_interactiveObjects.Add(pos, obj);
-	}
+    }
     public InteractiveObject GetInteractiveObject(Vector3Int pos) {
         if (m_interactiveObjects.ContainsKey(pos))
             return m_interactiveObjects[pos];
@@ -107,7 +109,7 @@ public class TileMgr {
                             createProb.Add(tPos, 0.0f);
                         createProb[tPos] += 0.1f;
                     }
-			    }
+                }
             }
 
             // 불 생성
@@ -231,7 +233,6 @@ public class TileMgr {
 
     public void CreateFire(Vector3Int pos) {
         EnvironmentTilemap.SetTile(pos, FireTile);
-        isChangedFire = true;
     }
     public void CreateElectric(Vector3Int pos) {
         EnvironmentTilemap.SetTile(pos, ElectricTile);
@@ -239,14 +240,14 @@ public class TileMgr {
     }
     public void CreateFireWall(Vector3Int pos) {
         ObjectTilemap.SetTile(pos, FireWallTile);
-	}
+    }
 
     public bool ExistObject(Vector3Int pos) {
         return ObjectTilemap.GetTile(pos) != null;
-	}
+    }
     public bool ExistEnvironment(Vector3Int pos) {
         return EnvironmentTilemap.GetTile(pos) != null;
-	}
+    }
     public bool ExistFire(Vector3Int pos) {
         return ExistEnvironmentTile(pos, "Fire");
     }
@@ -262,7 +263,7 @@ public class TileMgr {
     public bool ExistPlayerSpawn(Vector3Int pos) {
         //return SpawnTilemap.GetTile(pos) != null;
         return false;
-	}
+    }
 
     private Water GetWater(Vector3Int pos) {
         return EnvironmentTilemap.GetInstantiatedObject(pos).GetComponent<Water>();
@@ -270,7 +271,6 @@ public class TileMgr {
 
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");
-        isChangedFire = true;
     }
     public void RemoveWater(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Water");
@@ -305,27 +305,7 @@ public class TileMgr {
         if (tile != null && tile.name == name)
             EnvironmentTilemap.SetTile(pos, null);
     }
-    public void SetStair(int floor, bool isUp, Stair stair)
-    {
-        if (isUp) UpStairs.Add(floor, stair);
-        else DownStairs.Add(floor, stair);
-    }
-    public GameObject GetFloor(int idx){
-        return Floors[idx];
-    }
-    public Stair GetStair(int floor, bool isTargetUpStair)
-    {
-        if (isTargetUpStair && UpStairs.ContainsKey(floor)) return UpStairs[floor];
-        else if (!isTargetUpStair && DownStairs.ContainsKey(floor)) return DownStairs[floor];
-        else return null;
-    }
-    public int GetCurrentFloor(){
-        return _currentFloor;
-    }
-    public void SwitchFloorTilemap(int idx, int flag)
-    {
-        Floors[idx - MinFloor].SetActive(false);
-        GameObject obj = Floors[idx + flag - MinFloor];
+    private void SwitchFloorTilemap(GameObject obj) {
         BackgroundTilemap = obj.transform.Find("Background").gameObject.GetComponent<Tilemap>();
         ObjectTilemap = obj.transform.Find("Object").gameObject.GetComponent<Tilemap>();
         EnvironmentTilemap = obj.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
@@ -334,17 +314,5 @@ public class TileMgr {
         WarningTilemap = obj.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
         _currentFloor = idx + flag;
         obj.SetActive(true);
-    }
-
-    public bool IsChangedFire() {
-        bool temp = isChangedFire;
-        isChangedFire = false;
-        return temp;
-	}
-    
-    public int CurrentFloor
-    {
-        get { return _currentFloor; }
-        set { _currentFloor = value; }
     }
 }

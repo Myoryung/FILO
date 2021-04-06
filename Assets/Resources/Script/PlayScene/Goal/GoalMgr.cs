@@ -8,7 +8,6 @@ public class GoalMgr {
     private List<Goal> subGoals = new List<Goal>();
     private G_Deadline deadline = null;
     private G_RescueSurvivor rescueSurvivor = null;
-    private G_Extinguish extinguish = null;
     private G_Arrive arrive = null;
     private G_RescueImportantSurvivor rescueImportantSurvivor = null;
 
@@ -67,10 +66,6 @@ public class GoalMgr {
             rescueSurvivor = new G_RescueSurvivor(textObject, goalNode);
             goalObject = rescueSurvivor;
             break;
-        case Goal.GoalType.EXTINGUISH:
-            extinguish = new G_Extinguish(textObject, goalNode);
-            goalObject = extinguish;
-            break;
         case Goal.GoalType.ARRIVE:
             arrive = new G_Arrive(textObject, goalNode);
             goalObject = arrive;
@@ -105,10 +100,6 @@ public class GoalMgr {
         return isImpossible;
 	}
 
-    public void CheckFireInArea() {
-        if (extinguish != null)
-            extinguish.CheckFireInArea();
-    }
     public void CheckArriveAt(Vector3Int pos) {
         if (arrive != null)
             arrive.CheckArriveAt(pos);

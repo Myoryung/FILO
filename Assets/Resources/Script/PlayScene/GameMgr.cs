@@ -107,9 +107,6 @@ public class GameMgr : MonoBehaviour {
                 ChangeNameText();
             }
 
-            if (TileMgr.Instance.IsChangedFire())
-                goalMgr.CheckFireInArea();
-
             if (goalMgr.IsImpossible())
                 _currGameState = GameState.STAGE_END;
         }
@@ -218,6 +215,7 @@ public class GameMgr : MonoBehaviour {
     }
     private void SpreadFire() {
         TileMgr.Instance.SpreadFire();
+        TileMgr.Instance.MoveGas();
         _currGameState = GameState.DISASTER_ALARM;
     }
     private void DisasterAlarm() {

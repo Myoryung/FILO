@@ -6,39 +6,29 @@ using System.Xml;
 public class TileMgr {   
     private static TileMgr m_instance; // Singleton
 
-    private Tilemap BackgroundTilemap, ObjectTilemap, EnvironmentTilemap, SpawnTilemap;
-    private Tilemap EffectTilemap, WarningTilemap;
+    private List<Tilemap> BackgroundTilemaps = new List<Tilemap>();
+    private List<Tilemap> ObjectTilemaps = new List<Tilemap>();
+    private List<Tilemap> EnvironmentTilemaps = new List<Tilemap>();
+    private List<Tilemap> SpawnTilemaps = new List<Tilemap>();
+    private List<Tilemap> EffectTilemaps = new List<Tilemap>();
+    private List<Tilemap> WarningTilemaps = new List<Tilemap>();
 
     [SerializeField]
     private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
 
     private float EmberMoveTime = 0.0f;
-    private bool isChangedFire = false;
     private int _currentFloor;
 
     private List<GameObject> Floors;
 
     private readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
-    private Dictionary<Vector3Int, InteractiveObject> m_interactiveObjects;
-    private Dictionary<int, Stair> UpStairs = new Dictionary<int, Stair>();
-    private Dictionary<int, Stair> DownStairs = new Dictionary<int, Stair>();
 
-    private static readonly List<Dictionary<Vector3Int, Vector3Int>> DoorPairs = new List<Dictionary<Vector3Int, Vector3Int>>(){
-        new Dictionary<Vector3Int, Vector3Int>(){
-            {new Vector3Int(-2, -4, 0), new Vector3Int(0, -4, 0)},
-        }
+    private Dictionary<Vector3Int, Vector3Int> doorPairs = new Dictionary<Vector3Int, Vector3Int>(){
+        {new Vector3Int(-2, -4, 2), new Vector3Int(0, -4, 2)},
     };
-    private static readonly List<Dictionary<Vector3Int, Vector3Int>> SocketPairs = new List<Dictionary<Vector3Int, Vector3Int>>(){
-        new Dictionary<Vector3Int, Vector3Int>(){
-            {new Vector3Int(2, -2, 0), new Vector3Int(4, -3, 0)},
-        }
+    private Dictionary<Vector3Int, Vector3Int> socketPairs = new Dictionary<Vector3Int, Vector3Int>(){
+        {new Vector3Int(2, -2, 2), new Vector3Int(4, -3, 2)},
     };
-    public static Vector3Int GetDoorPos(Vector3Int pos) {
-        return DoorPairs[GameMgr.Instance.stage][pos];
-    }
-    public static Vector3Int GetSocketPos(Vector3Int pos) {
-        return SocketPairs[GameMgr.Instance.stage][pos];
-    }
 
     public static TileMgr Instance {
         get {
@@ -50,7 +40,6 @@ public class TileMgr {
 
     public TileMgr() {
         Floors = new List<GameObject>();
-        m_interactiveObjects = new Dictionary<Vector3Int, InteractiveObject>();
 
         // Load XML
         XmlDocument doc = new XmlDocument();
@@ -62,17 +51,25 @@ public class TileMgr {
         MinFloor = int.Parse(floorNode.SelectSingleNode("MinFloor").InnerText);
         MaxFloor = int.Parse(floorNode.SelectSingleNode("MaxFloor").InnerText);
         StartFloor = int.Parse(floorNode.SelectSingleNode("StartFloor").InnerText);
-        _currentFloor = StartFloor;
+        _currentFloor = StartFloor - MinFloor;
 
         GameObject ParentFloor = GameObject.Find("Floor");
         for(int i=MinFloor;i<=MaxFloor;i++)
         {
             Object floorPath = Resources.Load("Stage/Stage" + GameMgr.Instance.stage + "/Floor" + i);
-            Floors.Add((GameObject)MonoBehaviour.Instantiate(floorPath, Vector3.zero, Quaternion.identity, ParentFloor.transform));
-            Floors[i - MinFloor].name = "Floor" + i;
+            GameObject floor = (GameObject)Object.Instantiate(floorPath, ParentFloor.transform);
+            floor.SetActive(true);
+            Floors.Add(floor);
+
+            floor.name = "Floor" + i;
+            BackgroundTilemaps.Add(floor.transform.Find("Background").gameObject.GetComponent<Tilemap>());
+            ObjectTilemaps.Add(floor.transform.Find("Object").gameObject.GetComponent<Tilemap>());
+            EnvironmentTilemaps.Add(floor.transform.Find("Environment").gameObject.GetComponent<Tilemap>());
+            SpawnTilemaps.Add(floor.transform.Find("Spawn").gameObject.GetComponent<Tilemap>());
+            EffectTilemaps.Add(floor.transform.Find("Effect").gameObject.GetComponent<Tilemap>());
+            WarningTilemaps.Add(floor.transform.Find("Warning").gameObject.GetComponent<Tilemap>());
         }
-        //  Load Tilemap Object
-        SwitchFloorTilemap(StartFloor, 0);
+        SwitchFloorTilemap(StartFloor);
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
@@ -81,55 +78,51 @@ public class TileMgr {
         EffectTile = Resources.Load<TileBase>("Tilemap/Effect/Effect");
     }
 
-	public void SetInteractiveObject(Vector3Int pos, InteractiveObject obj) {
-        m_interactiveObjects.Remove(pos);
-        m_interactiveObjects.Add(pos, obj);
-	}
-    public InteractiveObject GetInteractiveObject(Vector3Int pos) {
-        if (m_interactiveObjects.ContainsKey(pos))
-            return m_interactiveObjects[pos];
-        return null;
-    }
-
     public void SpreadFire() {
-        GameObject[] FireObjects = GameObject.FindGameObjectsWithTag("Fire");
-        Dictionary<Vector3Int, float> createProb = new Dictionary<Vector3Int, float>();
+        foreach (Tilemap environmentTilemap in EnvironmentTilemaps) {
+            Fire[] fires = environmentTilemap.GetComponentsInChildren<Fire>();
+            Dictionary<Vector3Int, float> createProb = new Dictionary<Vector3Int, float>();
 
-        // 확률 계산
-        foreach (GameObject FireObject in FireObjects) {
-            Fire fire = FireObject.GetComponent<Fire>();
+            // 확률 계산
+            foreach (Fire fire in fires) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int x = -1; x <= 1; x++) {
+                        Vector3Int tPos = fire.TilePos + new Vector3Int(x, y, 0);
+                        if (!createProb.ContainsKey(tPos))
+                            createProb.Add(tPos, 0.0f);
+                        createProb[tPos] += 0.1f;
+                    }
+			    }
+            }
 
-            for (int y = -1; y <= 1; y++) {
-                for (int x = -1; x <= 1; x++) {
-                    Vector3Int tPos = fire.TilePos + new Vector3Int(x, y, 0);
-                    if (!createProb.ContainsKey(tPos))
-                        createProb.Add(tPos, 0.0f);
-                    createProb[tPos] += 0.1f;
-                }
-			}
-        }
+            // 불 생성
+            foreach (Vector3Int pos in createProb.Keys) {
+                if (ExistObject(pos) || ExistEnvironment(pos)) continue;
 
-        // 불 생성
-        foreach (Vector3Int pos in createProb.Keys) {
-            if (ExistObject(pos) || ExistEnvironment(pos)) continue;
-
-            float prob = Random.Range(0.0f, 1.0f);
-            if (prob <= createProb[pos])
-                CreateFire(pos);
+                float prob = Random.Range(0.0f, 1.0f);
+                if (prob <= createProb[pos])
+                    CreateFire(pos);
+            }
         }
     }
     public void MoveEmbers() {
         EmberMoveTime += Time.deltaTime;
         if (EmberMoveTime < 2.0f)
             return;
-
-        GameObject[] fireObjects = GameObject.FindGameObjectsWithTag("Fire");
-        foreach (GameObject fireObject in fireObjects) {
-            Fire fire = fireObject.GetComponent<Fire>();
-            fire.MoveEmber();
-        }
-
         EmberMoveTime = 0.0f;
+
+        foreach (Tilemap environmentTilemap in EnvironmentTilemaps) {
+            Fire[] fires = environmentTilemap.GetComponentsInChildren<Fire>();
+            foreach (Fire fire in fires)
+                fire.MoveEmber();
+        }
+    }
+    public void MoveGas() {
+        foreach (Tilemap environmentTilemap in EnvironmentTilemaps) {
+            Gas[] gasArr = environmentTilemap.GetComponentsInChildren<Gas>();
+            foreach (Gas gas in gasArr)
+                gas.Move();
+        }
     }
 
     private void Electrify(Vector3Int electricPos) {
@@ -194,55 +187,101 @@ public class TileMgr {
     }
     
     public Vector3Int WorldToCell(Vector3 pos) {
-        return BackgroundTilemap.WorldToCell(pos);
+        Vector3Int cellPos = BackgroundTilemaps[(int)pos.z - MinFloor].WorldToCell(pos);
+        cellPos.z = (int)pos.z;
+        return cellPos;
     }
     public Vector3 CellToWorld(Vector3Int pos) {
-        return BackgroundTilemap.CellToWorld(pos) + BackgroundTilemap.cellSize/2.0f;
+        Tilemap floor = BackgroundTilemaps[pos.z - MinFloor];
+
+        Vector3 worldPos = floor.CellToWorld(pos) + floor.cellSize/2.0f;
+        worldPos.z = pos.z;
+
+        return worldPos;
     }
 
     public void SetEffect(Vector3Int pos, Color color) {
-        EffectTilemap.SetTile(pos, EffectTile);
-        EffectTilemap.SetTileFlags(pos, TileFlags.None);
-        EffectTilemap.SetColor(pos, color);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        EffectTilemaps[floorIndex].SetTile(pos, EffectTile);
+        EffectTilemaps[floorIndex].SetTileFlags(pos, TileFlags.None);
+        EffectTilemaps[floorIndex].SetColor(pos, color);
     }
     public void RemoveEffect(Vector3Int pos) {
-        EffectTilemap.SetTile(pos, null);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        EffectTilemaps[floorIndex].SetTile(basePos, null);
     }
 
     public void SetWarning(Vector3Int pos) {
-        WarningTilemap.SetTile(pos, EffectTile);
-        WarningTilemap.SetTileFlags(pos, TileFlags.None);
-        WarningTilemap.SetColor(pos, new Color(1, 0, 0, 0));
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        WarningTilemaps[floorIndex].SetTile(basePos, EffectTile);
+        WarningTilemaps[floorIndex].SetTileFlags(basePos, TileFlags.None);
+        WarningTilemaps[floorIndex].SetColor(basePos, new Color(1, 0, 0, 0));
     }
     public void TurnWarning(Vector3Int pos, bool flag) {
-        if (WarningTilemap.GetTile(pos) == null) return;
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
 
-        Color color = WarningTilemap.GetColor(pos);
+        if (WarningTilemaps[floorIndex].GetTile(basePos) == null) return;
+
+        Color color = WarningTilemaps[floorIndex].GetColor(basePos);
         color.a = (flag) ? 0.5f : 0;
-        WarningTilemap.SetTileFlags(pos, TileFlags.None);
-        WarningTilemap.SetColor(pos, color);
+        WarningTilemaps[floorIndex].SetTileFlags(basePos, TileFlags.None);
+        WarningTilemaps[floorIndex].SetColor(basePos, color);
     }
     public void RemoveWarning(Vector3Int pos) {
-        WarningTilemap.SetTile(pos, null);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        WarningTilemaps[floorIndex].SetTile(basePos, null);
     }
 
     public void CreateFire(Vector3Int pos) {
-        EnvironmentTilemap.SetTile(pos, FireTile);
-        isChangedFire = true;
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        EnvironmentTilemaps[floorIndex].SetTile(basePos, FireTile);
     }
     public void CreateElectric(Vector3Int pos) {
-        EnvironmentTilemap.SetTile(pos, ElectricTile);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        EnvironmentTilemaps[floorIndex].SetTile(basePos, ElectricTile);
         Electrify(pos);
     }
     public void CreateFireWall(Vector3Int pos) {
-        ObjectTilemap.SetTile(pos, FireWallTile);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        ObjectTilemaps[floorIndex].SetTile(basePos, FireWallTile);
 	}
 
     public bool ExistObject(Vector3Int pos) {
-        return ObjectTilemap.GetTile(pos) != null;
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        return ObjectTilemaps[floorIndex].GetTile(basePos) != null;
 	}
     public bool ExistEnvironment(Vector3Int pos) {
-        return EnvironmentTilemap.GetTile(pos) != null;
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        return EnvironmentTilemaps[floorIndex].GetTile(basePos) != null;
 	}
     public bool ExistFire(Vector3Int pos) {
         return ExistEnvironmentTile(pos, "Fire");
@@ -253,95 +292,109 @@ public class TileMgr {
     public bool ExistElectric(Vector3Int pos) {
         return ExistEnvironmentTile(pos, "Electric");
     }
+    public bool ExistTempWall(Vector3Int pos) {
+        return ExistObjectTile(pos, "TempWall");
+    }
     public bool ExistPlayerSpawn(Vector3Int pos) {
         //return SpawnTilemap.GetTile(pos) != null;
         return false;
 	}
 
     private Water GetWater(Vector3Int pos) {
-        return EnvironmentTilemap.GetInstantiatedObject(pos).GetComponent<Water>();
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        return EnvironmentTilemaps[floorIndex].GetInstantiatedObject(basePos).GetComponent<Water>();
+    }
+    public InteractiveObject GetInteractiveObject(Vector3Int pos) {
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        GameObject obj = ObjectTilemaps[floorIndex].GetInstantiatedObject(basePos);
+        if (obj != null)
+            return obj.GetComponent<InteractiveObject>();
+        return null;
+    }
+    public INO_Door GetMatchedDoor(Vector3Int pos) {
+        Vector3Int doorPos = doorPairs[pos];
+        int floorIndex = doorPos.z - MinFloor;
+        doorPos.z = 0;
+
+        return ObjectTilemaps[floorIndex].GetInstantiatedObject(doorPos).GetComponent<INO_Door>();
+    }
+    public INO_Socket GetMatchedSocket(Vector3Int pos) {
+        Vector3Int socketPos = socketPairs[pos];
+        int floorIndex = socketPos.z - MinFloor;
+        socketPos.z = 0;
+
+        return ObjectTilemaps[floorIndex].GetInstantiatedObject(socketPos).GetComponent<INO_Socket>();
     }
 
-    public void RemoveObject(Vector3Int pos) {
-        ObjectTilemap.SetTile(pos, null);
-    }
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");
-        isChangedFire = true;
-    }
-    public void RemoveWater(Vector3Int pos) {
-        RemoveEnvironmentTile(pos, "Water");
     }
     public void RemoveElectric(Vector3Int pos) {
         Diselectrify(pos);
         RemoveEnvironmentTile(pos, "Electric");
     }
-    public void RemoveWall(Vector3Int pos) {
-        RemoveObjectTile(pos, "Wall");
+    public void RemoveTempWall(Vector3Int pos) {
+        RemoveObjectTile(pos, "TempWall");
     }
+    public void RemoveDoor(Vector3Int pos) {
+		RemoveObjectTile(pos, "Door");
+	}
 
     private bool ExistObjectTile(Vector3Int pos, string name) {
-        TileBase tile = ObjectTilemap.GetTile(pos);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        TileBase tile = ObjectTilemaps[floorIndex].GetTile(basePos);
         if (tile != null && tile.name == name)
             return true;
         return false;
     }
     private bool ExistEnvironmentTile(Vector3Int pos, string name) {
-        TileBase tile = EnvironmentTilemap.GetTile(pos);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        TileBase tile = EnvironmentTilemaps[floorIndex].GetTile(basePos);
         if (tile != null && tile.name == name)
             return true;
         return false;
     }
     private void RemoveObjectTile(Vector3Int pos, string name) {
-        TileBase tile = ObjectTilemap.GetTile(pos);
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
+
+        TileBase tile = ObjectTilemaps[floorIndex].GetTile(basePos);
         if (tile != null && tile.name == name)
-            ObjectTilemap.SetTile(pos, null);
+            ObjectTilemaps[floorIndex].SetTile(basePos, null);
     }
     private void RemoveEnvironmentTile(Vector3Int pos, string name) {
-        TileBase tile = EnvironmentTilemap.GetTile(pos);
-        if (tile != null && tile.name == name)
-            EnvironmentTilemap.SetTile(pos, null);
-    }
-    public void SetStair(int floor, bool isUp, Stair stair)
-    {
-        if (isUp) UpStairs.Add(floor, stair);
-        else DownStairs.Add(floor, stair);
-    }
-    public GameObject GetFloor(int idx){
-        return Floors[idx];
-    }
-    public Stair GetStair(int floor, bool isTargetUpStair)
-    {
-        if (isTargetUpStair && UpStairs.ContainsKey(floor)) return UpStairs[floor];
-        else if (!isTargetUpStair && DownStairs.ContainsKey(floor)) return DownStairs[floor];
-        else return null;
-    }
-    public int GetCurrentFloor(){
-        return _currentFloor;
-    }
-    public void SwitchFloorTilemap(int idx, int flag)
-    {
-        Floors[idx - MinFloor].SetActive(false);
-        GameObject obj = Floors[idx + flag - MinFloor];
-        BackgroundTilemap = obj.transform.Find("Background").gameObject.GetComponent<Tilemap>();
-        ObjectTilemap = obj.transform.Find("Object").gameObject.GetComponent<Tilemap>();
-        EnvironmentTilemap = obj.transform.Find("Environment").gameObject.GetComponent<Tilemap>();
-        SpawnTilemap = obj.transform.Find("Spawn").gameObject.GetComponent<Tilemap>();
-        EffectTilemap = obj.transform.Find("Effect").gameObject.GetComponent<Tilemap>();
-        WarningTilemap = obj.transform.Find("Warning").gameObject.GetComponent<Tilemap>();
-        _currentFloor = idx + flag;
-        obj.SetActive(true);
-    }
+        int floorIndex = pos.z - MinFloor;
+        Vector3Int basePos = pos;
+        basePos.z = 0;
 
-    public bool IsChangedFire() {
-        bool temp = isChangedFire;
-        isChangedFire = false;
-        return temp;
-	}
-    
-    public int CurrentFloor
-    {
-        get { return _currentFloor; }
-        set { _currentFloor = value; }
+        TileBase tile = EnvironmentTilemaps[floorIndex].GetTile(basePos);
+        if (tile != null && tile.name == name)
+            EnvironmentTilemaps[floorIndex].SetTile(basePos, null);
+    }
+    public void SwitchFloorTilemap(int floorNumber) {
+        int nextFloorIdx = floorNumber - MinFloor;
+
+        BackgroundTilemaps[_currentFloor].GetComponent<TilemapRenderer>().enabled = false;
+        EffectTilemaps[_currentFloor].GetComponent<TilemapRenderer>().enabled = false;
+        WarningTilemaps[_currentFloor].GetComponent<TilemapRenderer>().enabled = false;
+        
+        BackgroundTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
+        EffectTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
+        WarningTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
+        
+        _currentFloor = nextFloorIdx;
     }
 }

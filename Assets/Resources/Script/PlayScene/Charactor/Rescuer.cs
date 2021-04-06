@@ -14,9 +14,11 @@ public class Rescuer : Player
         base.Update();
     }
 
-    public override void ActiveSkill()
-    {
+    public override void ActiveSkill() {
         base.ActiveSkill();
+        if (CurrentO2 < GetSkillUseO2())
+            return;
+
         int range = 5;
         int offset = -(range / 2);
         Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position);
@@ -28,6 +30,8 @@ public class Rescuer : Player
                     survivor.ActiveSmileMark();
             }
         }
+
+        AddO2(-GetSkillUseO2());
     }
 
     protected override void Move()

@@ -46,6 +46,7 @@ public abstract class Charactor : MonoBehaviour {
             AddO2(-30);
             break;
         }
+
     }
 
     public virtual void AddHP(float value) {

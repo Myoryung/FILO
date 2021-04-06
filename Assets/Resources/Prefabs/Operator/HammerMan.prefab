@@ -23,6 +23,7 @@ MonoBehaviour:
   _playerNum: 1
   _movespeed: 500
   _maxMental: 2
+  skillUseO2: 10
   _body: {fileID: 573911847403852753}
 --- !u!1001 &526721416150014647
 PrefabInstance:

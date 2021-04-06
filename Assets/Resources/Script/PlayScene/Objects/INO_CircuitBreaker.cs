@@ -12,7 +12,7 @@ public class INO_CircuitBreaker : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        INO_Socket socket = (INO_Socket)TileMgr.Instance.GetInteractiveObject(TileMgr.GetSocketPos(Position));
+        INO_Socket socket = TileMgr.Instance.GetMatchedSocket(Position);
         if (socket != null)
             socket.Activate();
     }

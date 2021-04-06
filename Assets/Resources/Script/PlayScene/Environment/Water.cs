@@ -13,17 +13,9 @@ public class Water : MonoBehaviour {
         get { return _position; }
     }
 
-
     private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
-    }
-
-	private void OnDestroy() {
-        TileMgr.Instance.RemoveWater(position);
-    }
-
-	void Update() {
     }
 
     public void Electrify(Vector3Int originPos) {

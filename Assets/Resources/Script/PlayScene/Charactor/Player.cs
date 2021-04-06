@@ -28,7 +28,7 @@ public class Player : Charactor
 
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
-    private bool isInSafetyArea = false;
+    private bool isInSafetyArea = false, isInFire = false, isInElectric = false;
 
     // Local Component
     private Animator _anim; // 캐릭터 애니메이션
@@ -57,6 +57,9 @@ public class Player : Charactor
             Move();
             Activate();
         }
+
+        if (isInFire || isInElectric)
+            AddHP(-5);
     }
 
     protected virtual void Move()
@@ -309,6 +312,7 @@ public class Player : Charactor
 
         switch (other.tag) {
         case "Fire":
+            isInFire = true;
             AddMental(-2);
             break;
 
@@ -318,6 +322,7 @@ public class Player : Charactor
 
         case "Electric":
         case "Water(Electric)":
+            isInElectric = true;
             AddMental(-2); // 멘탈 감소
             break;
 
@@ -341,6 +346,15 @@ public class Player : Charactor
 
 	protected void OnTriggerExit2D(Collider2D collision) {
 		switch (collision.tag) {
+        case "Fire":
+            isInFire = false;
+            break;
+
+        case "Electric":
+        case "Water(Electric)":
+            isInElectric = false;
+            break;
+
         case "Beacon":
             isInSafetyArea = false;
             GameMgr.Instance.OnExitSafetyArea();

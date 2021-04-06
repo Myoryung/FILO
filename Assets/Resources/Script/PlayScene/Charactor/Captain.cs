@@ -4,6 +4,11 @@ public class Captain : Player {
     Vector3Int SkillRange = new Vector3Int(7, 7, 0); // 스킬 범위
     Vector3Int OldPos;
 
+	protected override void Start() {
+		base.Start();
+        OldPos = currentTilePos;
+    }
+
 	protected override void Update()
     {
         base.Update();
@@ -24,6 +29,7 @@ public class Captain : Player {
     }
 
     private void TurnOnWarning() {
+        Debug.Log("TurnOn - " + currentTilePos);
         for (int i = -(SkillRange.x/2); i < (Mathf.Ceil(SkillRange.x)/2); i++) {
             for (int j = -(SkillRange.y/2); j<(Mathf.Ceil(SkillRange.y)/2); j++) {
                 Vector3Int SearchPos = currentTilePos + new Vector3Int(i, j, 0);
@@ -32,6 +38,7 @@ public class Captain : Player {
         }
     }
     private void TurnOffWarning() {
+        Debug.Log("TurnOff - " + currentTilePos);
         Vector3Int nPos = OldPos - currentTilePos;
         nPos.z = currentTilePos.z;
         

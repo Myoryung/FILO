@@ -408,15 +408,6 @@ Tilemap:
   m_GameObject: {fileID: 2690168492731410544}
   m_Enabled: 1
   m_Tiles:
-  - first: {x: 3, y: -6, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 8
-      m_TileSpriteIndex: 1
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 1
-      m_AllTileFlags: 1073741825
   - first: {x: -2, y: -4, z: 0}
     second:
       serializedVersion: 2
@@ -424,7 +415,7 @@ Tilemap:
       m_TileSpriteIndex: 9
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 8
+      m_TileObjectToInstantiateIndex: 10
       m_AllTileFlags: 1073741825
   - first: {x: 0, y: -4, z: 0}
     second:
@@ -433,7 +424,7 @@ Tilemap:
       m_TileSpriteIndex: 8
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 7
+      m_TileObjectToInstantiateIndex: 8
       m_AllTileFlags: 1073741825
   - first: {x: 4, y: -3, z: 0}
     second:
@@ -451,7 +442,7 @@ Tilemap:
       m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 6
+      m_TileObjectToInstantiateIndex: 7
       m_AllTileFlags: 1073741825
   - first: {x: 2, y: -2, z: 0}
     second:
@@ -460,7 +451,7 @@ Tilemap:
       m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 5
+      m_TileObjectToInstantiateIndex: 6
       m_AllTileFlags: 1073741825
   - first: {x: -2, y: -1, z: 0}
     second:
@@ -469,7 +460,7 @@ Tilemap:
       m_TileSpriteIndex: 4
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 4
+      m_TileObjectToInstantiateIndex: 5
       m_AllTileFlags: 1073741825
   - first: {x: -4, y: 0, z: 0}
     second:
@@ -478,13 +469,22 @@ Tilemap:
       m_TileSpriteIndex: 3
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 3
+      m_TileObjectToInstantiateIndex: 4
       m_AllTileFlags: 1073741825
   - first: {x: 6, y: 0, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 9
       m_TileSpriteIndex: 1
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 1
+      m_AllTileFlags: 1073741825
+  - first: {x: 7, y: 0, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 7
+      m_TileSpriteIndex: 0
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 0
@@ -496,7 +496,7 @@ Tilemap:
       m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 2
+      m_TileObjectToInstantiateIndex: 3
       m_AllTileFlags: 1073741825
   - first: {x: -2, y: 3, z: 0}
     second:
@@ -505,7 +505,7 @@ Tilemap:
       m_TileSpriteIndex: 10
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 1
+      m_TileObjectToInstantiateIndex: 2
       m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
@@ -523,41 +523,21 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: acef56ab943c74a448fe084d0dfdb3ac, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: d997ec2becf2f80469d2e8829c8c6d3d, type: 2}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 1
-<<<<<<< HEAD
-    m_Data: {fileID: 11400000, guid: e3619be7437d6be488cdce5681762696, type: 2}
-=======
+    m_Data: {fileID: 11400000, guid: 2f0ed1deb5273864897ada7e7872c73e, type: 2}
+  - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 79a1d977994eb064b9e7aa916a3ac515, type: 2}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 730fc65... Add: 가벽 구현
-=======
   - m_RefCount: 1
-=======
-  - m_RefCount: 0
->>>>>>> b8d9fb7... Fix: 오브젝트 층 구현
-    m_Data: {fileID: 0}
-=======
-  - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: e69b0c30fd248d44bad19295a9a2a5f1, type: 2}
->>>>>>> 3f9abde... Add: 계단 타일 추가
+    m_Data: {fileID: 11400000, guid: e3619be7437d6be488cdce5681762696, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: f4edab0907de5b14191b4b8439979567, type: 2}
->>>>>>> 2f5976e... Fix: 타일 충돌 방식 변경
   m_TileSpriteArray:
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: 88100d470f9251843927a20b05a3795f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: f18496cda2912174b9367a99674736ee, type: 3}
   - m_RefCount: 1
-<<<<<<< HEAD
-    m_Data: {fileID: 21300000, guid: f051d2ff341141742b4b1ec8221ee5c9, type: 3}
-=======
     m_Data: {fileID: 21300000, guid: ac61a32cf91098a4ba533033e8ed7e7e, type: 3}
->>>>>>> 730fc65... Add: 가벽 구현
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: c75d1114532d65a4ab129392a8dbe27d, type: 3}
   - m_RefCount: 1
@@ -575,7 +555,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: b8d5bdcc624042644b018c2cd03984f3, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 10
+  - m_RefCount: 11
     m_Data:
       e00: 1
       e01: 0
@@ -594,13 +574,16 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 10
+  - m_RefCount: 11
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 0
     m_Data: {r: 5.0982e-41, g: 5.0982e-41, b: 5.0982e-41, a: 5.0982e-41}
   - m_RefCount: 0
-    m_Data: {r: 5.0982e-41, g: 5.0982e-41, b: 5.0982e-41, a: 5.0982e-41}
+    m_Data: {r: 5.56694e-40, g: 5.56694e-40, b: 5.56694e-40, a: 5.56694e-40}
   m_TileObjectToInstantiateArray:
+  - m_RefCount: 1
+    m_Data: {fileID: 8266654891535470065, guid: 8b22cbf3cd8194f4e9239b4a1c34cd3d,
+      type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 8266654891535470065, guid: 638bdcb3d30d90548955b96d9a7e0e17,
       type: 3}
@@ -608,11 +591,7 @@ Tilemap:
     m_Data: {fileID: 2927506909375122251, guid: 8a5646113ce06dc4ea44cac3a11e6885,
       type: 3}
   - m_RefCount: 1
-<<<<<<< HEAD
-    m_Data: {fileID: 3699098530845879797, guid: 5911e30a3604b164fa3ecca9fa1368d4,
-=======
     m_Data: {fileID: 8266654891535470065, guid: 2037424f13357ec4f9dd3a0f8e4050ca,
->>>>>>> 730fc65... Add: 가벽 구현
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 7841991225187466614, guid: c0c7bd9e43ec7a447b4e2990b5befb02,
@@ -630,21 +609,14 @@ Tilemap:
     m_Data: {fileID: 7685849225619292717, guid: 936fc6cf634492e48a25f7331299cf4a,
       type: 3}
   - m_RefCount: 1
+    m_Data: {fileID: 164084731782014418, guid: b5ecbd8dc88748246a20c5ad4ccfa601, type: 3}
+  - m_RefCount: 1
     m_Data: {fileID: 7407702887031566236, guid: 3167ab1d8223eb34ba497ec3a45a5220,
       type: 3}
-  - m_RefCount: 1
-    m_Data: {fileID: 164084731782014418, guid: b5ecbd8dc88748246a20c5ad4ccfa601, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-<<<<<<< HEAD
-  m_Origin: {x: -4, y: -6, z: 0}
-  m_Size: {x: 12, y: 9, z: 1}
-=======
   m_Origin: {x: -4, y: -7, z: 0}
   m_Size: {x: 14, y: 11, z: 1}
->>>>>>> 2f5976e... Fix: 타일 충돌 방식 변경
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -671,7 +643,7 @@ TilemapRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2690168492731410544}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -784,11 +756,11 @@ CompositeCollider2D:
         Y: 0
       - X: -3840000000
         Y: 0
-    - - X: 8959999900
+    - - X: 10240000100
         Y: -41
-      - X: 8959999900
+      - X: 10240000100
         Y: 1280000041
-      - X: 8959999959
+      - X: 10240000041
         Y: 1280000100
       - X: 7679999959
         Y: 1280000100
@@ -798,7 +770,7 @@ CompositeCollider2D:
         Y: -41
       - X: 7679999959
         Y: -100
-      - X: 8959999959
+      - X: 10240000041
         Y: -100
     - - X: -1280000000
         Y: 0
@@ -858,8 +830,8 @@ CompositeCollider2D:
       - {x: -384.00003, y: 256}
       - {x: -512, y: 255.99998}
       - {x: -511.99997, y: 0}
-    - - {x: 896, y: -0.00001}
-      - {x: 896, y: 128.00002}
+    - - {x: 1024, y: -0.00001}
+      - {x: 1024, y: 128.00002}
       - {x: 768, y: 127.99998}
       - {x: 768, y: -0.00001}
     - - {x: -128.00003, y: -128}
@@ -1465,144 +1437,144 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -18, y: -7, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -17, y: -7, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -16, y: -7, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -15, y: -7, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -29, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -28, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -27, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -26, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -25, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -24, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -23, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -22, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -21, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -20, y: -6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -23, y: -5, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 9
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
-      m_TileColorIndex: 5
+      m_TileColorIndex: 6
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741827
   - first: {x: -8, y: -5, z: 0}
@@ -3078,9 +3050,9 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 16
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 4
     m_Data: {fileID: 1235514713869779793, guid: 9be8aee0099ce8141ad476ec973efcec,
@@ -3169,19 +3141,10 @@ Tilemap:
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
-  - m_RefCount: 16
-    m_Data: {r: 0.74044824, g: 0.3869294, b: 0.49038476, a: 1}
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
-<<<<<<< HEAD
   - m_RefCount: 16
-<<<<<<< HEAD
-    m_Data: {r: 0.75120217, g: 0.32849935, b: 0.4509479, a: 1}
-=======
-    m_Data: {r: 0.82876104, g: 0.38223773, b: 0.5239825, a: 1}
->>>>>>> 730fc65... Add: 가벽 구현
-=======
->>>>>>> 2f5976e... Fix: 타일 충돌 방식 변경
+    m_Data: {r: 0.81422365, g: 0.41166535, b: 0.45091298, a: 1}
   m_TileObjectToInstantiateArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}

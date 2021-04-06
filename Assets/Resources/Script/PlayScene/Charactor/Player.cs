@@ -54,6 +54,7 @@ public class Player : Charactor
         //SetFOV();
 
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
+        Debug.Log(gameObject.name + ": " + transform.position + " -> " + _currentTilePos);
     }
     // Update is called once per frame
     protected virtual void Update()

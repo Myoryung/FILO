@@ -51,7 +51,7 @@ public class TileMgr {
         MinFloor = int.Parse(floorNode.SelectSingleNode("MinFloor").InnerText);
         MaxFloor = int.Parse(floorNode.SelectSingleNode("MaxFloor").InnerText);
         StartFloor = int.Parse(floorNode.SelectSingleNode("StartFloor").InnerText);
-        _currentFloor = StartFloor;
+        _currentFloor = StartFloor - MinFloor;
 
         GameObject ParentFloor = GameObject.Find("Floor");
         for(int i=MinFloor;i<=MaxFloor;i++)
@@ -69,11 +69,7 @@ public class TileMgr {
             EffectTilemaps.Add(floor.transform.Find("Effect").gameObject.GetComponent<Tilemap>());
             WarningTilemaps.Add(floor.transform.Find("Warning").gameObject.GetComponent<Tilemap>());
         }
-<<<<<<< HEAD
-        //  Load Tilemap Object
-        SwitchFloorTilemap(StartFloor, 0);
-=======
->>>>>>> 3f9abde... Add: 계단 타일 추가
+        SwitchFloorTilemap(StartFloor);
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
@@ -196,12 +192,10 @@ public class TileMgr {
         return cellPos;
     }
     public Vector3 CellToWorld(Vector3Int pos) {
-        Debug.Log(pos.z);
         Tilemap floor = BackgroundTilemaps[pos.z - MinFloor];
 
         Vector3 worldPos = floor.CellToWorld(pos) + floor.cellSize/2.0f;
         worldPos.z = pos.z;
-        Debug.Log(worldPos);
 
         return worldPos;
     }
@@ -390,16 +384,16 @@ public class TileMgr {
         if (tile != null && tile.name == name)
             EnvironmentTilemaps[floorIndex].SetTile(basePos, null);
     }
-    private void SwitchFloorTilemap(int floorNumber) {
+    public void SwitchFloorTilemap(int floorNumber) {
         int nextFloorIdx = floorNumber - MinFloor;
 
-        BackgroundTilemaps[_currentFloor].GetComponent<SpriteRenderer>().enabled = false;
-        EffectTilemaps[_currentFloor].GetComponent<SpriteRenderer>().enabled = false;
-        WarningTilemaps[_currentFloor].GetComponent<SpriteRenderer>().enabled = false;
+        BackgroundTilemaps[_currentFloor].GetComponent<TilemapRenderer>().enabled = false;
+        EffectTilemaps[_currentFloor].GetComponent<TilemapRenderer>().enabled = false;
+        WarningTilemaps[_currentFloor].GetComponent<TilemapRenderer>().enabled = false;
         
-        BackgroundTilemaps[nextFloorIdx].GetComponent<SpriteRenderer>().enabled = true;
-        EffectTilemaps[nextFloorIdx].GetComponent<SpriteRenderer>().enabled = true;
-        WarningTilemaps[nextFloorIdx].GetComponent<SpriteRenderer>().enabled = true;
+        BackgroundTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
+        EffectTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
+        WarningTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
         
         _currentFloor = nextFloorIdx;
     }

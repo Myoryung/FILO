@@ -21,6 +21,7 @@ TagManager:
   - Disaster_FallingRock
   - RescueTarget
   - TempWall
+  - Gas
   layers:
   - Default
   - TransparentFX

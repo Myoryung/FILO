@@ -26,17 +26,15 @@ public class Nurse : Player
         base.OnTriggerEnter2D(other);
     }
 
-    public override void ActiveSkill()
-    {
+    public override void ActiveSkill() {
         base.ActiveSkill();
-        if (CurrentO2 > 15) // 현재 산소가 10 이상있다면
-        {
+
+        if (CurrentO2 >= GetSkillUseO2())
             StartCoroutine(Heal()); // 스킬 발동
-        }
     }
 
     IEnumerator Heal() {
-        Vector3Int oPos = Vector3Int.zero; // 갱신용 old Pos
+        Vector3Int oPos = currentTilePos; // 갱신용 old Pos
         UI_Actives.SetActive(false); // UI 숨기기
 
         while (true) { // 클릭 작용시까지 반복
@@ -46,7 +44,9 @@ public class Nurse : Player
                 foreach (Player player in players) {
                     player.AddHP(30.0f);
                     player.AddO2(20.0f);
-                    AddO2(-15);
+
+                    // 산소 소비
+                    AddO2(-GetSkillUseO2());
                     break;
                 }
                 break;

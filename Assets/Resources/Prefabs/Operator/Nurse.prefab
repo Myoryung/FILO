@@ -467,5 +467,10 @@ PrefabInstance:
       propertyPath: m_Bounds.m_Extent.y
       value: 1.4402328
       objectReference: {fileID: 0}
+    - target: {fileID: 6139787915764308413, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: skillUseO2
+      value: 15
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b69ac7dd96b17f74c81723af895a4306, type: 3}

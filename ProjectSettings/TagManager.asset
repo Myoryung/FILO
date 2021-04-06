@@ -22,6 +22,8 @@ TagManager:
   - RescueTarget
   - TempWall
   - Gas
+  - UpStair
+  - DownStair
   layers:
   - Default
   - TransparentFX

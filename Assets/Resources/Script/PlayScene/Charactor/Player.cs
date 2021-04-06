@@ -30,7 +30,7 @@ public class Player : Charactor
 
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
-    private bool isInSafetyArea = false, isInFire = false, isInElectric = false, isInGas = false;
+    private bool isInSafetyArea = false, isInFire = false, isInElectric = false, isInGas = false, isInStair = false;
     private float startTimeInFire = 0, startTimeInElectric = 0;
 
 	// Local Component
@@ -382,9 +382,18 @@ public class Player : Charactor
                 _playerAct = Action.Idle;
             }
             break;
-        case "Portal":
-                Stair target = other.GetComponent<Stair>();
-                StartCoroutine(ChangeFloor(target.Flag, target.PortalPosition));
+
+        case "UpStair":
+            if (!isInStair) {
+                isInStair = true;
+                StartCoroutine(ChangeFloor(true));
+            }
+            break;
+        case "DownStair":
+            if (!isInStair) {
+                isInStair = true;
+                StartCoroutine(ChangeFloor(false));
+            }
             break;
         }
     }
@@ -408,18 +417,27 @@ public class Player : Charactor
             isInSafetyArea = false;
             GameMgr.Instance.OnExitSafetyArea();
             break;
-		}
+
+        case "UpStair":
+        case "DownStair":
+            isInStair = false;
+            break;
+        }
 	}
 
-    IEnumerator ChangeFloor(int flag, Vector3Int Pos){
+    IEnumerator ChangeFloor(bool isUp){
         Action oldAct = _playerAct;
         _playerAct = Action.MoveFloor;
         rbody.velocity = Vector2.zero;
         StartCoroutine(GameMgr.Instance.StartLoading());
         yield return new WaitUntil(() => GameMgr.Instance.CurrentLoadingState
                                         == GameMgr.LoadingState.Stay);
-        TileMgr.Instance.SwitchFloorTilemap(TileMgr.Instance.GetCurrentFloor(), flag);
-        transform.position = TileMgr.Instance.CellToWorld(Pos + Vector3Int.down);
+        
+        int floorNumber = _currentTilePos.z + ((isUp) ? 1 : -1);
+        _currentTilePos.z = floorNumber;
+        transform.position = TileMgr.Instance.CellToWorld(currentTilePos);
+
+        TileMgr.Instance.SwitchFloorTilemap(floorNumber);
         GameMgr.Instance.CurrentLoadingState = GameMgr.LoadingState.End;
         _playerAct = oldAct;
     }

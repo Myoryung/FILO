@@ -480,6 +480,15 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 3
       m_AllTileFlags: 1073741825
+  - first: {x: 6, y: 0, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 9
+      m_TileSpriteIndex: 1
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -4, y: 1, z: 0}
     second:
       serializedVersion: 2
@@ -523,6 +532,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 79a1d977994eb064b9e7aa916a3ac515, type: 2}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 730fc65... Add: 가벽 구현
 =======
   - m_RefCount: 1
@@ -530,14 +540,18 @@ Tilemap:
   - m_RefCount: 0
 >>>>>>> b8d9fb7... Fix: 오브젝트 층 구현
     m_Data: {fileID: 0}
+=======
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: e69b0c30fd248d44bad19295a9a2a5f1, type: 2}
+>>>>>>> 3f9abde... Add: 계단 타일 추가
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: f4edab0907de5b14191b4b8439979567, type: 2}
 >>>>>>> 2f5976e... Fix: 타일 충돌 방식 변경
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: f18496cda2912174b9367a99674736ee, type: 3}
   - m_RefCount: 1
 <<<<<<< HEAD
     m_Data: {fileID: 21300000, guid: f051d2ff341141742b4b1ec8221ee5c9, type: 3}
@@ -561,7 +575,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: b8d5bdcc624042644b018c2cd03984f3, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 9
+  - m_RefCount: 10
     m_Data:
       e00: 1
       e01: 0
@@ -580,15 +594,16 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 9
+  - m_RefCount: 10
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 0
     m_Data: {r: 5.0982e-41, g: 5.0982e-41, b: 5.0982e-41, a: 5.0982e-41}
   - m_RefCount: 0
     m_Data: {r: 5.0982e-41, g: 5.0982e-41, b: 5.0982e-41, a: 5.0982e-41}
   m_TileObjectToInstantiateArray:
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 8266654891535470065, guid: 638bdcb3d30d90548955b96d9a7e0e17,
+      type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 2927506909375122251, guid: 8a5646113ce06dc4ea44cac3a11e6885,
       type: 3}
@@ -619,6 +634,8 @@ Tilemap:
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 164084731782014418, guid: b5ecbd8dc88748246a20c5ad4ccfa601, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
 <<<<<<< HEAD
@@ -751,40 +768,42 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 8739114402249388766}
     m_ColliderPaths:
-    - - X: -1279999900
-        Y: 3839999959
-      - X: -1279999900
-        Y: 5120000041
-      - X: -1279999959
-        Y: 5120000100
-      - X: -2560000041
-        Y: 5120000100
-      - X: -2560000100
-        Y: 5120000041
-      - X: -2560000100
-        Y: 3839999959
-      - X: -2560000041
-        Y: 3839999900
-      - X: -1279999959
-        Y: 3839999900
-    - - X: -3840000100
-        Y: 1280000041
-      - X: -3840000041
-        Y: 1280000100
-      - X: -3840000000
-        Y: 1280000100
-      - X: -3840000000
-        Y: 2560000000
-      - X: -5120000000
-        Y: 2560000000
-      - X: -5120000000
-        Y: 0
-      - X: -3840000100
-        Y: 0
     - - X: -1280000000
-        Y: -100
+        Y: 5120000000
       - X: -2560000000
+        Y: 5120000000
+      - X: -2560000000
+        Y: 3840000000
+      - X: -1280000000
+        Y: 3840000000
+    - - X: -3840000000
+        Y: 2560000000
+      - X: -5120000000
+        Y: 2560000000
+      - X: -5120000000
+        Y: 0
+      - X: -3840000000
+        Y: 0
+    - - X: 8959999900
+        Y: -41
+      - X: 8959999900
+        Y: 1280000041
+      - X: 8959999959
+        Y: 1280000100
+      - X: 7679999959
+        Y: 1280000100
+      - X: 7679999900
+        Y: 1280000041
+      - X: 7679999900
+        Y: -41
+      - X: 7679999959
         Y: -100
+      - X: 8959999959
+        Y: -100
+    - - X: -1280000000
+        Y: 0
+      - X: -2560000000
+        Y: 0
       - X: -2560000000
         Y: -1280000000
       - X: -1280000000
@@ -833,15 +852,19 @@ CompositeCollider2D:
     m_Paths:
     - - {x: -128.00003, y: 384}
       - {x: -128.00003, y: 512}
-      - {x: -256, y: 512}
+      - {x: -256, y: 511.99997}
       - {x: -255.99998, y: 384}
-    - - {x: -384.00006, y: 0}
+    - - {x: -384.00003, y: 0}
       - {x: -384.00003, y: 256}
       - {x: -512, y: 255.99998}
       - {x: -511.99997, y: 0}
+    - - {x: 896, y: -0.00001}
+      - {x: 896, y: 128.00002}
+      - {x: 768, y: 127.99998}
+      - {x: 768, y: -0.00001}
     - - {x: -128.00003, y: -128}
-      - {x: -128.00003, y: -0.00001}
-      - {x: -256, y: -0.0000393}
+      - {x: -128.00003, y: 0}
+      - {x: -256, y: -0.000029300001}
       - {x: -255.99998, y: -128}
     - - {x: 383.99997, y: -256}
       - {x: 383.99997, y: -128}
@@ -1122,7 +1145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2690168492783896803
 Transform:
   m_ObjectHideFlags: 0
@@ -3147,7 +3170,7 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 16
-    m_Data: {r: 0.773662, g: 0.49894372, b: 0.52354735, a: 1}
+    m_Data: {r: 0.74044824, g: 0.3869294, b: 0.49038476, a: 1}
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
 <<<<<<< HEAD

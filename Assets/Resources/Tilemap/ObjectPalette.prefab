@@ -98,21 +98,22 @@ Tilemap:
   - first: {x: 0, y: -1, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 4
-      m_TileSpriteIndex: 5
+      m_TileIndex: 1
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
       m_TileColorIndex: 2
-      m_TileObjectToInstantiateIndex: 5
+      m_TileObjectToInstantiateIndex: 6
       m_AllTileFlags: 1073741825
   - first: {x: 1, y: -1, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 3
+      m_TileIndex: 4
       m_TileSpriteIndex: 4
       m_TileMatrixIndex: 0
       m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 4
       m_AllTileFlags: 1073741825
+<<<<<<< HEAD
   - first: {x: -3, y: 0, z: 0}
     second:
       serializedVersion: 2
@@ -121,6 +122,16 @@ Tilemap:
       m_TileMatrixIndex: 0
       m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 12
+=======
+  - first: {x: 3, y: -1, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 14
+      m_TileSpriteIndex: 14
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 2
+      m_TileObjectToInstantiateIndex: 14
+>>>>>>> 3f9abde... Add: 계단 타일 추가
       m_AllTileFlags: 1073741825
   - first: {x: -1, y: 0, z: 0}
     second:
@@ -135,19 +146,28 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 0
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
       m_TileColorIndex: 2
-      m_TileObjectToInstantiateIndex: 6
+      m_TileObjectToInstantiateIndex: 5
       m_AllTileFlags: 1073741825
   - first: {x: 1, y: 0, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
+      m_TileIndex: 3
       m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
       m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 2
+      m_AllTileFlags: 1073741825
+  - first: {x: 3, y: 0, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 13
+      m_TileSpriteIndex: 13
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 2
+      m_TileObjectToInstantiateIndex: 13
       m_AllTileFlags: 1073741825
   - first: {x: -1, y: 2, z: 0}
     second:
@@ -185,9 +205,9 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 80a94a97a96e2d84b8c8cc3c61dd77d6, type: 2}
   - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: b30d17b82bb850c4a9b9f32c1d18b04c, type: 2}
-  - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 1897a673b3c5c6c4998c0d4ec5fb7faf, type: 2}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: b30d17b82bb850c4a9b9f32c1d18b04c, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: a680ead9c4d60cc4693103bb993a89bc, type: 2}
   - m_RefCount: 1
@@ -209,12 +229,19 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: e3619be7437d6be488cdce5681762696, type: 2}
 =======
     m_Data: {fileID: 11400000, guid: 79a1d977994eb064b9e7aa916a3ac515, type: 2}
+<<<<<<< HEAD
 >>>>>>> 730fc65... Add: 가벽 구현
+=======
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: e69b0c30fd248d44bad19295a9a2a5f1, type: 2}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: b6a4b576e1a34804297dc99af3db958a, type: 2}
+>>>>>>> 3f9abde... Add: 계단 타일 추가
   m_TileSpriteArray:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: fac38f4412a3e1644b200008ecf6043a, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300000, guid: 07cf9038a81cbc3459e132b92c94b1cd, type: 3}
+    m_Data: {fileID: 21300000, guid: c94f2886dabf0e64e87e2da665d190c1, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: c75d1114532d65a4ab129392a8dbe27d, type: 3}
   - m_RefCount: 1
@@ -222,9 +249,9 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: 9453bd6147ca2714799a6ea5353fb2c2, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300000, guid: c94f2886dabf0e64e87e2da665d190c1, type: 3}
-  - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: 1a62d068dabab1440818611641ae87e4, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: 07cf9038a81cbc3459e132b92c94b1cd, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: c8f2273de9753274fa0a20241272630e, type: 3}
   - m_RefCount: 1
@@ -244,9 +271,17 @@ Tilemap:
   - m_RefCount: 14
 =======
     m_Data: {fileID: 21300000, guid: ac61a32cf91098a4ba533033e8ed7e7e, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: f18496cda2912174b9367a99674736ee, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: 88100d470f9251843927a20b05a3795f, type: 3}
   m_TileMatrixArray:
+<<<<<<< HEAD
   - m_RefCount: 13
 >>>>>>> 730fc65... Add: 가벽 구현
+=======
+  - m_RefCount: 15
+>>>>>>> 3f9abde... Add: 계단 타일 추가
     m_Data:
       e00: 1
       e01: 0
@@ -270,10 +305,14 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
   - m_RefCount: 14
 =======
   - m_RefCount: 13
 >>>>>>> 730fc65... Add: 가벽 구현
+=======
+  - m_RefCount: 15
+>>>>>>> 3f9abde... Add: 계단 타일 추가
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray:
   - m_RefCount: 1
@@ -283,7 +322,7 @@ Tilemap:
     m_Data: {fileID: 7841991225187466614, guid: c0c7bd9e43ec7a447b4e2990b5befb02,
       type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 7685849225619292717, guid: 936fc6cf634492e48a25f7331299cf4a,
+    m_Data: {fileID: 6922049167353198406, guid: 77bab2a50d44cea4f81e88c7f99ce715,
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 7251856654281370779, guid: c439d96996359cd49a3de449f67b349c,
@@ -291,10 +330,10 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 164084731782014418, guid: b5ecbd8dc88748246a20c5ad4ccfa601, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 6922049167353198406, guid: 77bab2a50d44cea4f81e88c7f99ce715,
+    m_Data: {fileID: 7407702887031566236, guid: 3167ab1d8223eb34ba497ec3a45a5220,
       type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 7407702887031566236, guid: 3167ab1d8223eb34ba497ec3a45a5220,
+    m_Data: {fileID: 7685849225619292717, guid: 936fc6cf634492e48a25f7331299cf4a,
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 2927506909375122251, guid: 8a5646113ce06dc4ea44cac3a11e6885,
@@ -321,10 +360,21 @@ Tilemap:
     m_Data: {fileID: 8266654891535470065, guid: 2037424f13357ec4f9dd3a0f8e4050ca,
 >>>>>>> 730fc65... Add: 가벽 구현
       type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 8266654891535470065, guid: 638bdcb3d30d90548955b96d9a7e0e17,
+      type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 8266654891535470065, guid: 8b22cbf3cd8194f4e9239b4a1c34cd3d,
+      type: 3}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
+<<<<<<< HEAD
   m_Origin: {x: -3, y: -4, z: 0}
   m_Size: {x: 5, y: 7, z: 1}
+=======
+  m_Origin: {x: -2, y: -4, z: 0}
+  m_Size: {x: 6, y: 7, z: 1}
+>>>>>>> 3f9abde... Add: 계단 타일 추가
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:

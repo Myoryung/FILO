@@ -4292,6 +4292,7 @@ MonoBehaviour:
   _playerNum: 2
   _movespeed: 500
   _maxMental: 4
+  skillUseO2: 15
   _body: {fileID: 3160156809655150965}
 --- !u!1001 &7136588880983307127
 PrefabInstance:
@@ -4552,6 +4553,7 @@ MonoBehaviour:
   _playerNum: 3
   _movespeed: 500
   _maxMental: 4
+  skillUseO2: 10
   _body: {fileID: 7136588880983307129}
 --- !u!1001 &7274700534510155483
 PrefabInstance:

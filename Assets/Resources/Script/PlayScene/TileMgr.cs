@@ -58,6 +58,7 @@ public class TileMgr {
         {
             Object floorPath = Resources.Load("Stage/Stage" + GameMgr.Instance.stage + "/Floor" + i);
             GameObject floor = (GameObject)Object.Instantiate(floorPath, ParentFloor.transform);
+            floor.SetActive(true);
             Floors.Add(floor);
 
             floor.name = "Floor" + i;
@@ -68,8 +69,11 @@ public class TileMgr {
             EffectTilemaps.Add(floor.transform.Find("Effect").gameObject.GetComponent<Tilemap>());
             WarningTilemaps.Add(floor.transform.Find("Warning").gameObject.GetComponent<Tilemap>());
         }
+<<<<<<< HEAD
         //  Load Tilemap Object
         SwitchFloorTilemap(StartFloor, 0);
+=======
+>>>>>>> 3f9abde... Add: 계단 타일 추가
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
@@ -192,10 +196,12 @@ public class TileMgr {
         return cellPos;
     }
     public Vector3 CellToWorld(Vector3Int pos) {
+        Debug.Log(pos.z);
         Tilemap floor = BackgroundTilemaps[pos.z - MinFloor];
 
         Vector3 worldPos = floor.CellToWorld(pos) + floor.cellSize/2.0f;
         worldPos.z = pos.z;
+        Debug.Log(worldPos);
 
         return worldPos;
     }

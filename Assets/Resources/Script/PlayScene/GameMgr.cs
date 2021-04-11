@@ -370,6 +370,7 @@ public class GameMgr : MonoBehaviour {
     }
     public IEnumerator StartLoading(){
         float alpha = 0.0f;
+        _fadeImage.enabled = true;
         while(alpha <= 1.0f)
         {
             _fadeImage.color = new Color(1,1,1,alpha);
@@ -384,6 +385,7 @@ public class GameMgr : MonoBehaviour {
             alpha -= Time.deltaTime;
             yield return null;
         }
+        _fadeImage.enabled = false;
         _loadingState = LoadingState.Begin;
     }
 

@@ -386,13 +386,13 @@ public class Player : Charactor
         case "UpStair":
             if (!isInStair) {
                 isInStair = true;
-                StartCoroutine(ChangeFloor(true));
+                ChangeFloor(true);
             }
             break;
         case "DownStair":
             if (!isInStair) {
                 isInStair = true;
-                StartCoroutine(ChangeFloor(false));
+                ChangeFloor(false);
             }
             break;
         }
@@ -425,7 +425,10 @@ public class Player : Charactor
         }
 	}
 
-    IEnumerator ChangeFloor(bool isUp){
+    public void ChangeFloor(bool isUp) {
+        StartCoroutine(CoroutineChangeFloor(isUp));
+    }
+    private IEnumerator CoroutineChangeFloor(bool isUp){
         Action oldAct = _playerAct;
         _playerAct = Action.MoveFloor;
         rbody.velocity = Vector2.zero;

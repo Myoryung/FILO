@@ -28,6 +28,9 @@ public class TileMgr {
     private Dictionary<Vector3Int, Vector3Int> socketPairs = new Dictionary<Vector3Int, Vector3Int>(){
         {new Vector3Int(2, -2, 2), new Vector3Int(4, -3, 2)},
     };
+    private Dictionary<Vector3Int, Vector3Int> elevatorPairs = new Dictionary<Vector3Int, Vector3Int>(){
+        {new Vector3Int(7, -5, 2), new Vector3Int(8, -3, 2)},
+    };
 
     public static TileMgr Instance {
         get {
@@ -376,7 +379,11 @@ public class TileMgr {
         return ExistEnvironmentTile(pos, "Water");
     }
     public bool ExistElectric(Vector3Int pos) {
-        return ExistEnvironmentTile(pos, "Electric");
+        if (ExistEnvironmentTile(pos, "Electric"))
+            return true;
+        else if (ExistWater(pos) && GetWater(pos).tag == "Water(Electric)")
+            return true;
+        return false;
     }
     public bool ExistTempWall(Vector3Int pos) {
         return ExistObjectTile(pos, "TempWall");
@@ -429,6 +436,13 @@ public class TileMgr {
         socketPos.z = 0;
 
         return ObjectTilemaps[floorIndex].GetInstantiatedObject(socketPos).GetComponent<INO_Socket>();
+    }
+    public INO_ElevatorPowerSupply GetMatchedPowerSupply(Vector3Int pos) {
+        Vector3Int powerSupplyPos = elevatorPairs[pos];
+        int floorIndex = powerSupplyPos.z - MinFloor;
+        powerSupplyPos.z = 0;
+
+        return ObjectTilemaps[floorIndex].GetInstantiatedObject(powerSupplyPos).GetComponent<INO_ElevatorPowerSupply>();
     }
 
     public void RemoveFire(Vector3Int pos) {

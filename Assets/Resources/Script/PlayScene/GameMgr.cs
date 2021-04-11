@@ -402,6 +402,9 @@ public class GameMgr : MonoBehaviour {
     public List<Player> GetPlayersAt(Vector3Int pos) {
         return GetAroundPlayers(pos, 1);
     }
+    public void ChangeFloorPlayer(bool isUp) {
+        players[CurrentChar].ChangeFloor(isUp);
+	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {
         survivors.Add(pos, survivor);

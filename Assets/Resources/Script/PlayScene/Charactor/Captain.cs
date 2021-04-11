@@ -29,7 +29,6 @@ public class Captain : Player {
     }
 
     private void TurnOnWarning() {
-        Debug.Log("TurnOn - " + currentTilePos);
         for (int i = -(SkillRange.x/2); i < (Mathf.Ceil(SkillRange.x)/2); i++) {
             for (int j = -(SkillRange.y/2); j<(Mathf.Ceil(SkillRange.y)/2); j++) {
                 Vector3Int SearchPos = currentTilePos + new Vector3Int(i, j, 0);
@@ -38,7 +37,6 @@ public class Captain : Player {
         }
     }
     private void TurnOffWarning() {
-        Debug.Log("TurnOff - " + currentTilePos);
         Vector3Int nPos = OldPos - currentTilePos;
         nPos.z = currentTilePos.z;
         

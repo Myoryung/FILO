@@ -13,7 +13,6 @@ public class TileMgr {
     private List<Tilemap> EffectTilemaps = new List<Tilemap>();
     private List<Tilemap> WarningTilemaps = new List<Tilemap>();
 
-    [SerializeField]
     private TileBase FireTile = null, FireWallTile = null, ElectricTile = null, EffectTile = null;
 
     private float EmberMoveTime = 0.0f;
@@ -72,9 +71,9 @@ public class TileMgr {
         SwitchFloorTilemap(StartFloor);
 
         // Load Prefab
-        FireTile = Resources.Load<TileBase>("Tilemap/Enviroment/Fire");
+        FireTile = Resources.Load<TileBase>("Tilemap/Environment/Fire");
         FireWallTile = Resources.Load<TileBase>("Tilemap/Object/FireWall");
-        ElectricTile = Resources.Load<TileBase>("Tilemap/Enviroment/Electric");
+        ElectricTile = Resources.Load<TileBase>("Tilemap/Environment/Electric");
         EffectTile = Resources.Load<TileBase>("Tilemap/Effect/Effect");
     }
 

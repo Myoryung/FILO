@@ -376,14 +376,10 @@ public class TileMgr {
         return ExistEnvironmentTile(pos, "Fire");
     }
     public bool ExistWater(Vector3Int pos) {
-        return ExistEnvironmentTile(pos, "Water");
+        return ExistEnvironmentTile(pos, "Water") || ExistEnvironmentTile(pos, "Water(Electric)");
     }
     public bool ExistElectric(Vector3Int pos) {
-        if (ExistEnvironmentTile(pos, "Electric"))
-            return true;
-        else if (ExistWater(pos) && GetWater(pos).tag == "Water(Electric)")
-            return true;
-        return false;
+        return ExistEnvironmentTile(pos, "Electric") || ExistEnvironmentTile(pos, "Water(Electric)");
     }
     public bool ExistTempWall(Vector3Int pos) {
         return ExistObjectTile(pos, "TempWall");
@@ -464,43 +460,43 @@ public class TileMgr {
         RemoveObjectTile(pos, "Flaming");
 	}
 
-    private bool ExistObjectTile(Vector3Int pos, string name) {
+    private bool ExistObjectTile(Vector3Int pos, string tag) {
         int floorIndex = pos.z - MinFloor;
         Vector3Int basePos = pos;
         basePos.z = 0;
 
-        TileBase tile = ObjectTilemaps[floorIndex].GetTile(basePos);
-        if (tile != null && tile.name == name)
+        GameObject obj = ObjectTilemaps[floorIndex].GetInstantiatedObject(basePos);
+        if (obj != null && obj.CompareTag(tag))
             return true;
         return false;
     }
-    private bool ExistEnvironmentTile(Vector3Int pos, string name) {
+    private bool ExistEnvironmentTile(Vector3Int pos, string tag) {
         int floorIndex = pos.z - MinFloor;
         Vector3Int basePos = pos;
         basePos.z = 0;
 
-        TileBase tile = EnvironmentTilemaps[floorIndex].GetTile(basePos);
-        if (tile != null && tile.name == name)
+        GameObject obj = EnvironmentTilemaps[floorIndex].GetInstantiatedObject(basePos);
+        if (obj != null && obj.CompareTag(tag))
             return true;
         return false;
     }
-    private void RemoveObjectTile(Vector3Int pos, string name) {
+    private void RemoveObjectTile(Vector3Int pos, string tag) {
         int floorIndex = pos.z - MinFloor;
         Vector3Int basePos = pos;
         basePos.z = 0;
 
-        TileBase tile = ObjectTilemaps[floorIndex].GetTile(basePos);
-        if (tile != null && tile.name == name)
+        GameObject obj = ObjectTilemaps[floorIndex].GetInstantiatedObject(basePos);
+        if (obj != null && obj.CompareTag(tag))
             ObjectTilemaps[floorIndex].SetTile(basePos, null);
     }
-    private void RemoveEnvironmentTile(Vector3Int pos, string name) {
+    private void RemoveEnvironmentTile(Vector3Int pos, string tag) {
         int floorIndex = pos.z - MinFloor;
         Vector3Int basePos = pos;
         basePos.z = 0;
 
-        TileBase tile = EnvironmentTilemaps[floorIndex].GetTile(basePos);
-        if (tile != null && tile.name == name)
-            EnvironmentTilemaps[floorIndex].SetTile(basePos, null);
+        GameObject obj = EnvironmentTilemaps[floorIndex].GetInstantiatedObject(basePos);
+        if (obj != null && obj.CompareTag(tag))
+            ObjectTilemaps[floorIndex].SetTile(basePos, null);
     }
     public void SwitchFloorTilemap(int floorNumber) {
         int nextFloorIdx = floorNumber - MinFloor;

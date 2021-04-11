@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3042702405425496230}
   - component: {fileID: 3905043619231652553}
+  - component: {fileID: -4162681176982569716}
   m_Layer: 0
   m_Name: Clothing1
-  m_TagString: Untagged
+  m_TagString: Flammable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -81,3 +82,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-4162681176982569716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8266654891535470065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fd02e3ac0124aa43b8dd9944085dc15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isConnectedLeft: 0
+  isConnectedUp: 0
+  isConnectedRight: 0
+  isConnectedDown: 0

@@ -24,6 +24,8 @@ TagManager:
   - Gas
   - UpStair
   - DownStair
+  - Flammable
+  - Flaming
   layers:
   - Default
   - TransparentFX

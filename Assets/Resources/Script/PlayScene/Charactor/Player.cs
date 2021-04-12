@@ -30,7 +30,7 @@ public class Player : Charactor
 
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
-    private bool isInSafetyArea = false, isInFire = false, isInElectric = false, isInGas = false, isInStair = false;
+    private bool isInSafetyArea = false, isInGas = false, isInStair = false;
     private float startTimeInFire = 0, startTimeInElectric = 0;
 
 	// Local Component
@@ -65,11 +65,11 @@ public class Player : Charactor
 
 
         float currTime = Time.time;
-        if (isInFire && currTime - startTimeInFire >= 2.0f) {
+        if (inFireCount > 0 && currTime - startTimeInFire >= 2.0f) {
             AddHP(-5);
             startTimeInFire = currTime;
         }
-        if (isInElectric && currTime - startTimeInElectric >= 2.0f) {
+        if (inElectricCount > 0 && currTime - startTimeInElectric >= 2.0f) {
             AddHP(-5);
             startTimeInElectric = currTime;
         }
@@ -352,19 +352,20 @@ public class Player : Charactor
         switch (other.tag) {
         case "Fire":
             startTimeInFire = Time.time;
-            isInFire = true;
-            AddMental(-2);
+            if (inFireCount == 1)
+                AddMental(-2);
             break;
 
         case "Ember":
-            AddMental(-1); // 멘탈 감소
+            if (inEmberCount == 1)
+                AddMental(-1); // 멘탈 감소
             break;
 
         case "Electric":
         case "Water(Electric)":
             startTimeInElectric = Time.time;
-            isInElectric = true;
-            AddMental(-2); // 멘탈 감소
+            if (inElectricCount == 1)
+                AddMental(-2); // 멘탈 감소
             break;
 
         case "Gas":
@@ -397,18 +398,10 @@ public class Player : Charactor
             break;
         }
     }
+	protected override void OnTriggerExit2D(Collider2D collision) {
+        base.OnTriggerExit2D(collision);
 
-	protected void OnTriggerExit2D(Collider2D collision) {
-		switch (collision.tag) {
-        case "Fire":
-            isInFire = false;
-            break;
-
-        case "Electric":
-        case "Water(Electric)":
-            isInElectric = false;
-            break;
-
+        switch (collision.tag) {
         case "Gas":
             isInGas = false;
             break;

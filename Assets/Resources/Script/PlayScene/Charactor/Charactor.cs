@@ -18,25 +18,30 @@ public abstract class Charactor : MonoBehaviour {
     private float _maxHp = 0.0f; // 최대 체력
     private float _currentHp = 0.0f; // 현재 체력
 
+    protected int inFireCount = 0, inEmberCount = 0, inElectricCount = 0;
+
     protected virtual void Start()
     {
         _currento2 = _maxo2;
         _currentHp = _maxHp;
     }
 
-    protected virtual void OnTriggerEnter2D(Collider2D other) {
-        switch (other.tag) {
+    protected virtual void OnTriggerEnter2D(Collider2D collision) {
+        switch (collision.tag) {
         case "Fire":
-            AddHP(-25.0f);
+            if (inFireCount++ == 0)
+                AddHP(-25.0f);
             break;
 
         case "Ember":
-            AddHP(-10.0f);
+            if (inEmberCount++ == 0)
+                AddHP(-10.0f);
             break;
 
         case "Electric":
         case "Water(Electric)":
-            AddHP(-35.0f);
+            if (inElectricCount++ == 0)
+                AddHP(-35.0f);
             break;
 
         case "Disaster_FallingRock":
@@ -46,7 +51,22 @@ public abstract class Charactor : MonoBehaviour {
             AddO2(-30);
             break;
         }
+    }
+    protected virtual void OnTriggerExit2D(Collider2D collision) {
+        switch (collision.tag) {
+        case "Fire":
+            inFireCount--;
+            break;
 
+        case "Ember":
+            inEmberCount--;
+            break;
+
+        case "Electric":
+        case "Water(Electric)":
+            inElectricCount--;
+            break;
+        }
     }
 
     public virtual void AddHP(float value) {

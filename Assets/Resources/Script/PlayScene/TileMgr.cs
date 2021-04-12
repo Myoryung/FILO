@@ -496,7 +496,7 @@ public class TileMgr {
 
         GameObject obj = EnvironmentTilemaps[floorIndex].GetInstantiatedObject(basePos);
         if (obj != null && obj.CompareTag(tag))
-            ObjectTilemaps[floorIndex].SetTile(basePos, null);
+            EnvironmentTilemaps[floorIndex].SetTile(basePos, null);
     }
     public void SwitchFloorTilemap(int floorNumber) {
         int nextFloorIdx = floorNumber - MinFloor;

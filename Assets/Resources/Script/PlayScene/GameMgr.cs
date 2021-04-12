@@ -37,7 +37,18 @@ public class GameMgr : MonoBehaviour {
         get { return _currentChar; }
         set { _currentChar = value; }
     } // CurrentChar Property
-   
+
+
+    private Canvas selectCanvas, playCanvas;
+
+    private Image tabletCodeTop, tabletCodeBottom;
+    private const float TABLET_CODE_MOVE_SPEED = 0.005f;
+    private Vector3 tabletCodeInitPos;
+
+    private Image tabletRecord;
+    private const float TABLET_RECORD_TURN_PERIOD = 1.0f;
+    private float tabletRecordTurnTime = 0.0f;
+
     private GameObject disasterAlaram = null;
     private Text disasterAlaramText = null;
 
@@ -70,8 +81,6 @@ public class GameMgr : MonoBehaviour {
     private bool bDisasterExist = false;
     private bool isAllPlayerInSafetyArea = false;
     private bool bStageEndSetup = false;
-
-    private GameObject selectCanvas, playCanvas;
 
     private void Awake()
     {
@@ -131,18 +140,25 @@ public class GameMgr : MonoBehaviour {
 
         StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
 
-        // Load Canvas Object
+        // Load Canvas
         GameObject canvas = GameObject.Find("UICanvas");
-        selectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
-        playCanvas = canvas.transform.Find("PlayCanvas").gameObject;
+        selectCanvas = canvas.transform.Find("SelectCanvas").GetComponent<Canvas>();
+        playCanvas = canvas.transform.Find("PlayCanvas").GetComponent<Canvas>();
 
-        selectCanvas.SetActive(true);
-        playCanvas.GetComponent<Canvas>().enabled = false;
+        selectCanvas.enabled = true;
+        playCanvas.enabled = false;
 
         // Load UI
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
-        _mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
+		tabletCodeTop = selectCanvas.transform.Find("Tablet/UI/CodeTop").GetComponent<Image>();
+        tabletCodeBottom = selectCanvas.transform.Find("Tablet/UI/CodeBottom").GetComponent<Image>();
+
+        tabletCodeInitPos = tabletCodeBottom.rectTransform.localPosition;
+
+        tabletRecord = selectCanvas.transform.Find("Tablet/UI/Record").GetComponent<Image>();
+
+		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
         _stateText = playCanvas.transform.Find("PlayerCard/CurrentState").GetComponent<Text>();
         _charNameText = playCanvas.transform.Find("PlayerCard/Player_KorName").GetComponent<Text>();
 
@@ -159,20 +175,41 @@ public class GameMgr : MonoBehaviour {
     }
     private void SelectChar() {
         //TileMgr.Instance.ExistPlayerSpawn()
-        if (Input.GetMouseButtonUp(0)) {
 
-		}
+        // 레코드 점멸
+        float currTime = Time.time;
+        if (currTime - tabletRecordTurnTime >= TABLET_RECORD_TURN_PERIOD) {
+            tabletRecord.enabled = !tabletRecord.enabled;
+            tabletRecordTurnTime = currTime;
+        }
 
-        players.Add(GameObject.Find("Captain").GetComponent<Player>());
-        players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
-        players.Add(GameObject.Find("Nurse").GetComponent<Player>());
-        players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+        // 코드 이동
+        float codeHeight = tabletCodeBottom.rectTransform.rect.height;
+        float moveAmount = codeHeight * TABLET_CODE_MOVE_SPEED;
+        tabletCodeBottom.fillAmount -= TABLET_CODE_MOVE_SPEED;
+        tabletCodeTop.fillAmount += TABLET_CODE_MOVE_SPEED;
+        tabletCodeBottom.rectTransform.localPosition += new Vector3(0, moveAmount);
+        tabletCodeTop.rectTransform.localPosition += new Vector3(0, moveAmount);
 
+        if (tabletCodeBottom.fillAmount <= 0) {
+            tabletCodeBottom.rectTransform.localPosition = tabletCodeInitPos;
+            tabletCodeTop.rectTransform.localPosition = tabletCodeInitPos;
+            tabletCodeBottom.fillAmount = 1;
+            tabletCodeTop.fillAmount = 0;
+        }
 
-        _currGameState = GameState.STAGE_READY;
+        if (Input.GetMouseButtonUp(1)) {
+            players.Add(GameObject.Find("Captain").GetComponent<Player>());
+            players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
+            players.Add(GameObject.Find("Nurse").GetComponent<Player>());
+            players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+
+            _currGameState = GameState.STAGE_READY;
+        }
     }
     private void StageReady() {
-        playCanvas.GetComponent<Canvas>().enabled = true;
+        selectCanvas.enabled = false;
+        playCanvas.enabled = true;
 
         foreach (Player player in players)
             player.StageStartActive();

@@ -215,6 +215,7 @@ public class GameMgr : MonoBehaviour {
     }
     private void EnvironmentTurn() {
         TileMgr.Instance.SpreadFire();
+        TileMgr.Instance.Flaming();
         TileMgr.Instance.MoveGas();
 
         _currGameState = GameState.DISASTER_ALARM;
@@ -369,6 +370,7 @@ public class GameMgr : MonoBehaviour {
     }
     public IEnumerator StartLoading(){
         float alpha = 0.0f;
+        _fadeImage.enabled = true;
         while(alpha <= 1.0f)
         {
             _fadeImage.color = new Color(1,1,1,alpha);
@@ -383,6 +385,7 @@ public class GameMgr : MonoBehaviour {
             alpha -= Time.deltaTime;
             yield return null;
         }
+        _fadeImage.enabled = false;
         _loadingState = LoadingState.Begin;
     }
 
@@ -401,6 +404,9 @@ public class GameMgr : MonoBehaviour {
     public List<Player> GetPlayersAt(Vector3Int pos) {
         return GetAroundPlayers(pos, 1);
     }
+    public void ChangeFloorPlayer(bool isUp) {
+        players[CurrentChar].ChangeFloor(isUp);
+	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {
         survivors.Add(pos, survivor);

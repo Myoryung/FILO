@@ -41,21 +41,14 @@ public class GameMgr : MonoBehaviour {
 
     private Canvas selectCanvas, playCanvas;
 
-    private Image tabletCodeTop, tabletCodeBottom;
-    private const float TABLET_CODE_MOVE_SPEED = 0.005f;
-    private Vector3 tabletCodeInitPos;
-
-    private Image tabletRecord;
-    private const float TABLET_RECORD_TURN_PERIOD = 1.0f;
-    private float tabletRecordTurnTime = 0.0f;
-
-    private GameObject disasterAlaram = null;
+	private GameObject disasterAlaram = null;
     private Text disasterAlaramText = null;
 
     private GameObject stageEnd = null;
     private Text stageEndText = null;
 
     private int _stage = 0;
+    private Tablet tablet;
     private DisasterMgr disasterMgr;
     private GoalMgr goalMgr;
 
@@ -74,6 +67,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     private bool bStagePlaying = false;
+    private bool bSelectOperatorInit = false;
     private bool bTurnEndClicked = false, bStageEndClicked = false;
     private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
@@ -151,13 +145,6 @@ public class GameMgr : MonoBehaviour {
         // Load UI
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
-		tabletCodeTop = selectCanvas.transform.Find("Tablet/UI/CodeTop").GetComponent<Image>();
-        tabletCodeBottom = selectCanvas.transform.Find("Tablet/UI/CodeBottom").GetComponent<Image>();
-
-        tabletCodeInitPos = tabletCodeBottom.rectTransform.localPosition;
-
-        tabletRecord = selectCanvas.transform.Find("Tablet/UI/Record").GetComponent<Image>();
-
 		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
         _stateText = playCanvas.transform.Find("PlayerCard/CurrentState").GetComponent<Text>();
         _charNameText = playCanvas.transform.Find("PlayerCard/Player_KorName").GetComponent<Text>();
@@ -174,35 +161,20 @@ public class GameMgr : MonoBehaviour {
         _currGameState = GameState.SELECT_CHAR;
     }
     private void SelectChar() {
-        //TileMgr.Instance.ExistPlayerSpawn()
-
-        // 레코드 점멸
-        float currTime = Time.time;
-        if (currTime - tabletRecordTurnTime >= TABLET_RECORD_TURN_PERIOD) {
-            tabletRecord.enabled = !tabletRecord.enabled;
-            tabletRecordTurnTime = currTime;
+        if (!bSelectOperatorInit) {
+            tablet = new Tablet();
+            bSelectOperatorInit = true;
         }
 
-        // 코드 이동
-        float codeHeight = tabletCodeBottom.rectTransform.rect.height;
-        float moveAmount = codeHeight * TABLET_CODE_MOVE_SPEED;
-        tabletCodeBottom.fillAmount -= TABLET_CODE_MOVE_SPEED;
-        tabletCodeTop.fillAmount += TABLET_CODE_MOVE_SPEED;
-        tabletCodeBottom.rectTransform.localPosition += new Vector3(0, moveAmount);
-        tabletCodeTop.rectTransform.localPosition += new Vector3(0, moveAmount);
-
-        if (tabletCodeBottom.fillAmount <= 0) {
-            tabletCodeBottom.rectTransform.localPosition = tabletCodeInitPos;
-            tabletCodeTop.rectTransform.localPosition = tabletCodeInitPos;
-            tabletCodeBottom.fillAmount = 1;
-            tabletCodeTop.fillAmount = 0;
-        }
+        tablet.Update();
 
         if (Input.GetMouseButtonUp(1)) {
             players.Add(GameObject.Find("Captain").GetComponent<Player>());
             players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
             players.Add(GameObject.Find("Nurse").GetComponent<Player>());
             players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+
+            tablet = null;
 
             _currGameState = GameState.STAGE_READY;
         }

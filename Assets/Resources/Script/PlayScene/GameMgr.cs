@@ -57,7 +57,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        STAGE_SETUP, SELECT_CHAR, STAGE_READY,
+        STAGE_SETUP, SELECT_OPERATOR, STAGE_READY,
         PLAYER_TURN, SURVIVOR_TURN, ENVIRONMENT_TURN, DISASTER_ALARM, DISASTER_TURN, TURN_END,
         STAGE_END
     }
@@ -91,7 +91,7 @@ public class GameMgr : MonoBehaviour {
     private void Update() {
         switch (CurrGameState) {
         case GameState.STAGE_SETUP: StageSetup(); break;
-        case GameState.SELECT_CHAR: SelectChar(); break;
+        case GameState.SELECT_OPERATOR: SelectOperator(); break;
         case GameState.STAGE_READY: StageReady(); break;
         case GameState.PLAYER_TURN: PlayerTurn(); break;
         case GameState.SURVIVOR_TURN: SurvivorTurn(); break;
@@ -158,9 +158,9 @@ public class GameMgr : MonoBehaviour {
         timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
         ChangeTimerText();
 
-        _currGameState = GameState.SELECT_CHAR;
+        _currGameState = GameState.SELECT_OPERATOR;
     }
-    private void SelectChar() {
+    private void SelectOperator() {
         if (!bSelectOperatorInit) {
             tablet = new Tablet();
             bSelectOperatorInit = true;
@@ -294,6 +294,11 @@ public class GameMgr : MonoBehaviour {
         else
             bTurnEndClicked = true;
     }
+    public void OnClickTabletFloor(int floor) {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        tablet.ChangeFloor(floor);
+	}
     public void OnClickDisasterAlarm() {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;

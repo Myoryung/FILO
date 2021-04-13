@@ -20,7 +20,7 @@ public class TileMgr {
 
     private List<GameObject> Floors;
 
-    private readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
+    public readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
 
     private Dictionary<Vector3Int, Vector3Int> doorPairs = new Dictionary<Vector3Int, Vector3Int>(){
         {new Vector3Int(-2, -4, 2), new Vector3Int(0, -4, 2)},
@@ -419,7 +419,13 @@ public class TileMgr {
             return obj.GetComponent<InteractiveObject>();
         return null;
     }
-    public INO_Door GetMatchedDoor(Vector3Int pos) {
+	public OperatorSpawn[] GetOperatorSpawns(int floor) {
+		int floorIndex = floor - MinFloor;
+
+        OperatorSpawn[] operatorSpawns = SpawnTilemaps[floorIndex].transform.GetComponentsInChildren<OperatorSpawn>();
+        return operatorSpawns;
+    }
+	public INO_Door GetMatchedDoor(Vector3Int pos) {
         Vector3Int doorPos = doorPairs[pos];
         int floorIndex = doorPos.z - MinFloor;
         doorPos.z = 0;

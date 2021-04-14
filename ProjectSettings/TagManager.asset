@@ -26,6 +26,7 @@ TagManager:
   - DownStair
   - Flammable
   - Flaming
+  - Door
   layers:
   - Default
   - TransparentFX

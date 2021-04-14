@@ -1195,12 +1195,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b5da935816f8ad40a33d43dfe0ee399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Players:
-  - {fileID: 1702616960}
-  - {fileID: 1031226864}
-  - {fileID: 3160156809655150971}
-  - {fileID: 7136588880983307135}
-  Target: {fileID: 1702616961}
 --- !u!1 &274530627
 GameObject:
   m_ObjectHideFlags: 0
@@ -1523,8 +1517,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 246366415}
-        m_MethodName: ChangeChar
+      - m_Target: {fileID: 786344073}
+        m_MethodName: OnClickChangeChar
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2622,8 +2616,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 246366415}
-        m_MethodName: ChangeChar
+      - m_Target: {fileID: 786344073}
+        m_MethodName: OnClickChangeChar
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3351,12 +3345,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 1}
---- !u!1 &1031226864 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 573911847331991341, guid: b0985a1440cd88f478283634b438381d,
-    type: 3}
-  m_PrefabInstance: {fileID: 813320932}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1031226865 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 573911847331991340, guid: b0985a1440cd88f478283634b438381d,
@@ -5786,12 +5774,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1669582299}
   m_CullTransparentMesh: 0
---- !u!1 &1702616960 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3478624997493455473, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 568288084}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1702616961 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3478624997493455472, guid: dfd4fc7ce2938ca43a066d7e2b3111a7,

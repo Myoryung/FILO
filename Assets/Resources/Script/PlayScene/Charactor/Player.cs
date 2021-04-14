@@ -83,7 +83,7 @@ public class Player : Charactor
         bool isMoved = false;
 
         //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && _playerAct != Action.MoveFloor && CurrentHP > 0.0f && _currentMental > 0)
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentOperator == _playerNum && Act != Action.Carry && _playerAct != Action.MoveFloor && CurrentHP > 0.0f && _currentMental > 0)
         {
             //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
             if (hor != 0.0f || ver != 0.0f) {
@@ -159,7 +159,7 @@ public class Player : Charactor
 
     protected virtual void Activate() // 행동 들 (구조, 도구사용)
     {
-        if (GameMgr.Instance.CurrentChar != _playerNum) return;
+        if (GameMgr.Instance.CurrentOperator != _playerNum) return;
 
         InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
         if (interactiveObject != null && interactiveObject.IsAvailable())
@@ -432,6 +432,7 @@ public class Player : Charactor
         int floorNumber = _currentTilePos.z + ((isUp) ? 1 : -1);
         _currentTilePos.z = floorNumber;
         transform.position = TileMgr.Instance.CellToWorld(currentTilePos);
+        Camera.main.GetComponent<FollowCam>().SetPosition(transform.position);
 
         TileMgr.Instance.SwitchFloorTilemap(floorNumber);
         GameMgr.Instance.CurrentLoadingState = GameMgr.LoadingState.End;

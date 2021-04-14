@@ -29,14 +29,13 @@ public class GameMgr : MonoBehaviour {
     public int GameTurn = 0; // 게임 턴
     private int currTime = 0;
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
-    private int _currentChar = 0; // 현재 사용중인 캐릭터의 번호
 
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
-    public int CurrentChar {
-        get { return _currentChar; }
-        set { _currentChar = value; }
-    } // CurrentChar Property
+    private int currOperatorIdx = 0;
+    public int CurrentOperator {
+        get { return currOperatorIdx; }
+    }
 
 
     private Canvas selectCanvas, playCanvas;
@@ -103,8 +102,8 @@ public class GameMgr : MonoBehaviour {
         }
 
         if (bStagePlaying) {
-            if (CurrentChar < players.Count) {
-                Player player = players[CurrentChar];
+            if (CurrentOperator < players.Count) {
+                Player player = players[CurrentOperator];
                 ChangeMentalText(player);
                 ChangeStateText(player);
                 ChangeNameText();
@@ -187,6 +186,7 @@ public class GameMgr : MonoBehaviour {
             player.StageStartActive();
 
         bStagePlaying = true;
+        SetFocusToCurrOperator();
 
         _currGameState = GameState.PLAYER_TURN;
     }
@@ -294,6 +294,16 @@ public class GameMgr : MonoBehaviour {
         else
             bTurnEndClicked = true;
     }
+    public void OnClickChangeChar(bool isRight) {
+        int prevOperatorIdx = currOperatorIdx;
+
+        if (isRight && currOperatorIdx+1 < players.Count)
+            currOperatorIdx++;
+        else if (!isRight && currOperatorIdx-1 >= 0)
+            currOperatorIdx--;
+
+        SetFocusToCurrOperator();
+    }
     public void OnClickTabletFloor(int floor) {
         if (CurrGameState != GameState.SELECT_OPERATOR) return;
 
@@ -308,6 +318,13 @@ public class GameMgr : MonoBehaviour {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;
 	}
+
+    public void SetFocusToCurrOperator() {
+        FollowCam cam = Camera.main.GetComponent<FollowCam>();
+        Transform currOperatorTransform = players[currOperatorIdx].transform;
+        cam.SetPosition(currOperatorTransform.position);
+        cam.SetTarget(currOperatorTransform);
+    }
 
     private void ChangeMentalText(Player player) {
         if (_mentalText == null) return;
@@ -364,7 +381,7 @@ public class GameMgr : MonoBehaviour {
     public void ChangeNameText() {
         if (_charNameText == null) return;
 
-        switch (CurrentChar) {
+        switch (CurrentOperator) {
         case 0:
             _charNameText.text = "01. 주인공";
             break;
@@ -424,7 +441,7 @@ public class GameMgr : MonoBehaviour {
         return GetAroundPlayers(pos, 1);
     }
     public void ChangeFloorPlayer(bool isUp) {
-        players[CurrentChar].ChangeFloor(isUp);
+        players[CurrentOperator].ChangeFloor(isUp);
 	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {

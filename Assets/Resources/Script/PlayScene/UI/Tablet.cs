@@ -21,20 +21,25 @@ public class Tablet {
     private List<GameObject> camsRed = new List<GameObject>();
     private List<int> currCams = new List<int>();
 
-    public Tablet() {
-		GameObject tabletUI = GameObject.Find("UICanvas/SelectCanvas/Tablet/UI");
+    private readonly Vector3 tabletMiddlePos;
 
-        // Code
-		tabletCodeTop = tabletUI.transform.Find("CodeTop").GetComponent<Image>();
-		tabletCodeBottom = tabletUI.transform.Find("CodeBottom").GetComponent<Image>();
+    public Tablet() {
+        GameObject tablet = GameObject.Find("UICanvas/SelectCanvas/Tablet");
+        Transform tabletUI = tablet.transform.Find("UI");
+
+        tabletMiddlePos = tablet.transform.localPosition + tabletUI.localPosition;
+
+		// Code
+		tabletCodeTop = tabletUI.Find("CodeTop").GetComponent<Image>();
+		tabletCodeBottom = tabletUI.Find("CodeBottom").GetComponent<Image>();
 		tabletCodeInitPos = tabletCodeBottom.rectTransform.localPosition;
 
         // Record
-		tabletRecord = tabletUI.transform.Find("Record").GetComponent<Image>();
+		tabletRecord = tabletUI.Find("Record").GetComponent<Image>();
 
         // Cam
-        Transform camWhite = tabletUI.transform.Find("Cam/White");
-        Transform camRed = tabletUI.transform.Find("Cam/Red");
+        Transform camWhite = tabletUI.Find("Cam/White");
+        Transform camRed = tabletUI.Find("Cam/Red");
 
         int camNum = camWhite.childCount;
         for (int i = 0; i < camNum; i++) {
@@ -44,7 +49,7 @@ public class Tablet {
         }
 
         // Floor
-        RectTransform tabletFloorsTF = tabletUI.transform.Find("Floors").GetComponent<RectTransform>();
+        RectTransform tabletFloorsTF = tabletUI.Find("Floors").GetComponent<RectTransform>();
         float floorHeight = floorPrefab.GetComponent<RectTransform>().rect.height;
         float y = -tabletFloorsTF.rect.height/2 + 15;
 
@@ -133,5 +138,9 @@ public class Tablet {
 
         camsWhite[currCam].SetActive(false);
         camsRed[currCam].SetActive(true);
-    }
+
+        OperatorSpawn currSpawn = operatorSpawnsList[currFloorIndex][currCam];
+        Vector3 targetPos = currSpawn.transform.position - tabletMiddlePos;
+        Camera.main.GetComponent<FollowCam>().SetPosition(targetPos);
+	}
 }

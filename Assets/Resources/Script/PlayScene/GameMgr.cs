@@ -182,6 +182,13 @@ public class GameMgr : MonoBehaviour {
         selectCanvas.enabled = false;
         playCanvas.enabled = true;
 
+        // Operator Spawn Object 삭제
+        for (int i = TileMgr.Instance.MinFloor; i <= TileMgr.Instance.MaxFloor; i++) {
+            OperatorSpawn[] operatorSpawns = TileMgr.Instance.GetOperatorSpawns(i);
+            foreach (OperatorSpawn operatorSpawn in operatorSpawns)
+                Destroy(operatorSpawn.gameObject);
+        }
+
         foreach (Player player in players)
             player.StageStartActive();
 

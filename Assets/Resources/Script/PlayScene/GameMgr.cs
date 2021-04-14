@@ -299,6 +299,11 @@ public class GameMgr : MonoBehaviour {
 
         tablet.ChangeFloor(floor);
 	}
+    public void OnClickTabletCam(int number) {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        tablet.ChangeCam(number);
+    }
     public void OnClickDisasterAlarm() {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;

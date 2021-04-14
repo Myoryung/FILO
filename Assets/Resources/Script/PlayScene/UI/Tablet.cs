@@ -17,7 +17,11 @@ public class Tablet {
     private List<OperatorSpawn[]> operatorSpawnsList = new List<OperatorSpawn[]>();
     private int currFloor;
 
-	public Tablet() {
+    private List<GameObject> camsWhite = new List<GameObject>();
+    private List<GameObject> camsRed = new List<GameObject>();
+    private List<int> currCams = new List<int>();
+
+    public Tablet() {
 		GameObject tabletUI = GameObject.Find("UICanvas/SelectCanvas/Tablet/UI");
 
         // Code
@@ -27,6 +31,17 @@ public class Tablet {
 
         // Record
 		tabletRecord = tabletUI.transform.Find("Record").GetComponent<Image>();
+
+        // Cam
+        Transform camWhite = tabletUI.transform.Find("Cam/White");
+        Transform camRed = tabletUI.transform.Find("Cam/Red");
+
+        int camNum = camWhite.childCount;
+        for (int i = 0; i < camNum; i++) {
+            camsWhite.Add(camWhite.GetChild(i).gameObject);
+            camsRed.Add(camRed.GetChild(i).gameObject);
+            currCams.Add(0);
+        }
 
         // Floor
         RectTransform tabletFloorsTF = tabletUI.transform.Find("Floors").GetComponent<RectTransform>();
@@ -79,18 +94,44 @@ public class Tablet {
     public void ChangeFloor(int floor) {
         if (currFloor == floor) return;
 
-        int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
-        floors[currFloorIndex].SetNormal();
+        int prevFloor = currFloor;
+        int prevFloorIdx = prevFloor - TileMgr.Instance.MinFloor;
+        int prevFloorCam = currCams[prevFloorIdx];
+
+        camsRed[prevFloorCam].SetActive(false);
+        floors[prevFloorIdx].SetNormal();
 
         SetFloor(floor);
     }
     private void SetFloor(int floor) {
-        int floorIndex = floor - TileMgr.Instance.MinFloor;
-
-        floors[floorIndex].SetHighlight();
-
-        // TODO: CAM 수정
-
         currFloor = floor;
+        int currFloorIdx = currFloor - TileMgr.Instance.MinFloor;
+
+        floors[currFloorIdx].SetHighlight();
+
+        int camNum = camsWhite.Count;
+        int activeCamNum = operatorSpawnsList[currFloorIdx].Length;
+        int currFloorCam = currCams[currFloorIdx];
+
+        for (int i = 0; i < camNum; i++)
+            camsWhite[i].SetActive(i < activeCamNum);
+        SetCam(currFloorCam);
+    }
+
+    public void ChangeCam(int number) {
+        int floorIndex = currFloor - TileMgr.Instance.MinFloor;
+        int prevCam = currCams[floorIndex];
+
+        camsWhite[prevCam].SetActive(true);
+        camsRed[prevCam].SetActive(false);
+
+        SetCam(number);
+	}
+    private void SetCam(int number) {
+        int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
+        int currCam = currCams[currFloorIndex] = number;
+
+        camsWhite[currCam].SetActive(false);
+        camsRed[currCam].SetActive(true);
     }
 }

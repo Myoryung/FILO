@@ -23,13 +23,16 @@ public class TileMgr {
     public readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
 
     private Dictionary<Vector3Int, Vector3Int> doorPairs = new Dictionary<Vector3Int, Vector3Int>(){
-        {new Vector3Int(-2, -4, 2), new Vector3Int(0, -4, 2)},
+        {new Vector3Int(2, 1, 4), new Vector3Int(2, -1, 4)},
     };
     private Dictionary<Vector3Int, Vector3Int> socketPairs = new Dictionary<Vector3Int, Vector3Int>(){
-        {new Vector3Int(2, -2, 2), new Vector3Int(4, -3, 2)},
+        {new Vector3Int(-3, -4, 2), new Vector3Int(-6, -4, 2)},
+        {new Vector3Int(0, -2, 3), new Vector3Int(0, 3, 3)},
     };
     private Dictionary<Vector3Int, Vector3Int> elevatorPairs = new Dictionary<Vector3Int, Vector3Int>(){
-        {new Vector3Int(7, -5, 2), new Vector3Int(8, -3, 2)},
+        {new Vector3Int(-3, -1, 2), new Vector3Int(-6, -1, 2)},
+        {new Vector3Int(-3, 1, 3), new Vector3Int(0, 2, 3)},
+        {new Vector3Int(3, 1, 3), new Vector3Int(0, 2, 3)},
     };
 
     public static TileMgr Instance {

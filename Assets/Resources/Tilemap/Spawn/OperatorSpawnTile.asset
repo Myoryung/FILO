@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b27c54689a6c87b4c978a8ac0247c441, type: 3}
-  m_Name: panicSurvivorSpawnTile
+  m_Name: OperatorSpawnTile
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 88d665abb8409de419fdaf6d01ce4782, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 36f6e3d6226dd234d8261d4dcccd55f7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 1
-  m_InstancedGameObject: {fileID: 2783329904084916213, guid: c046d534042e88d48889bb0826057731,
+  m_InstancedGameObject: {fileID: 2927506909375122251, guid: 3f6ae3ac698dd0e4eae15ce74684081d,
     type: 3}
   m_Flags: 1
   m_ColliderType: 1

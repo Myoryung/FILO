@@ -29,22 +29,25 @@ public class GameMgr : MonoBehaviour {
     public int GameTurn = 0; // 게임 턴
     private int currTime = 0;
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
-    private int _currentChar = 0; // 현재 사용중인 캐릭터의 번호
 
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
-    public int CurrentChar {
-        get { return _currentChar; }
-        set { _currentChar = value; }
-    } // CurrentChar Property
-   
-    private GameObject disasterAlaram = null;
+    private int currOperatorIdx = 0;
+    public int CurrentOperator {
+        get { return currOperatorIdx; }
+    }
+
+
+    private Canvas selectCanvas, playCanvas;
+
+	private GameObject disasterAlaram = null;
     private Text disasterAlaramText = null;
 
     private GameObject stageEnd = null;
     private Text stageEndText = null;
 
     private int _stage = 0;
+    private Tablet tablet;
     private DisasterMgr disasterMgr;
     private GoalMgr goalMgr;
 
@@ -53,7 +56,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        STAGE_SETUP, SELECT_CHAR, STAGE_READY,
+        STAGE_SETUP, SELECT_OPERATOR, STAGE_READY,
         PLAYER_TURN, SURVIVOR_TURN, ENVIRONMENT_TURN, DISASTER_ALARM, DISASTER_TURN, TURN_END,
         STAGE_END
     }
@@ -63,6 +66,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     private bool bStagePlaying = false;
+    private bool bSelectOperatorInit = false;
     private bool bTurnEndClicked = false, bStageEndClicked = false;
     private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
@@ -70,8 +74,6 @@ public class GameMgr : MonoBehaviour {
     private bool bDisasterExist = false;
     private bool isAllPlayerInSafetyArea = false;
     private bool bStageEndSetup = false;
-
-    private GameObject selectCanvas, playCanvas;
 
     private void Awake()
     {
@@ -88,7 +90,7 @@ public class GameMgr : MonoBehaviour {
     private void Update() {
         switch (CurrGameState) {
         case GameState.STAGE_SETUP: StageSetup(); break;
-        case GameState.SELECT_CHAR: SelectChar(); break;
+        case GameState.SELECT_OPERATOR: SelectOperator(); break;
         case GameState.STAGE_READY: StageReady(); break;
         case GameState.PLAYER_TURN: PlayerTurn(); break;
         case GameState.SURVIVOR_TURN: SurvivorTurn(); break;
@@ -100,8 +102,8 @@ public class GameMgr : MonoBehaviour {
         }
 
         if (bStagePlaying) {
-            if (CurrentChar < players.Count) {
-                Player player = players[CurrentChar];
+            if (CurrentOperator < players.Count) {
+                Player player = players[CurrentOperator];
                 ChangeMentalText(player);
                 ChangeStateText(player);
                 ChangeNameText();
@@ -131,18 +133,18 @@ public class GameMgr : MonoBehaviour {
 
         StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
 
-        // Load Canvas Object
+        // Load Canvas
         GameObject canvas = GameObject.Find("UICanvas");
-        selectCanvas = canvas.transform.Find("SelectCanvas").gameObject;
-        playCanvas = canvas.transform.Find("PlayCanvas").gameObject;
+        selectCanvas = canvas.transform.Find("SelectCanvas").GetComponent<Canvas>();
+        playCanvas = canvas.transform.Find("PlayCanvas").GetComponent<Canvas>();
 
-        selectCanvas.SetActive(true);
-        playCanvas.GetComponent<Canvas>().enabled = false;
+        selectCanvas.enabled = true;
+        playCanvas.enabled = false;
 
         // Load UI
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
-        _mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
+		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
         _stateText = playCanvas.transform.Find("PlayerCard/CurrentState").GetComponent<Text>();
         _charNameText = playCanvas.transform.Find("PlayerCard/Player_KorName").GetComponent<Text>();
 
@@ -155,29 +157,43 @@ public class GameMgr : MonoBehaviour {
         timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
         ChangeTimerText();
 
-        _currGameState = GameState.SELECT_CHAR;
+        _currGameState = GameState.SELECT_OPERATOR;
     }
-    private void SelectChar() {
-        //TileMgr.Instance.ExistPlayerSpawn()
-        if (Input.GetMouseButtonUp(0)) {
+    private void SelectOperator() {
+        if (!bSelectOperatorInit) {
+            tablet = new Tablet();
+            bSelectOperatorInit = true;
+        }
 
-		}
+        tablet.Update();
 
-        players.Add(GameObject.Find("Captain").GetComponent<Player>());
-        players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
-        players.Add(GameObject.Find("Nurse").GetComponent<Player>());
-        players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+        if (Input.GetMouseButtonUp(1)) {
+            players.Add(GameObject.Find("Captain").GetComponent<Player>());
+            players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
+            players.Add(GameObject.Find("Nurse").GetComponent<Player>());
+            players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
 
+            tablet = null;
 
-        _currGameState = GameState.STAGE_READY;
+            _currGameState = GameState.STAGE_READY;
+        }
     }
     private void StageReady() {
-        playCanvas.GetComponent<Canvas>().enabled = true;
+        selectCanvas.enabled = false;
+        playCanvas.enabled = true;
+
+        // Operator Spawn Object 삭제
+        for (int i = TileMgr.Instance.MinFloor; i <= TileMgr.Instance.MaxFloor; i++) {
+            OperatorSpawn[] operatorSpawns = TileMgr.Instance.GetOperatorSpawns(i);
+            foreach (OperatorSpawn operatorSpawn in operatorSpawns)
+                Destroy(operatorSpawn.gameObject);
+        }
 
         foreach (Player player in players)
             player.StageStartActive();
 
         bStagePlaying = true;
+        SetFocusToCurrOperator();
 
         _currGameState = GameState.PLAYER_TURN;
     }
@@ -285,10 +301,37 @@ public class GameMgr : MonoBehaviour {
         else
             bTurnEndClicked = true;
     }
+    public void OnClickChangeChar(bool isRight) {
+        int prevOperatorIdx = currOperatorIdx;
+
+        if (isRight && currOperatorIdx+1 < players.Count)
+            currOperatorIdx++;
+        else if (!isRight && currOperatorIdx-1 >= 0)
+            currOperatorIdx--;
+
+        SetFocusToCurrOperator();
+    }
+    public void OnClickTabletFloor(int floor) {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        tablet.ChangeFloor(floor);
+	}
+    public void OnClickTabletCam(int number) {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        tablet.ChangeCam(number);
+    }
     public void OnClickDisasterAlarm() {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;
 	}
+
+    public void SetFocusToCurrOperator() {
+        FollowCam cam = Camera.main.GetComponent<FollowCam>();
+        Transform currOperatorTransform = players[currOperatorIdx].transform;
+        cam.SetPosition(currOperatorTransform.position);
+        cam.SetTarget(currOperatorTransform);
+    }
 
     private void ChangeMentalText(Player player) {
         if (_mentalText == null) return;
@@ -345,7 +388,7 @@ public class GameMgr : MonoBehaviour {
     public void ChangeNameText() {
         if (_charNameText == null) return;
 
-        switch (CurrentChar) {
+        switch (CurrentOperator) {
         case 0:
             _charNameText.text = "01. 주인공";
             break;
@@ -405,7 +448,7 @@ public class GameMgr : MonoBehaviour {
         return GetAroundPlayers(pos, 1);
     }
     public void ChangeFloorPlayer(bool isUp) {
-        players[CurrentChar].ChangeFloor(isUp);
+        players[CurrentOperator].ChangeFloor(isUp);
 	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {

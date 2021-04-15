@@ -11,7 +11,7 @@ public class GoalMgr {
     private G_Arrive arrive = null;
     private G_RescueImportantSurvivor rescueImportantSurvivor = null;
 
-    private GameObject GoalTextPrefab = Resources.Load<GameObject>("Prefabs/StageGoal");
+    private GameObject GoalTextPrefab = Resources.Load<GameObject>("Prefabs/UI/StageGoal");
     private GameObject StageGoals = GameObject.Find("UICanvas/PlayCanvas/TopLeftUI/StageGoals");
 
     public GoalMgr(XmlNode goalsNode) {

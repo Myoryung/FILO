@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 565450209b8d04a4981326ee5ba5e0b4, type: 3}
-  m_Name: PlayerSpawnTile
+  m_Script: {fileID: 11500000, guid: b27c54689a6c87b4c978a8ac0247c441, type: 3}
+  m_Name: StaticSurvivorSpawnTile
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 3109f606b2c184841ae3f0b17c146c01, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c8f2273de9753274fa0a20241272630e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -31,6 +31,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 1
-  m_InstancedGameObject: {fileID: 0}
+  m_InstancedGameObject: {fileID: 2783329904084916213, guid: 6cb6850b1e326a44aa234bf32c039544,
+    type: 3}
   m_Flags: 1
   m_ColliderType: 1

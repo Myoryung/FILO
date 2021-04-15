@@ -2,32 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FollowCam : MonoBehaviour
-{
-    public GameObject[] Players; // 타겟들의 배열
-    [SerializeField]
-    private Transform Target; // 현재 따라가는 타켓
+public class FollowCam : MonoBehaviour {
+    private const float CAMERA_Z = -100;
 
-    private void LateUpdate()
-    {
-        if (Target != null)
-        {
-            Vector3 pos = Target.position;
-            this.transform.position = Vector3.Lerp(this.transform.position, pos, 3.0f * Time.deltaTime); // 카메라 이동
-            this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, -100.0f);
+    private Transform target = null;
+
+	private void LateUpdate() {
+        if (target != null) {
+            Vector3 pos = target.position;
+            transform.position = Vector3.Lerp(transform.position, pos, 3.0f * Time.deltaTime); // 카메라 이동
+            transform.position = new Vector3(transform.position.x, transform.position.y, CAMERA_Z); // Z값 고정
         }
     }
 
-    public void ChangeChar(bool isRight) // 타겟 변경
-    {
-        if(isRight && GameMgr.Instance.CurrentChar < 3) // 오른쪽 클릭 시 마지막 번호가 아니면
-        {
-            GameMgr.Instance.CurrentChar++;
-        }
-        else if(!isRight && GameMgr.Instance.CurrentChar > 0) // 왼쪽 클릭 시 마지막 번호가 아니면
-        {
-            GameMgr.Instance.CurrentChar--;
-        }
-        Target = Players[GameMgr.Instance.CurrentChar].transform;
+    public void SetTarget(Transform target) {
+        this.target = target;
+    }
+    public void SetPosition(Vector3 pos) {
+        transform.position = new Vector3(pos.x, pos.y, CAMERA_Z);
     }
 }

@@ -12,11 +12,6 @@ public abstract class InteractiveObject : MonoBehaviour
 
 	private void Start() {
         position = TileMgr.Instance.WorldToCell(transform.position);
-        TileMgr.Instance.SetInteractiveObject(Position, this);
-    }
-
-	private void OnDestroy() {
-        TileMgr.Instance.SetInteractiveObject(Position, null);
     }
 
     public virtual bool IsAvailable() {

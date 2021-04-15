@@ -11,7 +11,6 @@ public class INO_Door : InteractiveObject {
     public override void Activate() {
         base.Activate();
 
-        TileMgr.Instance.SetInteractiveObject(Position, null);
-        Destroy(this.gameObject);
+        TileMgr.Instance.RemoveDoor(Position);
     }
 }

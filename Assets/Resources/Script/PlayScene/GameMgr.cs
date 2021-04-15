@@ -54,7 +54,7 @@ public class GameMgr : MonoBehaviour {
 
     public enum GameState {
         STAGE_SETUP, SELECT_CHAR, STAGE_READY,
-        PLAYER_TURN, SURVIVOR_TURN, SPREAD_FIRE, DISASTER_ALARM, DISASTER_TURN, TURN_END,
+        PLAYER_TURN, SURVIVOR_TURN, ENVIRONMENT_TURN, DISASTER_ALARM, DISASTER_TURN, TURN_END,
         STAGE_END
     }
     private GameState _currGameState = GameState.STAGE_SETUP;
@@ -92,7 +92,7 @@ public class GameMgr : MonoBehaviour {
         case GameState.STAGE_READY: StageReady(); break;
         case GameState.PLAYER_TURN: PlayerTurn(); break;
         case GameState.SURVIVOR_TURN: SurvivorTurn(); break;
-        case GameState.SPREAD_FIRE: SpreadFire(); break;
+        case GameState.ENVIRONMENT_TURN: EnvironmentTurn(); break;
         case GameState.DISASTER_ALARM: DisasterAlarm(); break;
         case GameState.DISASTER_TURN: DisasterTurn(); break;
         case GameState.TURN_END: TurnEnd(); break;
@@ -106,9 +106,6 @@ public class GameMgr : MonoBehaviour {
                 ChangeStateText(player);
                 ChangeNameText();
             }
-
-            if (TileMgr.Instance.IsChangedFire())
-                goalMgr.CheckFireInArea();
 
             if (goalMgr.IsImpossible())
                 _currGameState = GameState.STAGE_END;
@@ -212,12 +209,15 @@ public class GameMgr : MonoBehaviour {
 
             if (moveDone) {
                 bSurvivorActive = false;
-                _currGameState = GameState.SPREAD_FIRE;
+                _currGameState = GameState.ENVIRONMENT_TURN;
             }
         }
     }
-    private void SpreadFire() {
+    private void EnvironmentTurn() {
         TileMgr.Instance.SpreadFire();
+        TileMgr.Instance.Flaming();
+        TileMgr.Instance.MoveGas();
+
         _currGameState = GameState.DISASTER_ALARM;
     }
     private void DisasterAlarm() {
@@ -404,6 +404,9 @@ public class GameMgr : MonoBehaviour {
     public List<Player> GetPlayersAt(Vector3Int pos) {
         return GetAroundPlayers(pos, 1);
     }
+    public void ChangeFloorPlayer(bool isUp) {
+        players[CurrentChar].ChangeFloor(isUp);
+	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {
         survivors.Add(pos, survivor);

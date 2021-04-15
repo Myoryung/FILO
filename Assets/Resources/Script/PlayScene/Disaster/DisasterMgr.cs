@@ -20,7 +20,8 @@ public class DisasterMgr {
             string[] pointStr = disasterNode.SelectSingleNode("Point").InnerText.Replace(" ", "").Split(',');
             int x = int.Parse(pointStr[0]);
             int y = int.Parse(pointStr[1]);
-            Vector3Int point = new Vector3Int(x, y, 0);
+            int z = int.Parse(pointStr[2]);
+            Vector3Int point = new Vector3Int(x, y, z);
 
             int turn = int.Parse(disasterNode.SelectSingleNode("Turn").InnerText);
 

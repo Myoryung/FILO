@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 2f0ed1deb5273864897ada7e7872c73e
+=======
+guid: b6a4b576e1a34804297dc99af3db958a
+>>>>>>> 3f9abde... Add: 계단 타일 추가
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

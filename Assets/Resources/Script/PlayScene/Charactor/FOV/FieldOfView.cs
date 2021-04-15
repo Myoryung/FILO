@@ -160,13 +160,13 @@ public class FieldOfView : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, viewRadius, ViewLayer);
         if (hit)
         {
-            //Debug.DrawRay(transform.position, hit.point, Color.red, 0.3f);
-            return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
+			Debug.DrawRay(transform.position, hit.point, Color.red, 0.3f);
+			return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
         }
         else
         {
-            //Debug.DrawRay(transform.position, dir * viewRadius, Color.red, 0.3f);
-            return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);
+			Debug.DrawRay(transform.position, dir * viewRadius, Color.red, 0.3f);
+			return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);
         }
     }
 

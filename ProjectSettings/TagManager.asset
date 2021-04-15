@@ -20,6 +20,12 @@ TagManager:
   - Disaster_Smoke
   - Disaster_FallingRock
   - RescueTarget
+  - TempWall
+  - Gas
+  - UpStair
+  - DownStair
+  - Flammable
+  - Flaming
   layers:
   - Default
   - TransparentFX

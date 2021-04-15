@@ -4,6 +4,11 @@ public class Captain : Player {
     Vector3Int SkillRange = new Vector3Int(7, 7, 0); // 스킬 범위
     Vector3Int OldPos;
 
+	protected override void Start() {
+		base.Start();
+        OldPos = currentTilePos;
+    }
+
 	protected override void Update()
     {
         base.Update();
@@ -33,18 +38,20 @@ public class Captain : Player {
     }
     private void TurnOffWarning() {
         Vector3Int nPos = OldPos - currentTilePos;
-        int ClearArea = 0;
+        nPos.z = currentTilePos.z;
+        
+        int clearArea;
         if (nPos.x != 0) {
-            ClearArea = (int)(Mathf.Ceil(SkillRange.x) / 2);
-            for (int i = -ClearArea; i <= ClearArea; i++) {
-                Vector3Int SearchPos = OldPos + new Vector3Int(ClearArea * nPos.x, i, 0);
+            clearArea = (int)(Mathf.Ceil(SkillRange.x) / 2);
+            for (int i = -clearArea; i <= clearArea; i++) {
+                Vector3Int SearchPos = OldPos + new Vector3Int(clearArea * nPos.x, i, 0);
                 TileMgr.Instance.TurnWarning(SearchPos, false);
             }
         }
         if (nPos.y != 0) {
-            ClearArea = (int)(Mathf.Ceil(SkillRange.y) / 2);
-            for (int i = -ClearArea; i <= ClearArea; i++) {
-                Vector3Int SearchPos = OldPos + new Vector3Int(i, ClearArea * nPos.y, 0);
+            clearArea = (int)(Mathf.Ceil(SkillRange.y) / 2);
+            for (int i = -clearArea; i <= clearArea; i++) {
+                Vector3Int SearchPos = OldPos + new Vector3Int(i, clearArea * nPos.y, 0);
                 TileMgr.Instance.TurnWarning(SearchPos, false);
             }
         }

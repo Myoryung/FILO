@@ -4,25 +4,25 @@
   <Disasters>
     <Disaster>
       <Type>FALLING_ROCK</Type>
-      <Point>1,2</Point>
+      <Point>1,2,2</Point>
       <Turn>1</Turn>
     </Disaster>
 
     <Disaster>
       <Type>SHORT_CIRCUIT</Type>
-      <Point>7,-2</Point>
+      <Point>7,-2,2</Point>
       <Turn>2</Turn>
     </Disaster>
 
     <Disaster>
       <Type>FLASHOVER</Type>
-      <Point>5,0</Point>
+      <Point>5,0,2</Point>
       <Turn>3</Turn>
     </Disaster>
 
     <Disaster>
       <Type>SMOKE</Type>
-      <Point>3,0</Point>
+      <Point>3,0,2</Point>
       <Turn>4</Turn>
     </Disaster>
   </Disasters>

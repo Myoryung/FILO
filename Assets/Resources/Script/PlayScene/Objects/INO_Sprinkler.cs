@@ -7,14 +7,11 @@ public class INO_Sprinkler : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        List<GameObject> fires = new List<GameObject>(GameObject.FindGameObjectsWithTag("Fire"));
-		int count = (int)Math.Ceiling(fires.Count / 2.0);
-
-		for (int i = 0; i < count; i++) {
-			int index = UnityEngine.Random.Range(0, fires.Count);
-			Vector3Int tilePos = fires[index].GetComponent<Fire>().TilePos;
-			TileMgr.Instance.RemoveFire(tilePos);
-			fires.RemoveAt(index);
+		for (int y = -2; y <= 2; y++) {
+			for (int x = -2; x <= 2; x++) {
+				Vector3Int firePos = Position + new Vector3Int(x, y, 0);
+				TileMgr.Instance.RemoveFire(firePos);
+			}
 		}
 	}
 }

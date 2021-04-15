@@ -24,12 +24,17 @@ public class Player : Charactor
     private float _maxMental = 0; // 최대 멘탈
     private float _currentMental = 0; // 현재 멘탈
 
+    [SerializeField]
+    private float skillUseO2; // 스킬 발동 시 사용되는 산소량
+    private const float O2_ADDED_PER_TURN = 10.0f; // 턴 종료시마다 회복되는 산소량
+
     // 타일 충돌체크용 값
     private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
-    private bool isInSafetyArea = false;
+    private bool isInSafetyArea = false, isInGas = false, isInStair = false;
+    private float startTimeInFire = 0, startTimeInElectric = 0;
 
-    // Local Component
-    private Animator _anim; // 캐릭터 애니메이션
+	// Local Component
+	private Animator _anim; // 캐릭터 애니메이션
     [SerializeField]
     private Transform _body = null; // 캐릭터 이미지의 Transform
     private Rigidbody2D rbody = null;
@@ -47,6 +52,8 @@ public class Player : Charactor
         _currentMental = _maxMental;
         rbody = GetComponent<Rigidbody2D>();
         //SetFOV();
+
+        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
     }
     // Update is called once per frame
     protected virtual void Update()
@@ -55,6 +62,17 @@ public class Player : Charactor
             Move();
             Activate();
         }
+
+
+        float currTime = Time.time;
+        if (inFireCount > 0 && currTime - startTimeInFire >= 2.0f) {
+            AddHP(-5);
+            startTimeInFire = currTime;
+        }
+        if (inElectricCount > 0 && currTime - startTimeInElectric >= 2.0f) {
+            AddHP(-5);
+            startTimeInElectric = currTime;
+        }
     }
 
     protected virtual void Move()
@@ -62,20 +80,22 @@ public class Player : Charactor
         float hor = Input.GetAxisRaw("Horizontal"); // 가속도 없이 Raw값 사용
         float ver = Input.GetAxisRaw("Vertical");
 
-        //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
-        ////구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && CurrentHP > 0.0f && _currentMental > 0 && _playerAct != Action.MoveFloor)
-        {
+        bool isMoved = false;
 
-            float diaMove = 1.0f;
-            if (hor != 0.0f && ver != 0.0f)
-            {
-                diaMove = Mathf.Sqrt(2) / 2;
-                AddO2(-(UseO2 * Time.deltaTime * diaMove));
+        //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
+        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentChar == _playerNum && Act != Action.Carry && _playerAct != Action.MoveFloor && CurrentHP > 0.0f && _currentMental > 0)
+        {
+            //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
+            if (hor != 0.0f || ver != 0.0f) {
+                Vector3 dir = new Vector3(hor, ver, 0.0f);
+                dir /= dir.magnitude;
+                rbody.velocity = dir * _movespeed;
+
+                isMoved = true;
             }
-            else if (hor != 0.0f || ver != 0.0f) // 좌, 우 이동중이라면
-                AddO2(-(UseO2 * Time.deltaTime));
-            rbody.velocity = new Vector3(hor * _movespeed, ver * _movespeed, 0.0f) * diaMove;
+            else
+                rbody.velocity = Vector3.zero;
+
 
             //if ((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
             //{
@@ -94,10 +114,21 @@ public class Player : Charactor
             if (hor != 0 || ver != 0)
                 GameMgr.Instance.OnMovePlayer(currentTilePos);
         }
-        //if (hor == 0 && ver == 0) // 이동 종료 시
-        //{
-        //    //_anim.SetBool("IsRunning", false); // 달리기 애니메이션 종료
-        //}
+
+        if (isMoved) {
+            float o2UseRate = 1.0f;
+            if (isInGas)
+                o2UseRate *= 1.5f;
+            if (Act == Action.Rescue)
+                o2UseRate *= 1.5f;
+
+            AddO2(-UseO2 * o2UseRate * Time.deltaTime);
+        }
+
+        if (hor == 0 && ver == 0) // 이동 종료 시
+        {
+            _anim.SetBool("IsRunning", false); // 달리기 애니메이션 종료
+        }
     }
 
     protected InteractiveObject SearchAroundInteractiveObject(Vector3Int pos) {
@@ -150,8 +181,12 @@ public class Player : Charactor
 	}
     public virtual void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
-        if (_playerAct != Action.Panic) // 패닉 상태는 산소가 회복되지 않는다
-            AddO2(10.0f);
+        if (_playerAct != Action.Panic) { // 패닉 상태는 산소가 회복되지 않는다
+            if (IsInSafetyArea)
+                AddO2(O2_ADDED_PER_TURN * 2.0f);
+            else
+                AddO2(O2_ADDED_PER_TURN);
+        }
 
         if(_playerAct == Action.Carry) // 업는 중이라면
         {
@@ -164,10 +199,19 @@ public class Player : Charactor
 		}
     }
 
-    public virtual void ActiveSkill()
-    {
+    public virtual void ActiveSkill() {
         UI_Actives.SetActive(false);
     }
+    protected float GetSkillUseO2() {
+        float o2UseRate = 1.0f;
+        if (isInGas)
+            o2UseRate *= 1.5f;
+        if (Act == Action.Rescue)
+            o2UseRate *= 1.5f;
+
+        return skillUseO2 * o2UseRate;
+    }
+
     public virtual void ActiveUltSkill() // 궁국기 virtual 함수
     {
         UI_Actives.SetActive(false);
@@ -181,7 +225,7 @@ public class Player : Charactor
 
     IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
     {
-        Vector3Int nPos = Vector3Int.zero;
+        Vector3Int nPos = currentTilePos;
         while (true) {
             RenderInteractArea(ref nPos); // 구조 영역선택
             if (Input.GetMouseButtonDown(0)) {
@@ -235,8 +279,11 @@ public class Player : Charactor
         //좌표 값 변경으로 인해 수정해야 할 코드
         while (true) {
             if (Input.GetMouseButton(0)) {
-                Vector3 localPos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 캐릭터 기준 로컬좌표
-                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)); // 타일맵에서 마우스 좌표
+                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mousePos.z = transform.position.z;
+
+                Vector3 localPos = mousePos - transform.position; // 마우스 캐릭터 기준 로컬좌표
+                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos); // 타일맵에서 마우스 좌표
                 if (_currentTilePos.x - moustIntPos.x <= 2 &&
                     _currentTilePos.x - moustIntPos.x >= -2 &&
                     _currentTilePos.y - moustIntPos.y <= 2 &&
@@ -262,7 +309,7 @@ public class Player : Charactor
     }
     IEnumerator UseFireWall() // 방화벽 설치
     {
-        Vector3Int nPos = Vector3Int.zero;
+        Vector3Int nPos = currentTilePos;
         while (true) {
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
@@ -278,11 +325,12 @@ public class Player : Charactor
     }
     IEnumerator UseStickyBomb() // 점착폭탄 설치
     {
-        Vector3Int nPos = Vector3Int.zero;
+        Vector3Int nPos = currentTilePos;
+
         while (true) {
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.RemoveWall(nPos);
+                TileMgr.Instance.RemoveTempWall(nPos);
                 break;
             }
             else if (Input.GetMouseButtonDown(1) || IsMoving)
@@ -303,16 +351,25 @@ public class Player : Charactor
 
         switch (other.tag) {
         case "Fire":
-            AddMental(-2);
+            startTimeInFire = Time.time;
+            if (inFireCount == 1)
+                AddMental(-2);
             break;
 
         case "Ember":
-            AddMental(-1); // 멘탈 감소
+            if (inEmberCount == 1)
+                AddMental(-1); // 멘탈 감소
             break;
 
         case "Electric":
         case "Water(Electric)":
-            AddMental(-2); // 멘탈 감소
+            startTimeInElectric = Time.time;
+            if (inElectricCount == 1)
+                AddMental(-2); // 멘탈 감소
+            break;
+
+        case "Gas":
+            isInGas = true;
             break;
 
         case "Beacon":
@@ -326,31 +383,57 @@ public class Player : Charactor
                 _playerAct = Action.Idle;
             }
             break;
-        case "Portal":
-                Stair target = other.GetComponent<Stair>();
-                StartCoroutine(ChangeFloor(target.Flag, target.PortalPosition));
+
+        case "UpStair":
+            if (!isInStair) {
+                isInStair = true;
+                ChangeFloor(true);
+            }
+            break;
+        case "DownStair":
+            if (!isInStair) {
+                isInStair = true;
+                ChangeFloor(false);
+            }
             break;
         }
     }
+	protected override void OnTriggerExit2D(Collider2D collision) {
+        base.OnTriggerExit2D(collision);
 
-	protected void OnTriggerExit2D(Collider2D collision) {
-		switch (collision.tag) {
+        switch (collision.tag) {
+        case "Gas":
+            isInGas = false;
+            break;
+
         case "Beacon":
             isInSafetyArea = false;
             GameMgr.Instance.OnExitSafetyArea();
             break;
-		}
+
+        case "UpStair":
+        case "DownStair":
+            isInStair = false;
+            break;
+        }
 	}
 
-    IEnumerator ChangeFloor(int flag, Vector3Int Pos){
+    public void ChangeFloor(bool isUp) {
+        StartCoroutine(CoroutineChangeFloor(isUp));
+    }
+    private IEnumerator CoroutineChangeFloor(bool isUp){
         Action oldAct = _playerAct;
         _playerAct = Action.MoveFloor;
         rbody.velocity = Vector2.zero;
         StartCoroutine(GameMgr.Instance.StartLoading());
         yield return new WaitUntil(() => GameMgr.Instance.CurrentLoadingState
                                         == GameMgr.LoadingState.Stay);
-        TileMgr.Instance.SwitchFloorTilemap(TileMgr.Instance.GetCurrentFloor(), flag);
-        transform.position = TileMgr.Instance.CellToWorld(Pos + Vector3Int.down);
+        
+        int floorNumber = _currentTilePos.z + ((isUp) ? 1 : -1);
+        _currentTilePos.z = floorNumber;
+        transform.position = TileMgr.Instance.CellToWorld(currentTilePos);
+
+        TileMgr.Instance.SwitchFloorTilemap(floorNumber);
         GameMgr.Instance.CurrentLoadingState = GameMgr.LoadingState.End;
         _playerAct = oldAct;
     }

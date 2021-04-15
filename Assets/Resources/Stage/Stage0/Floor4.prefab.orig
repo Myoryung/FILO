@@ -963,6 +963,11 @@ Tilemap:
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
+<<<<<<< HEAD
+=======
+  - m_RefCount: 16
+    m_Data: {r: 0.7899252, g: 0.54699385, b: 0.6236068, a: 1}
+>>>>>>> 1a22f901c0dd5d73fcafdc38ec00f704a59acfd8
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 16

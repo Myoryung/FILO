@@ -20,14 +20,16 @@ public class FieldOfView : MonoBehaviour
 
     public float maskCutawayDst = .1f;
 
-    public MeshFilter viewMeshFilter;
+    public MeshFilter viewRedMeshFilter;
+    public MeshFilter viewBlueMeshFilter;
     Mesh viewMesh;
 
     void Start()
     {
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
-        viewMeshFilter.mesh = viewMesh;
+        viewRedMeshFilter.mesh = viewMesh;
+        viewBlueMeshFilter.mesh = viewMesh;
 
         StartCoroutine("FindTargetsWithDelay", .2f);
     }
@@ -160,12 +162,10 @@ public class FieldOfView : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, viewRadius, ViewLayer);
         if (hit)
         {
-			Debug.DrawRay(transform.position, hit.point, Color.red, 0.3f);
 			return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
         }
         else
         {
-			Debug.DrawRay(transform.position, dir * viewRadius, Color.red, 0.3f);
 			return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);
         }
     }

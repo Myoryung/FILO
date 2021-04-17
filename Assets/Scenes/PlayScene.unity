@@ -2279,7 +2279,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 1}
-<<<<<<< Updated upstream
 --- !u!1 &599799895
 GameObject:
   m_ObjectHideFlags: 0
@@ -2428,14 +2427,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 606258652}
   m_CullTransparentMesh: 0
-=======
---- !u!20 &637158095 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 3468037474468583484, guid: 3fa4fc50cc6ed774d8c61de27be30536,
-    type: 3}
-  m_PrefabInstance: {fileID: 1599082080}
-  m_PrefabAsset: {fileID: 0}
->>>>>>> Stashed changes
 --- !u!1 &650617299
 GameObject:
   m_ObjectHideFlags: 0
@@ -4986,9 +4977,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420923677}
   m_CullTransparentMesh: 0
-<<<<<<< Updated upstream
---- !u!1 &1421817375
-=======
 --- !u!1001 &1599082080
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5084,7 +5072,6 @@ PrefabInstance:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3fa4fc50cc6ed774d8c61de27be30536, type: 3}
 --- !u!1 &1636957946
->>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

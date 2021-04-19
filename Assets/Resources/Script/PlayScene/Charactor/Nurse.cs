@@ -16,11 +16,6 @@ public class Nurse : Player
         base.Update();
     }
 
-    protected override void Move()
-    {
-        base.Move();
-    }
-
     protected override void OnTriggerEnter2D(Collider2D other)
     {
         base.OnTriggerEnter2D(other);

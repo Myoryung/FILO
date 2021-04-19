@@ -28,16 +28,14 @@ public class GameMgr : MonoBehaviour {
     }
     public int GameTurn = 0; // 게임 턴
     private int currTime = 0;
+
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
-    private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
+    private int currPlayerIdx = 0;
 
-    private GameObject[] operators = new GameObject[4];
     private GameObject[] operatorPrefabs = new GameObject[4];
+    private GameObject[] operators = new GameObject[4];
 
-    private int currOperatorIdx = 0;
-    public int CurrentOperator {
-        get { return currOperatorIdx; }
-    }
+    private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
 
     private Canvas selectCanvas, playCanvas;
@@ -104,12 +102,10 @@ public class GameMgr : MonoBehaviour {
         }
 
         if (bStagePlaying) {
-            if (CurrentOperator < players.Count) {
-                Player player = players[CurrentOperator];
-                ChangeMentalText(player);
-                ChangeStateText(player);
-                ChangeNameText();
-            }
+            Player player = players[currPlayerIdx];
+            ChangeMentalText(player);
+            ChangeStateText(player);
+            ChangeNameText();
 
             if (goalMgr.IsImpossible())
                 _currGameState = GameState.STAGE_END;
@@ -177,11 +173,11 @@ public class GameMgr : MonoBehaviour {
 
         if (Input.GetMouseButtonUp(1)) {
             foreach (GameObject oper in operators) {
-                if (oper != null)
-                    players.Add(oper.GetComponent<Player>());
-            }
+				if (oper != null)
+					players.Add(oper.GetComponent<Player>());
+			}
 
-            if (players.Count > 0) {
+			if (players.Count > 0) {
                 tablet = null;
                 _currGameState = GameState.STAGE_READY;
             }
@@ -202,11 +198,16 @@ public class GameMgr : MonoBehaviour {
             player.StageStartActive();
 
         bStagePlaying = true;
+        players[currPlayerIdx].OnSetMain();
         SetFocusToCurrOperator();
 
         _currGameState = GameState.PLAYER_TURN;
     }
     private void PlayerTurn() {
+        Player currPlayer = players[currPlayerIdx];
+        currPlayer.Move();
+        currPlayer.Activate();
+
         if (bTurnEndClicked) {
             // 캐릭터들의 턴 종료 행동 함수 호출
             for (int i = 0; i < players.Count; i++)
@@ -311,14 +312,18 @@ public class GameMgr : MonoBehaviour {
             bTurnEndClicked = true;
     }
     public void OnClickChangeChar(bool isRight) {
-        int prevOperatorIdx = currOperatorIdx;
+        int prevPlayerIdx = currPlayerIdx;
 
-        if (isRight && currOperatorIdx+1 < players.Count)
-            currOperatorIdx++;
-        else if (!isRight && currOperatorIdx-1 >= 0)
-            currOperatorIdx--;
+        if (isRight && currPlayerIdx+1 < players.Count)
+            currPlayerIdx++;
+        else if (!isRight && currPlayerIdx-1 >= 0)
+            currPlayerIdx--;
 
-        SetFocusToCurrOperator();
+        if (prevPlayerIdx != currPlayerIdx) {
+            players[prevPlayerIdx].OnUnsetMain();
+            players[currPlayerIdx].OnSetMain();
+            SetFocusToCurrOperator();
+        }
     }
     public void OnClickTabletFloor(int floor) {
         if (CurrGameState != GameState.SELECT_OPERATOR) return;
@@ -366,7 +371,7 @@ public class GameMgr : MonoBehaviour {
 
     public void SetFocusToCurrOperator() {
         FollowCam cam = Camera.main.GetComponent<FollowCam>();
-        Transform currOperatorTransform = players[currOperatorIdx].transform;
+        Transform currOperatorTransform = players[currPlayerIdx].transform;
         cam.SetPosition(currOperatorTransform.position);
         cam.SetTarget(currOperatorTransform);
     }
@@ -426,7 +431,7 @@ public class GameMgr : MonoBehaviour {
     public void ChangeNameText() {
         if (_charNameText == null) return;
 
-        switch (CurrentOperator) {
+        switch (currPlayerIdx) {
         case 0:
             _charNameText.text = "01. 주인공";
             break;
@@ -486,7 +491,7 @@ public class GameMgr : MonoBehaviour {
         return GetAroundPlayers(pos, 1);
     }
     public void ChangeFloorPlayer(bool isUp) {
-        players[CurrentOperator].ChangeFloor(isUp);
+        players[currPlayerIdx].ChangeFloor(isUp);
 	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {

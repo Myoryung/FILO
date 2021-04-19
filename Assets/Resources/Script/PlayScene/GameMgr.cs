@@ -40,17 +40,20 @@ public class GameMgr : MonoBehaviour {
 
     private Canvas selectCanvas, playCanvas;
 
-	private GameObject disasterAlaram = null;
+    private DisasterMgr disasterMgr;
+    private GameObject disasterAlaram = null;
     private Text disasterAlaramText = null;
 
     private GameObject stageEnd = null;
     private Text stageEndText = null;
 
-    private int _stage = 0;
     private Tablet tablet;
-    private DisasterMgr disasterMgr;
+    private GameObject[] operatorCards;
+    private Sprite operatorCardNormalSprite, operatorCardSelectedSprite;
+
     private GoalMgr goalMgr;
 
+    private int _stage = 0;
     public int stage {
         get { return _stage; }
     }
@@ -140,6 +143,11 @@ public class GameMgr : MonoBehaviour {
         playCanvas.enabled = false;
 
         // Load UI
+        Transform operatorCard = selectCanvas.transform.Find("OperatorSelect/OperatorCard");
+        operatorCards = new GameObject[operatorCard.childCount];
+        for (int i = 0; i < operatorCard.childCount; i++)
+            operatorCards[i] = operatorCard.GetChild(i).gameObject;
+
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
 		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
@@ -155,11 +163,14 @@ public class GameMgr : MonoBehaviour {
         timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
         ChangeTimerText();
 
-        // Load Prefab
+        // Load Resources
         operatorPrefabs[0] = Resources.Load<GameObject>("Prefabs/Operator/Captain");
         operatorPrefabs[1] = Resources.Load<GameObject>("Prefabs/Operator/HammerMan");
         operatorPrefabs[2] = Resources.Load<GameObject>("Prefabs/Operator/Rescuers");
         operatorPrefabs[3] = Resources.Load<GameObject>("Prefabs/Operator/Nurse");
+
+        operatorCardNormalSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/OperatorCardNormal");
+        operatorCardSelectedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/OperatorCardSelected");
 
         _currGameState = GameState.SELECT_OPERATOR;
     }
@@ -346,6 +357,7 @@ public class GameMgr : MonoBehaviour {
             tablet.ClearOperatorPair(operatorNumber);
 			Destroy(operators[operatorNumber]);
             operators[operatorNumber] = null;
+            operatorCards[operatorNumber].GetComponent<Image>().sprite = operatorCardNormalSprite;
         }
         else {
             // 현재 캠에 존재하는 다른 대원 삭제
@@ -354,15 +366,16 @@ public class GameMgr : MonoBehaviour {
                 tablet.ClearOperatorPair(prevOperatorNumber);
                 Destroy(operators[prevOperatorNumber]);
                 operators[prevOperatorNumber] = null;
-            }
+                operatorCards[prevOperatorNumber].GetComponent<Image>().sprite = operatorCardNormalSprite;
+			}
 
-            if (operators[operatorNumber] == null)
+            if (operators[operatorNumber] == null) {
                 operators[operatorNumber] = Instantiate(operatorPrefabs[operatorNumber]);
-            operators[operatorNumber].transform.position = tablet.GetCurrCamPos();
+				operatorCards[operatorNumber].GetComponent<Image>().sprite = operatorCardSelectedSprite;
+			}
+			operators[operatorNumber].transform.position = tablet.GetCurrCamPos();
             tablet.SetOperatorPair(operatorNumber, currCam);
         }
-
-        // TODO: Operator Card Sprite 변경
     }
     public void OnClickDisasterAlarm() {
         if (CurrGameState == GameState.DISASTER_ALARM)

@@ -126,6 +126,22 @@ public class GameMgr : MonoBehaviour {
         string[] startTimeTokens = startTimeStr.Split(':');
         currTime = int.Parse(startTimeTokens[0])*60 + int.Parse(startTimeTokens[1]);
 
+        // Stage Content
+        string stageNamePreviewText = stageNode.SelectSingleNode("StageNamePreview").InnerText;
+        string stageNameText = stageNode.SelectSingleNode("StageName").InnerText;
+        string stageContentText = stageNode.SelectSingleNode("StageContent").InnerText;
+
+        string[] stageContentLines = stageContentText.Split('\n');
+        for (int i = 1; i < stageContentLines.Length; i++)
+            stageContentLines[i] = stageContentLines[i].Trim();
+        for (int i = 1; i <= 2 && i < stageContentLines.Length; i++)
+            stageContentLines[i] = "          " + stageContentLines[i];
+
+        stageContentText = "";
+        for (int i = 1; i < stageContentLines.Length; i++)
+            stageContentText += stageContentLines[i] + "\n";
+
+        // Disaster & Goal
         XmlNode disastersNode = stageNode.SelectSingleNode("Disasters");
         XmlNode goalsNode = stageNode.SelectSingleNode("Goals");
 
@@ -142,12 +158,39 @@ public class GameMgr : MonoBehaviour {
         selectCanvas.enabled = true;
         playCanvas.enabled = false;
 
-        // Load UI
+        // Load Select UI
         Transform operatorCard = selectCanvas.transform.Find("OperatorSelect/OperatorCard");
         operatorCards = new GameObject[operatorCard.childCount];
         for (int i = 0; i < operatorCard.childCount; i++)
             operatorCards[i] = operatorCard.GetChild(i).gameObject;
 
+        selectCanvas.transform.Find("StageGoal/StageNamePreview").GetComponentInChildren<Text>().text = stageNamePreviewText;
+		Text stageName = selectCanvas.transform.Find("StageGoal/StageName").GetComponent<Text>();
+        stageName.text = stageNameText;
+        stageName.SetNativeSize();
+
+        RectTransform stageBar = selectCanvas.transform.Find("StageGoal/StageBar").GetComponent<RectTransform>();
+        stageBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stageName.rectTransform.rect.width + 20);
+
+        GameObject goalPrefab = Resources.Load<GameObject>("Prefabs/UI/SelectUI_Goal");
+        Transform goals = selectCanvas.transform.Find("StageGoal/Goals");
+        List<Goal> mainGoals = goalMgr.GetMainGoals();
+
+        for (int i = 0; i < mainGoals.Count; i++) {
+            string explanation = mainGoals[i].GetExplanationText();
+            string status = mainGoals[i].GetStatusText();
+
+            GameObject goal = Instantiate(goalPrefab, goals);
+            goal.transform.Find("Explanation").GetComponent<Text>().text = explanation;
+            goal.transform.Find("Status").GetComponent<Text>().text = status;
+            goal.transform.localPosition = new Vector3(0, -20 + -30 * i);
+        }
+
+        RectTransform content = selectCanvas.transform.Find("StageGoal/Content").GetComponent<RectTransform>();
+        content.GetComponent<Text>().text = stageContentText;
+        content.anchoredPosition += new Vector2(0, -20 + -30*mainGoals.Count + -20);
+
+        // Load Play UI
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
 		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();

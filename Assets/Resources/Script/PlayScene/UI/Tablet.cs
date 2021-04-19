@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Tablet {
 	private Image tabletCodeTop, tabletCodeBottom;
-	private const float TABLET_CODE_MOVE_SPEED = 0.005f;
+	private const float TABLET_CODE_MOVE_SPEED = 0.075f;
 	private Vector3 tabletCodeInitPos;
 
 	private Image tabletRecord;
@@ -88,10 +88,11 @@ public class Tablet {
         }
 
         // 코드 이동
+        float speed = TABLET_CODE_MOVE_SPEED * Time.deltaTime;
         float codeHeight = tabletCodeBottom.rectTransform.rect.height;
-        float moveAmount = codeHeight * TABLET_CODE_MOVE_SPEED;
-        tabletCodeBottom.fillAmount -= TABLET_CODE_MOVE_SPEED;
-        tabletCodeTop.fillAmount += TABLET_CODE_MOVE_SPEED;
+        float moveAmount = codeHeight * speed;
+        tabletCodeBottom.fillAmount -= speed;
+        tabletCodeTop.fillAmount += speed;
         tabletCodeBottom.rectTransform.localPosition += new Vector3(0, moveAmount);
         tabletCodeTop.rectTransform.localPosition += new Vector3(0, moveAmount);
 

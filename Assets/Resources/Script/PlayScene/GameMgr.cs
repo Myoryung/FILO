@@ -17,7 +17,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     private Text _mentalText, _stateText, _charNameText;
-    private Text timerText = null;
+    private Text startBtnText, timerText = null;
     private Image _fadeImage = null;
 
     public enum LoadingState { Begin, Stay, End}
@@ -69,7 +69,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     private bool bStagePlaying = false;
-    private bool bSelectOperatorInit = false;
+    private bool bSelectOperatorInit = false, bStageStartReady = false, bStageStartBtnClicked = false;
     private bool bTurnEndClicked = false, bStageEndClicked = false;
     private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
@@ -190,6 +190,9 @@ public class GameMgr : MonoBehaviour {
         content.GetComponent<Text>().text = stageContentText;
         content.anchoredPosition += new Vector2(0, -20 + -30*mainGoals.Count + -20);
 
+        startBtnText = selectCanvas.transform.Find("StartBtn").GetComponentInChildren<Text>();
+        ChangeStartBtnText();
+
         // Load Play UI
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
@@ -224,17 +227,23 @@ public class GameMgr : MonoBehaviour {
         }
 
         tablet.Update();
+        ChangeStartBtnText();
 
-        if (Input.GetMouseButtonUp(1)) {
-            foreach (GameObject oper in operators) {
-				if (oper != null)
-					players.Add(oper.GetComponent<Player>());
-			}
+        int cnt = 0;
+        foreach (GameObject oper in operators) {
+            if (oper != null)
+                cnt++;
+        }
+        bStageStartReady = (cnt == operators.Length);
 
-			if (players.Count > 0) {
-                tablet = null;
-                _currGameState = GameState.STAGE_READY;
-            }
+        if (bStageStartReady && bStageStartBtnClicked) {
+            bStageStartBtnClicked = false;
+
+            foreach (GameObject oper in operators)
+                players.Add(oper.GetComponent<Player>());
+
+            tablet = null;
+            _currGameState = GameState.STAGE_READY;
         }
     }
     private void StageReady() {
@@ -357,6 +366,12 @@ public class GameMgr : MonoBehaviour {
         }
     }
 
+    public void OnClickStageStartBtn() {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        if (bStageStartReady)
+            bStageStartBtnClicked = true;
+    }
     public void OnClickTurnEnd() {
         if (CurrGameState != GameState.PLAYER_TURN) return;
 
@@ -501,6 +516,12 @@ public class GameMgr : MonoBehaviour {
             _charNameText.text = "04. 레  오";
             break;
         }
+    }
+    public void ChangeStartBtnText() {
+        if (bStageStartReady)
+            startBtnText.text = "임무 시작";
+        else
+            startBtnText.text = string.Format("{0,2}:{1:00}", (currTime / 60), (currTime % 60));
     }
     public void ChangeTimerText() {
         if (timerText == null) return;

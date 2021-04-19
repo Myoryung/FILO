@@ -23,6 +23,8 @@ public class Tablet {
 
     private readonly Vector3 tabletMiddlePos;
 
+    private readonly Dictionary<int, KeyValuePair<int, int>> operatorCamPairs = new Dictionary<int, KeyValuePair<int, int>>();
+
     public Tablet() {
         GameObject tablet = GameObject.Find("UICanvas/SelectCanvas/Tablet");
         Transform tabletUI = tablet.transform.Find("UI");
@@ -70,7 +72,12 @@ public class Tablet {
         }
 
         SetFloor(TileMgr.Instance.MinFloor);
-	}
+
+        // Cam Operator Pair
+        KeyValuePair<int, int> nonePair = new KeyValuePair<int, int>(-1, -1);
+        for (int i = 0; i < 4; i++)
+            operatorCamPairs.Add(i, nonePair);
+    }
 
 	public void Update() {
         // 레코드 점멸
@@ -139,8 +146,37 @@ public class Tablet {
         camsWhite[currCam].SetActive(false);
         camsRed[currCam].SetActive(true);
 
-        OperatorSpawn currSpawn = operatorSpawnsList[currFloorIndex][currCam];
-        Vector3 targetPos = currSpawn.transform.position - tabletMiddlePos;
+        Vector3 targetPos = GetCurrCamPos() - tabletMiddlePos;
         Camera.main.GetComponent<FollowCam>().SetPosition(targetPos);
 	}
+
+    public Vector3 GetCurrCamPos() {
+        int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
+        int currCam = currCams[currFloorIndex];
+
+        OperatorSpawn currSpawn = operatorSpawnsList[currFloorIndex][currCam];
+        return currSpawn.transform.position;
+    }
+    public KeyValuePair<int, int> GetCurrCam() {
+        int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
+        int currCam = currCams[currFloorIndex];
+
+        return new KeyValuePair<int, int>(currFloor, currCam);
+	}
+    public KeyValuePair<int, int> GetCamPlacedOperator(int operatorNumber) {
+        return operatorCamPairs[operatorNumber];
+    }
+    public int GetOperatorAtCam(KeyValuePair<int, int> cam) {
+        for (int i = 0; i < operatorCamPairs.Count; i++) {
+            if (operatorCamPairs[i].Equals(cam))
+                return i;
+		}
+        return -1;
+    }
+    public void SetOperatorPair(int operatorNumber, KeyValuePair<int, int> cam) {
+        operatorCamPairs[operatorNumber] = cam;
+    }
+    public void ClearOperatorPair(int operatorNumber) {
+        operatorCamPairs[operatorNumber] = new KeyValuePair<int, int>(-1, -1);
+    }
 }

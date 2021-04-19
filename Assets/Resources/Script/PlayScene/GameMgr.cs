@@ -29,8 +29,10 @@ public class GameMgr : MonoBehaviour {
     public int GameTurn = 0; // 게임 턴
     private int currTime = 0;
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
-
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
+
+    private GameObject[] operators = new GameObject[4];
+    private GameObject[] operatorPrefabs = new GameObject[4];
 
     private int currOperatorIdx = 0;
     public int CurrentOperator {
@@ -157,6 +159,12 @@ public class GameMgr : MonoBehaviour {
         timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
         ChangeTimerText();
 
+        // Load Prefab
+        operatorPrefabs[0] = Resources.Load<GameObject>("Prefabs/Operator/Captain");
+        operatorPrefabs[1] = Resources.Load<GameObject>("Prefabs/Operator/HammerMan");
+        operatorPrefabs[2] = Resources.Load<GameObject>("Prefabs/Operator/Rescuers");
+        operatorPrefabs[3] = Resources.Load<GameObject>("Prefabs/Operator/Nurse");
+
         _currGameState = GameState.SELECT_OPERATOR;
     }
     private void SelectOperator() {
@@ -168,14 +176,15 @@ public class GameMgr : MonoBehaviour {
         tablet.Update();
 
         if (Input.GetMouseButtonUp(1)) {
-            players.Add(GameObject.Find("Captain").GetComponent<Player>());
-            players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
-            players.Add(GameObject.Find("Nurse").GetComponent<Player>());
-            players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+            foreach (GameObject oper in operators) {
+                if (oper != null)
+                    players.Add(oper.GetComponent<Player>());
+            }
 
-            tablet = null;
-
-            _currGameState = GameState.STAGE_READY;
+            if (players.Count > 0) {
+                tablet = null;
+                _currGameState = GameState.STAGE_READY;
+            }
         }
     }
     private void StageReady() {
@@ -320,6 +329,35 @@ public class GameMgr : MonoBehaviour {
         if (CurrGameState != GameState.SELECT_OPERATOR) return;
 
         tablet.ChangeCam(number);
+    }
+    public void OnClickOperatorCard(int operatorNumber) {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        // Operator 생성 및 삭제
+        KeyValuePair<int, int> prevCam = tablet.GetCamPlacedOperator(operatorNumber);
+        KeyValuePair<int, int> currCam = tablet.GetCurrCam();
+
+        if (prevCam.Equals(currCam)) {
+            tablet.ClearOperatorPair(operatorNumber);
+			Destroy(operators[operatorNumber]);
+            operators[operatorNumber] = null;
+        }
+        else {
+            // 현재 캠에 존재하는 다른 대원 삭제
+            int prevOperatorNumber = tablet.GetOperatorAtCam(currCam);
+            if (prevOperatorNumber != -1) {
+                tablet.ClearOperatorPair(prevOperatorNumber);
+                Destroy(operators[prevOperatorNumber]);
+                operators[prevOperatorNumber] = null;
+            }
+
+            if (operators[operatorNumber] == null)
+                operators[operatorNumber] = Instantiate(operatorPrefabs[operatorNumber]);
+            operators[operatorNumber].transform.position = tablet.GetCurrCamPos();
+            tablet.SetOperatorPair(operatorNumber, currCam);
+        }
+
+        // TODO: Operator Card Sprite 변경
     }
     public void OnClickDisasterAlarm() {
         if (CurrGameState == GameState.DISASTER_ALARM)

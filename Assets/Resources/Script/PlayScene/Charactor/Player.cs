@@ -13,10 +13,9 @@ public class Player : Charactor
 
     // 플레이어 스테이터스
     public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire, MoveFloor } // 캐릭터 행동 상태 종류
-    protected Action _playerAct; 
+    protected Action _playerAct;
+
     private Survivor _rescuingSurvivor; // 현재 구조중인 생존자
-    [SerializeField]
-    private int _playerNum = 0; // 캐릭터 번호
     [SerializeField]
     private float _movespeed = 0.0f; // 캐릭터 이동속도
 
@@ -56,14 +55,7 @@ public class Player : Charactor
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
     }
     // Update is called once per frame
-    protected virtual void Update()
-    {
-        if (GameMgr.Instance != null && GameMgr.Instance.CurrGameState == GameMgr.GameState.PLAYER_TURN) {
-            Move();
-            Activate();
-        }
-
-
+    protected virtual void Update() {
         float currTime = Time.time;
         if (inFireCount > 0 && currTime - startTimeInFire >= 2.0f) {
             AddHP(-5);
@@ -75,60 +67,56 @@ public class Player : Charactor
         }
     }
 
-    protected virtual void Move()
-    {
-        float hor = Input.GetAxisRaw("Horizontal"); // 가속도 없이 Raw값 사용
+    public virtual void Move() {
+        float hor = Input.GetAxisRaw("Horizontal"); // 가속도 없는 Raw값 사용
         float ver = Input.GetAxisRaw("Vertical");
 
-        bool isMoved = false;
+        if (CurrentHP <= 0 || CurrentO2 <= 0 || _currentMental <= 0 ||
+            Act == Action.Carry || Act == Action.MoveFloor ||
+            (hor == 0.0f && ver == 0.0f)) {
 
-        //구조 상태가 아니며, 현재 체력과 산소가 남아있는 현재 조종중인 캐릭터를 Translate로 이동시킨다.
-        if (CurrentO2 > 0.0f && GameMgr.Instance.CurrentOperator == _playerNum && Act != Action.Carry && _playerAct != Action.MoveFloor && CurrentHP > 0.0f && _currentMental > 0)
-        {
-            //transform.Translate(hor * Time.deltaTime * _movespeed, ver * Time.deltaTime * _movespeed, 0.0f);
-            if (hor != 0.0f || ver != 0.0f) {
-                Vector3 dir = new Vector3(hor, ver, 0.0f);
-                dir /= dir.magnitude;
-                rbody.velocity = dir * _movespeed;
+            // 이동 종료
+            rbody.velocity = Vector3.zero;
 
-                isMoved = true;
-            }
-            else
-                rbody.velocity = Vector3.zero;
-
-
-            //if ((hor != 0 || ver != 0) && _anim.GetBool("IsRunning") == false) // 이동 시작 시
-            //{
-            //    //_anim.SetBool("IsRunning", true); // 달리기 애니메이션 재생
-            //}
-            //if (hor > 0) // 바라보는 방향이 우측이라면
-            //{
-            //    _body.rotation = new Quaternion(0, 180.0f, 0, this.transform.rotation.w); // 우측으로 이미지 회전
-            //}
-            //else if (hor < 0) // 좌측이라면
-            //{
-            //    _body.rotation = Quaternion.identity; // y값 초기화
-            //}
-
-            _currentTilePos = TileMgr.Instance.WorldToCell(transform.position); // 현재 캐릭터의 타일맵 좌표 갱신
-            if (hor != 0 || ver != 0)
-                GameMgr.Instance.OnMovePlayer(currentTilePos);
+            // 애니메이션 종료
+            if (_anim.GetBool("IsRunning"))
+                _anim.SetBool("IsRunning", false);
+            return;
         }
 
-        if (isMoved) {
-            float o2UseRate = 1.0f;
-            if (isInGas)
-                o2UseRate *= 1.5f;
-            if (Act == Action.Rescue)
-                o2UseRate *= 1.5f;
+        // 캐릭터 이동
+        Vector3 dir = new Vector3(hor, ver, 0.0f);
+        dir /= dir.magnitude;
+        rbody.velocity = dir * _movespeed;
 
-            AddO2(-UseO2 * o2UseRate * Time.deltaTime);
-        }
+        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
 
-        if (hor == 0 && ver == 0) // 이동 종료 시
-        {
-            _anim.SetBool("IsRunning", false); // 달리기 애니메이션 종료
+        // 이동 방향에 따라 캐릭터 이미지 회전
+        bool isRight = hor > 0;
+        if (isRight) {
+            if (_body.rotation.y != 180)
+                _body.rotation = new Quaternion(0, 180.0f, 0, transform.rotation.w);
         }
+        else {
+            if (_body.rotation.y != 0)
+                _body.rotation = Quaternion.identity;
+        }
+        
+        // 애니메이션 시작
+        if (!_anim.GetBool("IsRunning"))
+            _anim.SetBool("IsRunning", true);
+
+        // 산소 소비
+        float o2UseRate = 1.0f;
+        if (isInGas)
+            o2UseRate *= 1.5f;
+        if (Act == Action.Rescue)
+            o2UseRate *= 1.5f;
+
+        AddO2(-UseO2 * o2UseRate * Time.deltaTime);
+
+        // 트리거 실행
+        GameMgr.Instance.OnMovePlayer(currentTilePos);
     }
 
     protected InteractiveObject SearchAroundInteractiveObject(Vector3Int pos) {
@@ -157,10 +145,8 @@ public class Player : Charactor
         InteractiveBtn.SetActive(false);
     }
 
-    protected virtual void Activate() // 행동 들 (구조, 도구사용)
+    public virtual void Activate() // 행동 들 (구조, 도구사용)
     {
-        if (GameMgr.Instance.CurrentOperator != _playerNum) return;
-
         InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
         if (interactiveObject != null && interactiveObject.IsAvailable())
             ActivateInteractBtn(interactiveObject);
@@ -197,6 +183,31 @@ public class Player : Charactor
 				_playerAct = Action.Rescue; // Rescue 상태로 변경
             }
 		}
+
+        // 애니메이션 종료
+        if (_anim.GetBool("IsRunning"))
+            _anim.SetBool("IsRunning", false);
+
+        // UI 비활성화
+        UI_Actives.SetActive(false);
+        UI_ToolBtns.SetActive(false);
+    }
+    public void OnSetMain() {
+        // 이동 제한 해제
+        rbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
+    public void OnUnsetMain() {
+        // 이동 제한
+        rbody.constraints = RigidbodyConstraints2D.FreezeAll;
+        rbody.velocity = Vector3.zero;
+
+        // 애니메이션 종료
+        if (_anim.GetBool("IsRunning"))
+            _anim.SetBool("IsRunning", false);
+
+        // UI 비활성화
+        UI_Actives.SetActive(false);
+        UI_ToolBtns.SetActive(false);
     }
 
     public virtual void ActiveSkill() {

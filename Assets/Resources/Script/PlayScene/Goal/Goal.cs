@@ -30,4 +30,11 @@ public abstract class Goal {
 	public abstract bool IsSatisfied();
 	public abstract bool IsImpossible();
 	protected abstract void RefreshText();
+
+	public string GetExplanationText() {
+		return ExplanationText.text;
+	}
+	public string GetStatusText() {
+		return StatusText.text;
+	}
 }

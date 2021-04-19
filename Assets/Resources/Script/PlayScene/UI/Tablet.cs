@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Tablet {
 	private Image tabletCodeTop, tabletCodeBottom;
-	private const float TABLET_CODE_MOVE_SPEED = 0.005f;
+	private const float TABLET_CODE_MOVE_SPEED = 0.075f;
 	private Vector3 tabletCodeInitPos;
 
 	private Image tabletRecord;
@@ -22,6 +22,8 @@ public class Tablet {
     private List<int> currCams = new List<int>();
 
     private readonly Vector3 tabletMiddlePos;
+
+    private readonly Dictionary<int, KeyValuePair<int, int>> operatorCamPairs = new Dictionary<int, KeyValuePair<int, int>>();
 
     public Tablet() {
         GameObject tablet = GameObject.Find("UICanvas/SelectCanvas/Tablet");
@@ -70,7 +72,12 @@ public class Tablet {
         }
 
         SetFloor(TileMgr.Instance.MinFloor);
-	}
+
+        // Cam Operator Pair
+        KeyValuePair<int, int> nonePair = new KeyValuePair<int, int>(-1, -1);
+        for (int i = 0; i < 4; i++)
+            operatorCamPairs.Add(i, nonePair);
+    }
 
 	public void Update() {
         // 레코드 점멸
@@ -81,10 +88,11 @@ public class Tablet {
         }
 
         // 코드 이동
+        float speed = TABLET_CODE_MOVE_SPEED * Time.deltaTime;
         float codeHeight = tabletCodeBottom.rectTransform.rect.height;
-        float moveAmount = codeHeight * TABLET_CODE_MOVE_SPEED;
-        tabletCodeBottom.fillAmount -= TABLET_CODE_MOVE_SPEED;
-        tabletCodeTop.fillAmount += TABLET_CODE_MOVE_SPEED;
+        float moveAmount = codeHeight * speed;
+        tabletCodeBottom.fillAmount -= speed;
+        tabletCodeTop.fillAmount += speed;
         tabletCodeBottom.rectTransform.localPosition += new Vector3(0, moveAmount);
         tabletCodeTop.rectTransform.localPosition += new Vector3(0, moveAmount);
 
@@ -139,8 +147,37 @@ public class Tablet {
         camsWhite[currCam].SetActive(false);
         camsRed[currCam].SetActive(true);
 
-        OperatorSpawn currSpawn = operatorSpawnsList[currFloorIndex][currCam];
-        Vector3 targetPos = currSpawn.transform.position - tabletMiddlePos;
+        Vector3 targetPos = GetCurrCamPos() - tabletMiddlePos;
         Camera.main.GetComponent<FollowCam>().SetPosition(targetPos);
 	}
+
+    public Vector3 GetCurrCamPos() {
+        int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
+        int currCam = currCams[currFloorIndex];
+
+        OperatorSpawn currSpawn = operatorSpawnsList[currFloorIndex][currCam];
+        return currSpawn.transform.position;
+    }
+    public KeyValuePair<int, int> GetCurrCam() {
+        int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
+        int currCam = currCams[currFloorIndex];
+
+        return new KeyValuePair<int, int>(currFloor, currCam);
+	}
+    public KeyValuePair<int, int> GetCamPlacedOperator(int operatorNumber) {
+        return operatorCamPairs[operatorNumber];
+    }
+    public int GetOperatorAtCam(KeyValuePair<int, int> cam) {
+        for (int i = 0; i < operatorCamPairs.Count; i++) {
+            if (operatorCamPairs[i].Equals(cam))
+                return i;
+		}
+        return -1;
+    }
+    public void SetOperatorPair(int operatorNumber, KeyValuePair<int, int> cam) {
+        operatorCamPairs[operatorNumber] = cam;
+    }
+    public void ClearOperatorPair(int operatorNumber) {
+        operatorCamPairs[operatorNumber] = new KeyValuePair<int, int>(-1, -1);
+    }
 }

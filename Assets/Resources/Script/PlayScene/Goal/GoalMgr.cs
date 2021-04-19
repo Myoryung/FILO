@@ -79,6 +79,10 @@ public class GoalMgr {
         return goalObject;
     }
 
+    public List<Goal> GetMainGoals() {
+        return mainGoals;
+	}
+
     public bool IsAllSatisfied() {
         bool isSatisfied = true;
         foreach (Goal goal in mainGoals) {

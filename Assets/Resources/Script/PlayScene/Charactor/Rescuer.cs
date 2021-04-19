@@ -34,11 +34,6 @@ public class Rescuer : Player
         AddO2(-GetSkillUseO2());
     }
 
-    protected override void Move()
-    {
-        base.Move();
-    }
-
     protected override void OnTriggerEnter2D(Collider2D other)
     {
         base.OnTriggerEnter2D(other);

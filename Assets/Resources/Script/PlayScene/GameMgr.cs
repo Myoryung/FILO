@@ -17,7 +17,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     private Text _mentalText, _stateText, _charNameText;
-    private Text timerText = null;
+    private Text startBtnText, timerText = null;
     private Image _fadeImage = null;
 
     public enum LoadingState { Begin, Stay, End}
@@ -28,29 +28,32 @@ public class GameMgr : MonoBehaviour {
     }
     public int GameTurn = 0; // 게임 턴
     private int currTime = 0;
+
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
+    private int currPlayerIdx = 0;
+
+    private GameObject[] operatorPrefabs = new GameObject[4];
+    private GameObject[] operators = new GameObject[4];
 
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
-
-    private int currOperatorIdx = 0;
-    public int CurrentOperator {
-        get { return currOperatorIdx; }
-    }
 
 
     private Canvas selectCanvas, playCanvas;
 
-	private GameObject disasterAlaram = null;
+    private DisasterMgr disasterMgr;
+    private GameObject disasterAlaram = null;
     private Text disasterAlaramText = null;
 
     private GameObject stageEnd = null;
     private Text stageEndText = null;
 
-    private int _stage = 0;
     private Tablet tablet;
-    private DisasterMgr disasterMgr;
+    private GameObject[] operatorCards;
+    private Sprite operatorCardNormalSprite, operatorCardSelectedSprite;
+
     private GoalMgr goalMgr;
 
+    private int _stage = 0;
     public int stage {
         get { return _stage; }
     }
@@ -66,7 +69,7 @@ public class GameMgr : MonoBehaviour {
     }
 
     private bool bStagePlaying = false;
-    private bool bSelectOperatorInit = false;
+    private bool bSelectOperatorInit = false, bStageStartReady = false, bStageStartBtnClicked = false;
     private bool bTurnEndClicked = false, bStageEndClicked = false;
     private bool bSurvivorActive = false;
     private bool bDisasterAlarmPopup = false, bDisasterAlarmClicked = false;
@@ -102,12 +105,10 @@ public class GameMgr : MonoBehaviour {
         }
 
         if (bStagePlaying) {
-            if (CurrentOperator < players.Count) {
-                Player player = players[CurrentOperator];
-                ChangeMentalText(player);
-                ChangeStateText(player);
-                ChangeNameText();
-            }
+            Player player = players[currPlayerIdx];
+            ChangeMentalText(player);
+            ChangeStateText(player);
+            ChangeNameText();
 
             if (goalMgr.IsImpossible())
                 _currGameState = GameState.STAGE_END;
@@ -125,6 +126,22 @@ public class GameMgr : MonoBehaviour {
         string[] startTimeTokens = startTimeStr.Split(':');
         currTime = int.Parse(startTimeTokens[0])*60 + int.Parse(startTimeTokens[1]);
 
+        // Stage Content
+        string stageNamePreviewText = stageNode.SelectSingleNode("StageNamePreview").InnerText;
+        string stageNameText = stageNode.SelectSingleNode("StageName").InnerText;
+        string stageContentText = stageNode.SelectSingleNode("StageContent").InnerText;
+
+        string[] stageContentLines = stageContentText.Split('\n');
+        for (int i = 1; i < stageContentLines.Length; i++)
+            stageContentLines[i] = stageContentLines[i].Trim();
+        for (int i = 1; i <= 2 && i < stageContentLines.Length; i++)
+            stageContentLines[i] = "          " + stageContentLines[i];
+
+        stageContentText = "";
+        for (int i = 1; i < stageContentLines.Length; i++)
+            stageContentText += stageContentLines[i] + "\n";
+
+        // Disaster & Goal
         XmlNode disastersNode = stageNode.SelectSingleNode("Disasters");
         XmlNode goalsNode = stageNode.SelectSingleNode("Goals");
 
@@ -141,7 +158,42 @@ public class GameMgr : MonoBehaviour {
         selectCanvas.enabled = true;
         playCanvas.enabled = false;
 
-        // Load UI
+        // Load Select UI
+        Transform operatorCard = selectCanvas.transform.Find("OperatorSelect/OperatorCard");
+        operatorCards = new GameObject[operatorCard.childCount];
+        for (int i = 0; i < operatorCard.childCount; i++)
+            operatorCards[i] = operatorCard.GetChild(i).gameObject;
+
+        selectCanvas.transform.Find("StageGoal/StageNamePreview").GetComponentInChildren<Text>().text = stageNamePreviewText;
+		Text stageName = selectCanvas.transform.Find("StageGoal/StageName").GetComponent<Text>();
+        stageName.text = stageNameText;
+        stageName.SetNativeSize();
+
+        RectTransform stageBar = selectCanvas.transform.Find("StageGoal/StageBar").GetComponent<RectTransform>();
+        stageBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stageName.rectTransform.rect.width + 20);
+
+        GameObject goalPrefab = Resources.Load<GameObject>("Prefabs/UI/SelectUI_Goal");
+        Transform goals = selectCanvas.transform.Find("StageGoal/Goals");
+        List<Goal> mainGoals = goalMgr.GetMainGoals();
+
+        for (int i = 0; i < mainGoals.Count; i++) {
+            string explanation = mainGoals[i].GetExplanationText();
+            string status = mainGoals[i].GetStatusText();
+
+            GameObject goal = Instantiate(goalPrefab, goals);
+            goal.transform.Find("Explanation").GetComponent<Text>().text = explanation;
+            goal.transform.Find("Status").GetComponent<Text>().text = status;
+            goal.transform.localPosition = new Vector3(0, -20 + -30 * i);
+        }
+
+        RectTransform content = selectCanvas.transform.Find("StageGoal/Content").GetComponent<RectTransform>();
+        content.GetComponent<Text>().text = stageContentText;
+        content.anchoredPosition += new Vector2(0, -20 + -30*mainGoals.Count + -20);
+
+        startBtnText = selectCanvas.transform.Find("StartBtn").GetComponentInChildren<Text>();
+        ChangeStartBtnText();
+
+        // Load Play UI
         _fadeImage = playCanvas.transform.Find("Fade").GetComponent<Image>();
 
 		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
@@ -157,6 +209,15 @@ public class GameMgr : MonoBehaviour {
         timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
         ChangeTimerText();
 
+        // Load Resources
+        operatorPrefabs[0] = Resources.Load<GameObject>("Prefabs/Operator/Captain");
+        operatorPrefabs[1] = Resources.Load<GameObject>("Prefabs/Operator/HammerMan");
+        operatorPrefabs[2] = Resources.Load<GameObject>("Prefabs/Operator/Rescuers");
+        operatorPrefabs[3] = Resources.Load<GameObject>("Prefabs/Operator/Nurse");
+
+        operatorCardNormalSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/OperatorCardNormal");
+        operatorCardSelectedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/OperatorCardSelected");
+
         _currGameState = GameState.SELECT_OPERATOR;
     }
     private void SelectOperator() {
@@ -166,15 +227,22 @@ public class GameMgr : MonoBehaviour {
         }
 
         tablet.Update();
+        ChangeStartBtnText();
 
-        if (Input.GetMouseButtonUp(1)) {
-            players.Add(GameObject.Find("Captain").GetComponent<Player>());
-            players.Add(GameObject.Find("HammerMan").GetComponent<Player>());
-            players.Add(GameObject.Find("Nurse").GetComponent<Player>());
-            players.Add(GameObject.Find("Rescuers").GetComponent<Player>());
+        int cnt = 0;
+        foreach (GameObject oper in operators) {
+            if (oper != null)
+                cnt++;
+        }
+        bStageStartReady = (cnt == operators.Length);
+
+        if (bStageStartReady && bStageStartBtnClicked) {
+            bStageStartBtnClicked = false;
+
+            foreach (GameObject oper in operators)
+                players.Add(oper.GetComponent<Player>());
 
             tablet = null;
-
             _currGameState = GameState.STAGE_READY;
         }
     }
@@ -193,11 +261,16 @@ public class GameMgr : MonoBehaviour {
             player.StageStartActive();
 
         bStagePlaying = true;
+        players[currPlayerIdx].OnSetMain();
         SetFocusToCurrOperator();
 
         _currGameState = GameState.PLAYER_TURN;
     }
     private void PlayerTurn() {
+        Player currPlayer = players[currPlayerIdx];
+        currPlayer.Move();
+        currPlayer.Activate();
+
         if (bTurnEndClicked) {
             // 캐릭터들의 턴 종료 행동 함수 호출
             for (int i = 0; i < players.Count; i++)
@@ -293,6 +366,12 @@ public class GameMgr : MonoBehaviour {
         }
     }
 
+    public void OnClickStageStartBtn() {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        if (bStageStartReady)
+            bStageStartBtnClicked = true;
+    }
     public void OnClickTurnEnd() {
         if (CurrGameState != GameState.PLAYER_TURN) return;
 
@@ -302,14 +381,18 @@ public class GameMgr : MonoBehaviour {
             bTurnEndClicked = true;
     }
     public void OnClickChangeChar(bool isRight) {
-        int prevOperatorIdx = currOperatorIdx;
+        int prevPlayerIdx = currPlayerIdx;
 
-        if (isRight && currOperatorIdx+1 < players.Count)
-            currOperatorIdx++;
-        else if (!isRight && currOperatorIdx-1 >= 0)
-            currOperatorIdx--;
+        if (isRight && currPlayerIdx+1 < players.Count)
+            currPlayerIdx++;
+        else if (!isRight && currPlayerIdx-1 >= 0)
+            currPlayerIdx--;
 
-        SetFocusToCurrOperator();
+        if (prevPlayerIdx != currPlayerIdx) {
+            players[prevPlayerIdx].OnUnsetMain();
+            players[currPlayerIdx].OnSetMain();
+            SetFocusToCurrOperator();
+        }
     }
     public void OnClickTabletFloor(int floor) {
         if (CurrGameState != GameState.SELECT_OPERATOR) return;
@@ -321,6 +404,37 @@ public class GameMgr : MonoBehaviour {
 
         tablet.ChangeCam(number);
     }
+    public void OnClickOperatorCard(int operatorNumber) {
+        if (CurrGameState != GameState.SELECT_OPERATOR) return;
+
+        // Operator 생성 및 삭제
+        KeyValuePair<int, int> prevCam = tablet.GetCamPlacedOperator(operatorNumber);
+        KeyValuePair<int, int> currCam = tablet.GetCurrCam();
+
+        if (prevCam.Equals(currCam)) {
+            tablet.ClearOperatorPair(operatorNumber);
+			Destroy(operators[operatorNumber]);
+            operators[operatorNumber] = null;
+            operatorCards[operatorNumber].GetComponent<Image>().sprite = operatorCardNormalSprite;
+        }
+        else {
+            // 현재 캠에 존재하는 다른 대원 삭제
+            int prevOperatorNumber = tablet.GetOperatorAtCam(currCam);
+            if (prevOperatorNumber != -1) {
+                tablet.ClearOperatorPair(prevOperatorNumber);
+                Destroy(operators[prevOperatorNumber]);
+                operators[prevOperatorNumber] = null;
+                operatorCards[prevOperatorNumber].GetComponent<Image>().sprite = operatorCardNormalSprite;
+			}
+
+            if (operators[operatorNumber] == null) {
+                operators[operatorNumber] = Instantiate(operatorPrefabs[operatorNumber]);
+				operatorCards[operatorNumber].GetComponent<Image>().sprite = operatorCardSelectedSprite;
+			}
+			operators[operatorNumber].transform.position = tablet.GetCurrCamPos();
+            tablet.SetOperatorPair(operatorNumber, currCam);
+        }
+    }
     public void OnClickDisasterAlarm() {
         if (CurrGameState == GameState.DISASTER_ALARM)
             bDisasterAlarmClicked = true;
@@ -328,7 +442,7 @@ public class GameMgr : MonoBehaviour {
 
     public void SetFocusToCurrOperator() {
         FollowCam cam = Camera.main.GetComponent<FollowCam>();
-        Transform currOperatorTransform = players[currOperatorIdx].transform;
+        Transform currOperatorTransform = players[currPlayerIdx].transform;
         cam.SetPosition(currOperatorTransform.position);
         cam.SetTarget(currOperatorTransform);
     }
@@ -388,7 +502,7 @@ public class GameMgr : MonoBehaviour {
     public void ChangeNameText() {
         if (_charNameText == null) return;
 
-        switch (CurrentOperator) {
+        switch (currPlayerIdx) {
         case 0:
             _charNameText.text = "01. 주인공";
             break;
@@ -402,6 +516,12 @@ public class GameMgr : MonoBehaviour {
             _charNameText.text = "04. 레  오";
             break;
         }
+    }
+    public void ChangeStartBtnText() {
+        if (bStageStartReady)
+            startBtnText.text = "임무 시작";
+        else
+            startBtnText.text = string.Format("{0,2}:{1:00}", (currTime / 60), (currTime % 60));
     }
     public void ChangeTimerText() {
         if (timerText == null) return;
@@ -448,7 +568,7 @@ public class GameMgr : MonoBehaviour {
         return GetAroundPlayers(pos, 1);
     }
     public void ChangeFloorPlayer(bool isUp) {
-        players[CurrentOperator].ChangeFloor(isUp);
+        players[currPlayerIdx].ChangeFloor(isUp);
 	}
 
     public void AddSurvivor(Vector3Int pos, Survivor survivor) {

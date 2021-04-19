@@ -13,10 +13,6 @@ public class HammerMan : Player
         base.Update();
     }
 
-    protected override void Move() {
-        base.Move();
-    }
-
     public override void ActiveSkill() {
         base.ActiveSkill();
 

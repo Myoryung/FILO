@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 
-public class Rescuer : Player
-{
+public class Rescuer : Player {
+
+    public const int OPERATOR_NUMBER = 2;
+    public override int OperatorNumber {
+        get { return OPERATOR_NUMBER; }
+    }
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -38,9 +43,5 @@ public class Rescuer : Player
     protected override void OnTriggerEnter2D(Collider2D other)
     {
         base.OnTriggerEnter2D(other);
-    }
-
-    public override int OperatorNumber {
-        get { return 2; }
     }
 }

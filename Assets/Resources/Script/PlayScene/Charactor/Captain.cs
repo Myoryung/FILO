@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 
 public class Captain : Player {
+
+    public const int OPERATOR_NUMBER = 0;
+    public override int OperatorNumber {
+        get { return OPERATOR_NUMBER; }
+    }
+
     Vector3Int SkillRange = new Vector3Int(7, 7, 0); // 스킬 범위
     Vector3Int OldPos;
 
@@ -57,9 +63,5 @@ public class Captain : Player {
                 TileMgr.Instance.TurnWarning(SearchPos, false);
             }
         }
-    }
-
-    public override int OperatorNumber {
-        get { return 0; }
     }
 }

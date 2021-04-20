@@ -514,16 +514,16 @@ public class GameMgr : MonoBehaviour {
         if (_charNameText == null) return;
 
         switch (players[currPlayerIdx].OperatorNumber) {
-        case 0:
+        case Captain.OPERATOR_NUMBER:
             _charNameText.text = "01. 주인공";
             break;
-        case 1:
+        case HammerMan.OPERATOR_NUMBER:
             _charNameText.text = "02. 빅토르";
             break;
-        case 2:
+        case Rescuer.OPERATOR_NUMBER:
             _charNameText.text = "03. 레  오";
             break;
-        case 3:
+        case Nurse.OPERATOR_NUMBER:
             _charNameText.text = "04. 시노에";
             break;
         }

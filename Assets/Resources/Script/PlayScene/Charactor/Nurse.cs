@@ -2,8 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Nurse : Player
-{
+public class Nurse : Player {
+
+    public const int OPERATOR_NUMBER = 3;
+    public override int OperatorNumber {
+        get { return OPERATOR_NUMBER; }
+    }
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -53,9 +58,5 @@ public class Nurse : Player
         }
 
         TileMgr.Instance.RemoveEffect(oPos);
-    }
-
-    public override int OperatorNumber {
-        get { return 3; }
     }
 }

@@ -1,8 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class HammerMan : Player
-{
+public class HammerMan : Player {
+
+    public const int OPERATOR_NUMBER = 1;
+    public override int OperatorNumber {
+        get { return OPERATOR_NUMBER; }
+    }
+
     // Start is called before the first frame update
     protected override void Start() {
         base.Start();
@@ -49,8 +54,5 @@ public class HammerMan : Player
 
     protected override void OnTriggerEnter2D(Collider2D other) {
         base.OnTriggerEnter2D(other);
-    }
-    public override int OperatorNumber {
-        get { return 1; }
     }
 }

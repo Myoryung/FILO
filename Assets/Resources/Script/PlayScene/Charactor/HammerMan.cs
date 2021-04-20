@@ -50,4 +50,7 @@ public class HammerMan : Player
     protected override void OnTriggerEnter2D(Collider2D other) {
         base.OnTriggerEnter2D(other);
     }
+    public override int OperatorNumber {
+        get { return 1; }
+    }
 }

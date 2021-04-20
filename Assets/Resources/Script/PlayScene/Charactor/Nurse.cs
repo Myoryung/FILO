@@ -54,4 +54,8 @@ public class Nurse : Player
 
         TileMgr.Instance.RemoveEffect(oPos);
     }
+
+    public override int OperatorNumber {
+        get { return 3; }
+    }
 }

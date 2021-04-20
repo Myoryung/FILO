@@ -39,4 +39,8 @@ public class Rescuer : Player
     {
         base.OnTriggerEnter2D(other);
     }
+
+    public override int OperatorNumber {
+        get { return 2; }
+    }
 }

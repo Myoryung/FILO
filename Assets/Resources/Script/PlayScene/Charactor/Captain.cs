@@ -58,4 +58,8 @@ public class Captain : Player {
             }
         }
     }
+
+    public override int OperatorNumber {
+        get { return 0; }
+    }
 }

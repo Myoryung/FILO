@@ -43,6 +43,9 @@ public class Player : Charactor
     {
         get { return _currentTilePos; }
     }
+    public virtual int OperatorNumber {
+        get { return -1; }
+    }
 
     protected override void Start()
     {

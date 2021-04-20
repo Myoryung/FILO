@@ -15,11 +15,13 @@ public abstract class InteractiveObject : MonoBehaviour
 	private void Start() {
         tilePos = TileMgr.Instance.WorldToCell(transform.position);
 
+        conditionCanvas = transform.Find("Canvas").gameObject;
+        conditionCanvas.SetActive(false);
         if (conditionText != null) {
             conditionText = "조건\n" + conditionText;
 
-            Text text = GetComponentInChildren<Text>();
-            Image image = GetComponentInChildren<Image>();
+            Image image = conditionCanvas.transform.Find("Image").GetComponent<Image>();
+            Text text = image.transform.Find("Text").GetComponent<Text>();
 
             text.text = conditionText;
             text.rectTransform.sizeDelta = new Vector2(text.preferredWidth, text.preferredHeight);
@@ -27,8 +29,6 @@ public abstract class InteractiveObject : MonoBehaviour
 
             isConditionInit = true;
         }
-        conditionCanvas = transform.Find("Canvas").gameObject;
-        conditionCanvas.SetActive(false);
     }
 
     public virtual bool IsActive() {

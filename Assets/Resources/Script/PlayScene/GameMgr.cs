@@ -167,7 +167,7 @@ public class GameMgr : MonoBehaviour {
         selectCanvas.transform.Find("StageGoal/StageNamePreview").GetComponentInChildren<Text>().text = stageNamePreviewText;
 		Text stageName = selectCanvas.transform.Find("StageGoal/StageName").GetComponent<Text>();
         stageName.text = stageNameText;
-        stageName.SetNativeSize();
+        stageName.rectTransform.sizeDelta = new Vector2(stageName.preferredWidth, stageName.preferredHeight);
 
         RectTransform stageBar = selectCanvas.transform.Find("StageGoal/StageBar").GetComponent<RectTransform>();
         stageBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stageName.rectTransform.rect.width + 20);

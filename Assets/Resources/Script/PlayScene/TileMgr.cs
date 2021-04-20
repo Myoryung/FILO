@@ -36,19 +36,19 @@ public class TileMgr {
     };
 
     public static TileMgr Instance {
-        get {
-            if (m_instance == null)
-                m_instance = new TileMgr();
-            return m_instance;
-        }
+        get { return m_instance; }
+    }
+    public static void CreateInstance(int stage) {
+        if (m_instance == null)
+            m_instance = new TileMgr(stage);
     }
 
-    public TileMgr() {
+    private TileMgr(int stage) {
         Floors = new List<GameObject>();
 
         // Load XML
         XmlDocument doc = new XmlDocument();
-        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + GameMgr.Instance.stage);
+        TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
         doc.LoadXml(textAsset.text);
 
         XmlNode floorNode = doc.SelectSingleNode("Stage/Floors");
@@ -61,7 +61,7 @@ public class TileMgr {
         GameObject ParentFloor = GameObject.Find("Floor");
         for(int i=MinFloor;i<=MaxFloor;i++)
         {
-            Object floorPath = Resources.Load("Stage/Stage" + GameMgr.Instance.stage + "/Floor" + i);
+            Object floorPath = Resources.Load("Stage/Stage" + stage + "/Floor" + i);
             GameObject floor = (GameObject)Object.Instantiate(floorPath, ParentFloor.transform);
             floor.SetActive(true);
             Floors.Add(floor);

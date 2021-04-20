@@ -117,6 +117,9 @@ public class GameMgr : MonoBehaviour {
     }
 
     private void StageSetup() {
+        // Create TileMgr Instance
+        TileMgr.CreateInstance(stage);
+
         // Load XML
         XmlDocument doc = new XmlDocument();
         TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);

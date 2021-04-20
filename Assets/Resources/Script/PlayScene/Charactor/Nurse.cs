@@ -22,10 +22,10 @@ public class Nurse : Player
     }
 
     public override void ActiveSkill() {
-        base.ActiveSkill();
-
         if (CurrentO2 >= GetSkillUseO2())
             StartCoroutine(Heal()); // 스킬 발동
+    }
+    public override void ActiveUltSkill() {
     }
 
     IEnumerator Heal() {

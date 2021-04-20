@@ -14,10 +14,10 @@ public class HammerMan : Player
     }
 
     public override void ActiveSkill() {
-        base.ActiveSkill();
-
         if (CurrentO2 >= GetSkillUseO2())
             StartCoroutine(RescueHammer()); // 스킬 발동
+    }
+    public override void ActiveUltSkill() {
     }
 
     IEnumerator RescueHammer() {

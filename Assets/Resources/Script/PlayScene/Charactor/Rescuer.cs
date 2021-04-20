@@ -15,7 +15,6 @@ public class Rescuer : Player
     }
 
     public override void ActiveSkill() {
-        base.ActiveSkill();
         if (CurrentO2 < GetSkillUseO2())
             return;
 
@@ -32,6 +31,8 @@ public class Rescuer : Player
         }
 
         AddO2(-GetSkillUseO2());
+    }
+    public override void ActiveUltSkill() {
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)

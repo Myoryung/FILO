@@ -27,6 +27,8 @@ public class Captain : Player {
             OldPos = currentTilePos;
         }
     }
+    public override void ActiveUltSkill() {
+    }
 
     private void TurnOnWarning() {
         for (int i = -(SkillRange.x/2); i < (Mathf.Ceil(SkillRange.x)/2); i++) {

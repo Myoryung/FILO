@@ -12,7 +12,7 @@ public abstract class InteractiveObject : MonoBehaviour
     protected string conditionText;
     private bool isConditionInit = false;
 
-	private void Start() {
+	protected virtual void Start() {
         tilePos = TileMgr.Instance.WorldToCell(transform.position);
 
         conditionCanvas = transform.Find("Canvas").gameObject;

@@ -67,12 +67,15 @@ public class TileMgr {
             Floors.Add(floor);
 
             floor.name = "Floor" + i;
-            BackgroundTilemaps.Add(floor.transform.Find("Background").gameObject.GetComponent<Tilemap>());
+            Tilemap background = floor.transform.Find("Background").gameObject.GetComponent<Tilemap>();
+            BackgroundTilemaps.Add(background);
             ObjectTilemaps.Add(floor.transform.Find("Object").gameObject.GetComponent<Tilemap>());
             EnvironmentTilemaps.Add(floor.transform.Find("Environment").gameObject.GetComponent<Tilemap>());
             SpawnTilemaps.Add(floor.transform.Find("Spawn").gameObject.GetComponent<Tilemap>());
             EffectTilemaps.Add(floor.transform.Find("Effect").gameObject.GetComponent<Tilemap>());
             WarningTilemaps.Add(floor.transform.Find("Warning").gameObject.GetComponent<Tilemap>());
+
+            background.CompressBounds();
         }
         SwitchFloorTilemap(StartFloor);
 
@@ -134,6 +137,13 @@ public class TileMgr {
             Gas[] gasArr = environmentTilemap.GetComponentsInChildren<Gas>();
             foreach (Gas gas in gasArr)
                 gas.Move();
+        }
+    }
+    public void UpdateDrone() {
+        foreach (Tilemap objectTilemap in ObjectTilemaps) {
+            INO_Drone[] drones = objectTilemap.GetComponentsInChildren<INO_Drone>();
+            foreach (INO_Drone drone in drones)
+                drone.TurnUpdate();
         }
     }
 
@@ -507,6 +517,7 @@ public class TileMgr {
         if (obj != null && obj.CompareTag(tag))
             EnvironmentTilemaps[floorIndex].SetTile(basePos, null);
     }
+
     public void SwitchFloorTilemap(int floorNumber) {
         int nextFloorIdx = floorNumber - MinFloor;
 
@@ -519,5 +530,14 @@ public class TileMgr {
         WarningTilemaps[nextFloorIdx].GetComponent<TilemapRenderer>().enabled = true;
         
         _currentFloor = nextFloorIdx;
+    }
+    public Vector2 GetFloorSize(int floor) {
+        int floorIndex = floor - MinFloor;
+
+        Tilemap tilemap = BackgroundTilemaps[floorIndex];
+        BoundsInt bounds = tilemap.cellBounds;
+
+        Vector2 size = new Vector2(tilemap.cellSize.x * bounds.size.x, tilemap.cellSize.y * bounds.size.y);
+        return size;
     }
 }

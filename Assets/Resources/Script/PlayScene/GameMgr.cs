@@ -364,6 +364,9 @@ public class GameMgr : MonoBehaviour {
         GameTurn++;
         currTime += 5;
         ChangeTimerText();
+
+        TileMgr.Instance.UpdateDrone();
+
         goalMgr.OnTurnEnd(currTime);
 
         _currGameState = GameState.PLAYER_TURN;

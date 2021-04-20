@@ -32,9 +32,6 @@ public class GameMgr : MonoBehaviour {
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
     private int currPlayerIdx = 0;
 
-    private GameObject[] operatorPrefabs = new GameObject[4];
-    private GameObject[] operators = new GameObject[4];
-
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
 
@@ -48,8 +45,12 @@ public class GameMgr : MonoBehaviour {
     private Text stageEndText = null;
 
     private Tablet tablet;
-    private GameObject[] operatorCards;
     private Sprite operatorCardNormalSprite, operatorCardSelectedSprite;
+    private GameObject[] operatorCards = new GameObject[4];
+    private int operatorCardNum;
+
+    private GameObject[] operatorPrefabs = new GameObject[4];
+    private GameObject[] operators = new GameObject[4];
 
     private GoalMgr goalMgr;
 
@@ -116,6 +117,9 @@ public class GameMgr : MonoBehaviour {
     }
 
     private void StageSetup() {
+        // Create TileMgr Instance
+        TileMgr.CreateInstance(stage);
+
         // Load XML
         XmlDocument doc = new XmlDocument();
         TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
@@ -160,14 +164,19 @@ public class GameMgr : MonoBehaviour {
 
         // Load Select UI
         Transform operatorCard = selectCanvas.transform.Find("OperatorSelect/OperatorCard");
-        operatorCards = new GameObject[operatorCard.childCount];
-        for (int i = 0; i < operatorCard.childCount; i++)
-            operatorCards[i] = operatorCard.GetChild(i).gameObject;
+        operatorCardNum = 0;
+        for (int i = 0; i < operatorCard.childCount; i++) {
+            GameObject go = operatorCard.GetChild(i).gameObject;
+            if (go.activeSelf) {
+                operatorCards[i] = go;
+                operatorCardNum++;
+            }
+        }
 
         selectCanvas.transform.Find("StageGoal/StageNamePreview").GetComponentInChildren<Text>().text = stageNamePreviewText;
 		Text stageName = selectCanvas.transform.Find("StageGoal/StageName").GetComponent<Text>();
         stageName.text = stageNameText;
-        stageName.SetNativeSize();
+        stageName.rectTransform.sizeDelta = new Vector2(stageName.preferredWidth, stageName.preferredHeight);
 
         RectTransform stageBar = selectCanvas.transform.Find("StageGoal/StageBar").GetComponent<RectTransform>();
         stageBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stageName.rectTransform.rect.width + 20);
@@ -227,20 +236,22 @@ public class GameMgr : MonoBehaviour {
         }
 
         tablet.Update();
-        ChangeStartBtnText();
 
         int cnt = 0;
         foreach (GameObject oper in operators) {
             if (oper != null)
                 cnt++;
         }
-        bStageStartReady = (cnt == operators.Length);
+        bStageStartReady = (cnt == operatorCardNum);
+        ChangeStartBtnText();
 
         if (bStageStartReady && bStageStartBtnClicked) {
             bStageStartBtnClicked = false;
 
-            foreach (GameObject oper in operators)
-                players.Add(oper.GetComponent<Player>());
+            foreach (GameObject oper in operators) {
+                if (oper != null)
+                    players.Add(oper.GetComponent<Player>());
+            }
 
             tablet = null;
             _currGameState = GameState.STAGE_READY;
@@ -353,6 +364,9 @@ public class GameMgr : MonoBehaviour {
         GameTurn++;
         currTime += 5;
         ChangeTimerText();
+
+        TileMgr.Instance.UpdateDrone();
+
         goalMgr.OnTurnEnd(currTime);
 
         _currGameState = GameState.PLAYER_TURN;
@@ -502,18 +516,18 @@ public class GameMgr : MonoBehaviour {
     public void ChangeNameText() {
         if (_charNameText == null) return;
 
-        switch (currPlayerIdx) {
-        case 0:
+        switch (players[currPlayerIdx].OperatorNumber) {
+        case Captain.OPERATOR_NUMBER:
             _charNameText.text = "01. 주인공";
             break;
-        case 1:
+        case HammerMan.OPERATOR_NUMBER:
             _charNameText.text = "02. 빅토르";
             break;
-        case 2:
-            _charNameText.text = "03. 시노에";
+        case Rescuer.OPERATOR_NUMBER:
+            _charNameText.text = "03. 레  오";
             break;
-        case 3:
-            _charNameText.text = "04. 레  오";
+        case Nurse.OPERATOR_NUMBER:
+            _charNameText.text = "04. 시노에";
             break;
         }
     }

@@ -4,7 +4,14 @@ using UnityEngine;
 
 public class INO_CircuitBreaker : InteractiveObject {
 
-	public override bool IsAvailable() {
+    private void Awake() {
+        conditionText = "주변에 대원 1명 존재";
+    }
+
+    public override bool IsActive() {
+        return true;
+    }
+    public override bool IsAvailable() {
 		return true;
 	}
 
@@ -12,7 +19,7 @@ public class INO_CircuitBreaker : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        INO_Socket socket = TileMgr.Instance.GetMatchedSocket(Position);
+        INO_Socket socket = TileMgr.Instance.GetMatchedSocket(tilePos);
         if (socket != null)
             socket.Activate();
     }

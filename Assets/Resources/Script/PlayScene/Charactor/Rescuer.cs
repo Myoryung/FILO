@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 
-public class Rescuer : Player
-{
+public class Rescuer : Player {
+
+    public const int OPERATOR_NUMBER = 2;
+    public override int OperatorNumber {
+        get { return OPERATOR_NUMBER; }
+    }
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -15,7 +20,6 @@ public class Rescuer : Player
     }
 
     public override void ActiveSkill() {
-        base.ActiveSkill();
         if (CurrentO2 < GetSkillUseO2())
             return;
 
@@ -32,6 +36,8 @@ public class Rescuer : Player
         }
 
         AddO2(-GetSkillUseO2());
+    }
+    public override void ActiveUltSkill() {
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)

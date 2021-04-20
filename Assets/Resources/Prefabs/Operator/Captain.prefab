@@ -20,9 +20,9 @@ MonoBehaviour:
   MTGage: {fileID: 3478624996984236030}
   UI_Actives: {fileID: 3478624997929221601}
   UI_ToolBtns: {fileID: 3478624997932862598}
-  _playerNum: 0
   _movespeed: 500
   _maxMental: 4
+  skillUseO2: 0
   _body: {fileID: 3478624997555938957}
 --- !u!1001 &3530598493537103851
 PrefabInstance:
@@ -134,7 +134,12 @@ PrefabInstance:
     - target: {fileID: 52279160323031584, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OpenToolBtns
+      value: OnClickBehaviorBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160323031584, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 52279160326674222, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
@@ -189,7 +194,7 @@ PrefabInstance:
     - target: {fileID: 52279160571190275, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ActiveSkill
+      value: OnClickBehaviorBtn
       objectReference: {fileID: 0}
     - target: {fileID: 52279160575806999, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
@@ -316,6 +321,16 @@ PrefabInstance:
       propertyPath: m_Bounds.m_Extent.y
       value: 0.40402138
       objectReference: {fileID: 0}
+    - target: {fileID: 52279160912314025, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160912314025, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4266554766673676318}
     - target: {fileID: 52279161088578952, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
       propertyPath: m_Bounds.m_Center.x
@@ -419,7 +434,12 @@ PrefabInstance:
     - target: {fileID: 52279161831615933, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StartRescue
+      value: OnClickBehaviorBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279161831615933, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 52279161942216492, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}

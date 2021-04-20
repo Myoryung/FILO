@@ -1,8 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class HammerMan : Player
-{
+public class HammerMan : Player {
+
+    public const int OPERATOR_NUMBER = 1;
+    public override int OperatorNumber {
+        get { return OPERATOR_NUMBER; }
+    }
+
     // Start is called before the first frame update
     protected override void Start() {
         base.Start();
@@ -14,10 +19,10 @@ public class HammerMan : Player
     }
 
     public override void ActiveSkill() {
-        base.ActiveSkill();
-
         if (CurrentO2 >= GetSkillUseO2())
             StartCoroutine(RescueHammer()); // 스킬 발동
+    }
+    public override void ActiveUltSkill() {
     }
 
     IEnumerator RescueHammer() {

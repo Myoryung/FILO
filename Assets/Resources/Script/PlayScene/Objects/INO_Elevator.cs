@@ -8,7 +8,7 @@ public class INO_Elevator : InteractiveObject {
     private bool isUp;
     
     public override bool IsAvailable() {
-        INO_ElevatorPowerSupply powerSupply = TileMgr.Instance.GetMatchedPowerSupply(Position);
+        INO_ElevatorPowerSupply powerSupply = TileMgr.Instance.GetMatchedPowerSupply(tilePos);
         return powerSupply.ExistAroundElectric();
     }
 

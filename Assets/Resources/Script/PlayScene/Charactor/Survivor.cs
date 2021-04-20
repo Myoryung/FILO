@@ -107,9 +107,7 @@ public class Survivor : Charactor {
 	}
 
     public void TurnOffRender() {
-        Transform sprite = gameObject.transform.Find("Sprite");
-        Transform ui = gameObject.transform.Find("UI");
-        sprite.GetComponent<SpriteRenderer>().enabled = false;
-        ui.gameObject.SetActive(false);
+        GetComponent<SpriteRenderer>().enabled = false;
+        transform.Find("UI").gameObject.SetActive(false);
     }
 }

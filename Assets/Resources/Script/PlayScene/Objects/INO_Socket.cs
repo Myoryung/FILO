@@ -11,9 +11,9 @@ public class INO_Socket : InteractiveObject {
     public override void Activate() {
         base.Activate();
 
-        if (TileMgr.Instance.ExistElectric(Position))
-            TileMgr.Instance.RemoveElectric(Position);
+        if (TileMgr.Instance.ExistElectric(tilePos))
+            TileMgr.Instance.RemoveElectric(tilePos);
         else
-            TileMgr.Instance.CreateElectric(Position);
+            TileMgr.Instance.CreateElectric(tilePos);
     }
 }

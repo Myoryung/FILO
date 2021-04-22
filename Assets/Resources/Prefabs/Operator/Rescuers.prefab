@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HPGage: {fileID: 9099260878359408989}
   O2Gage: {fileID: 9099260879592242045}
+  UI_Actives: {fileID: 9099260879055027397}
   _maxo2: 70
   _useo2: 2
   _maxHp: 60
-  MTGage: {fileID: 9099260879731009242}
-  UI_Actives: {fileID: 9099260879055027397}
-  UI_ToolBtns: {fileID: 9099260879050280354}
   _movespeed: 500
+  _body: {fileID: 9099260879159830441}
+  MTGage: {fileID: 9099260879731009242}
+  UI_ToolBtns: {fileID: 9099260879050280354}
   _maxMental: 4
   skillUseO2: 10
-  _body: {fileID: 9099260879159830441}
+  robotDot: {fileID: 0}
 --- !u!1001 &9150938486230838991
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -180,6 +181,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: UseTool
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449976165633515732, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 555583687497710267}
+    - target: {fileID: 3449976165633515732, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickBehaviorBtn
       objectReference: {fileID: 0}
     - target: {fileID: 6139787915764308413, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Captain : Player {
 
@@ -10,7 +11,14 @@ public class Captain : Player {
     Vector3Int SkillRange = new Vector3Int(7, 7, 0); // 스킬 범위
     Vector3Int OldPos;
 
-	protected override void Start() {
+    protected override void Awake()
+    {
+        base.Awake();
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator0");
+        ultName = "광범위 소화지원";
+    }
+
+    protected override void Start() {
 		base.Start();
         OldPos = currentTilePos;
     }
@@ -33,7 +41,13 @@ public class Captain : Player {
             OldPos = currentTilePos;
         }
     }
-    public override void ActiveUltSkill() {
+
+    public override void ActiveUltSkill()
+    {
+        base.ActiveUltSkill();
+        Action oldact = _playerAct;
+        StartCoroutine(ShowCutScene());
+        StartCoroutine(MassExtinguish(oldact));
     }
 
     private void TurnOnWarning() {
@@ -61,6 +75,54 @@ public class Captain : Player {
             for (int i = -clearArea; i <= clearArea; i++) {
                 Vector3Int SearchPos = OldPos + new Vector3Int(i, clearArea * nPos.y, 0);
                 TileMgr.Instance.TurnWarning(SearchPos, false);
+            }
+        }
+    }
+    IEnumerator MassExtinguish(Action act)
+    {
+        Vector3Int ultSkillRange = new Vector3Int(3, 3, 0);
+        for (int i = -ultSkillRange.x; i <= ultSkillRange.x; i++)
+        {
+            for (int j = -ultSkillRange.y; j <= ultSkillRange.y; j++)
+            {
+                TileMgr.Instance.SetEffect(_currentTilePos + new Vector3Int(i, j, 0), new Color(1, 1, 0, 0.3f));
+            }
+        }
+        while (true)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = transform.position.z;
+            Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos); // 타일맵에서 마우스 좌표
+            // 마우스 위에 사용 시 적용범위 타일 표시
+            if (Input.GetMouseButton(0))
+            {
+
+                Vector3 localPos = mousePos - transform.position; // 마우스 캐릭터 기준 로컬좌표
+                if (_currentTilePos.x - moustIntPos.x <= ultSkillRange.x &&
+                    _currentTilePos.x - moustIntPos.x >= -ultSkillRange.x &&
+                    _currentTilePos.y - moustIntPos.y <= ultSkillRange.y &&
+                    _currentTilePos.y - moustIntPos.y >= -ultSkillRange.y) // 누른 위치가 캐릭터 기준 2칸 이내라면
+                {
+                    Vector2Int SpreadRange = new Vector2Int(1, 1); // 불 제거 범위
+                    for (int i = -SpreadRange.x; i <= SpreadRange.x; i++)
+                    {
+                        for (int j = -SpreadRange.y; j < SpreadRange.y; j++)
+                        {
+                            Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
+                            TileMgr.Instance.RemoveFire(fPos);
+                        }
+                    }
+                }
+                break;
+            }
+            yield return null;
+        }
+        _playerAct = act;
+        for (int i = -ultSkillRange.x; i <= ultSkillRange.x; i++)
+        {
+            for (int j = -ultSkillRange.y; j <= ultSkillRange.y; j++)
+            {
+                TileMgr.Instance.SetEffect(_currentTilePos + new Vector3Int(i, j, 0), new Color(1, 1, 1, 0));
             }
         }
     }

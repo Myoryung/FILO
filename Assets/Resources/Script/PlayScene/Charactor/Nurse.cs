@@ -9,6 +9,12 @@ public class Nurse : Player {
         get { return OPERATOR_NUMBER; }
     }
 
+    protected override void Awake()
+    {
+        base.Awake();
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator3");
+        ultName = "회복 드론";
+    }
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -30,7 +36,13 @@ public class Nurse : Player {
         if (CurrentO2 >= GetSkillUseO2())
             StartCoroutine(Heal()); // 스킬 발동
     }
-    public override void ActiveUltSkill() {
+
+    public override void ActiveUltSkill()
+    {
+        base.ActiveUltSkill();
+        Action oldact = _playerAct;
+        StartCoroutine(ShowCutScene());
+        StartCoroutine(HealDrone(oldact));
     }
 
     IEnumerator Heal() {
@@ -58,5 +70,33 @@ public class Nurse : Player {
         }
 
         TileMgr.Instance.RemoveEffect(oPos);
+    }
+
+    IEnumerator HealDrone(Action act)
+    {
+        while(true)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mousePos.z = transform.position.z;
+
+                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector3.forward, 100.0f);
+                if(hit)
+                {
+                    if(hit.transform.CompareTag("Player"))
+                    {
+                        Player target = hit.transform.GetComponent<Player>();
+                        target.AddHP(target.MaxHP / 2);
+                        target.AddO2(target.MaxO2 / 2);
+                        //카메라 타겟 연출 추가 필요
+                        //카메라 복귀 연출 추가 필요
+                        break;
+                    }
+                }
+            }
+            yield return null;
+        }
+        _playerAct = act;
     }
 }

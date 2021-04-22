@@ -8,17 +8,17 @@ public class Player : Charactor
 {
     // UI 및 타일 정보
     public Image MTGage; // 멘탈
-    public GameObject UI_Actives; // 행동 버튼 UI
     public GameObject UI_ToolBtns; // 도구 버튼 UI
+    private GameObject CutScene; // 궁극기 컷씬
+    protected Sprite cutSceneIlust = null;
+    protected string ultName = null;
 
     // 플레이어 스테이터스
-    public enum Action { Idle, Walk, Run, Carry, Rescue, Interact, Panic, Retire, MoveFloor } // 캐릭터 행동 상태 종류
+    public enum Action { Idle, Walk, Run, Carry, Rescue, ActiveUlt, Interact, Panic, Retire, MoveFloor } // 캐릭터 행동 상태 종류
     protected Action _playerAct;
 
     private Survivor _rescuingSurvivor; // 현재 구조중인 생존자
     private InteractiveObject aroundInteractiveObject;
-    [SerializeField]
-    private float _movespeed = 0.0f; // 캐릭터 이동속도
 
     [SerializeField]
     private float _maxMental = 0; // 최대 멘탈
@@ -27,24 +27,21 @@ public class Player : Charactor
     [SerializeField]
     private float skillUseO2; // 스킬 발동 시 사용되는 산소량
     private const float O2_ADDED_PER_TURN = 10.0f; // 턴 종료시마다 회복되는 산소량
+    protected bool isUsedUlt = false;
 
     // 타일 충돌체크용 값
-    private Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
     private bool isInSafetyArea = false, isInGas = false, isInStair = false;
     private float startTimeInFire = 0, startTimeInElectric = 0;
 
 	// Local Component
 	private Animator _anim; // 캐릭터 애니메이션
-    [SerializeField]
-    private Transform _body = null; // 캐릭터 이미지의 Transform
-    private Rigidbody2D rbody = null;
     
-    public Vector3Int currentTilePos
-    {
-        get { return _currentTilePos; }
-    }
     public virtual int OperatorNumber {
         get { return -1; }
+    }
+
+    protected virtual void Awake()
+    {
     }
 
     protected override void Start()
@@ -57,6 +54,7 @@ public class Player : Charactor
         //SetFOV();
 
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
+        CutScene = GameObject.Find("MiddleUI").transform.Find("CutScene").gameObject;
     }
 
     // Update is called once per frame
@@ -123,7 +121,8 @@ public class Player : Charactor
             aroundInteractiveObject.SetActive_ConditionUI(false);
     }
 
-    public virtual void Move() {
+    public override void Move() {
+        base.Move();
         float hor = Input.GetAxisRaw("Horizontal"); // 가속도 없는 Raw값 사용
         float ver = Input.GetAxisRaw("Vertical");
 
@@ -175,7 +174,7 @@ public class Player : Charactor
         GameMgr.Instance.OnMovePlayer(currentTilePos);
     }
 
-    public virtual void Activate() { // 행동 UI (구조, 도구사용)
+    public override void Activate() { // 행동 UI (구조, 도구사용)
         if (Input.GetMouseButtonUp(1)) { // 마우스 우클릭 시 UI 표시
             if (UI_Actives.activeSelf || UI_ToolBtns.activeSelf) { // 이미 켜져있었다면 UI 끄기
                 UI_Actives.SetActive(false);
@@ -232,6 +231,7 @@ public class Player : Charactor
         case 1: StartCoroutine(Rescue()); break;
         case 2: OpenToolBtns(); break;
         case 3: OnClickInteractBtn(); break;
+        case 4: ActiveUltSkill(); break;
         }
 
         if (number != 2) {
@@ -241,10 +241,22 @@ public class Player : Charactor
         }
     }
     public virtual void ActiveSkill() { }
-    public virtual void ActiveUltSkill() { }
+    public virtual void ActiveUltSkill() {
+        if (isUsedUlt)
+            return;
+    }
     private void OnClickInteractBtn() {
         if (aroundInteractiveObject != null && aroundInteractiveObject.IsAvailable())
             aroundInteractiveObject.Activate();
+    }
+    protected IEnumerator ShowCutScene()
+    {
+        _playerAct = Action.ActiveUlt;
+        CutScene.transform.Find("Ilustration").GetComponent<Image>().sprite = cutSceneIlust;
+        CutScene.transform.Find("UltText").GetComponent<Text>().text = ultName;
+        CutScene.SetActive(true);
+        yield return new WaitForSeconds(2.0f);
+        CutScene.SetActive(false);
     }
     IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
     {
@@ -464,17 +476,6 @@ public class Player : Charactor
         _playerAct = oldAct;
     }
 
-	protected void RenderInteractArea(ref Vector3Int oPos) {
-        Vector3Int direction = GetMouseDirectiontoTilemap();
-
-        Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
-        if (nPos != oPos) { // 기존의 렌더부분과 갱신된 부분이 다르면
-            TileMgr.Instance.RemoveEffect(oPos);            // 기존의 좌표 색 복구
-            TileMgr.Instance.SetEffect(nPos, Color.blue);   // 새로운 좌표 색 변경
-            oPos = nPos;
-        }
-    } // 
-
     public override void AddHP(float value) {
         base.AddHP(value);
 
@@ -523,18 +524,4 @@ public class Player : Charactor
         get { return isInSafetyArea; }
 	}
 
-    protected bool IsMoving { // 현재 움직이는 상태인가 체크하는 함수
-        get { return (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0); }
-    }
-
-    private Vector3Int GetMouseDirectiontoTilemap() // 현재 캐릭터 기준으로 마우스가 어느 위치에 있는지 반환하는 함수
-    {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
-        Vector3Int direction;
-        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
-            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
-        else
-            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
-        return direction;
-    }
 }

@@ -7,7 +7,12 @@ public class HammerMan : Player {
     public override int OperatorNumber {
         get { return OPERATOR_NUMBER; }
     }
-
+    protected override void Awake()
+    {
+        base.Awake();
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator1");
+        ultName = "아직 멈출 수 없다";
+    }
     // Start is called before the first frame update
     protected override void Start() {
         base.Start();
@@ -22,7 +27,15 @@ public class HammerMan : Player {
         if (CurrentO2 >= GetSkillUseO2())
             StartCoroutine(RescueHammer()); // 스킬 발동
     }
-    public override void ActiveUltSkill() {
+
+    public override void ActiveUltSkill()
+    {
+        base.ActiveUltSkill();
+        Action oldact = _playerAct;
+        StartCoroutine(ShowCutScene());
+        AddO2(50.0f);
+        _playerAct = oldact;
+        isUsedUlt = true;
     }
 
     IEnumerator RescueHammer() {

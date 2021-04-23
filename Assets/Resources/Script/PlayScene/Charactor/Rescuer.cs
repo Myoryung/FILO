@@ -7,7 +7,15 @@ public class Rescuer : Player {
         get { return OPERATOR_NUMBER; }
     }
 
+    [SerializeField]
+    private GameObject robotDot;
     // Start is called before the first frame update
+    protected override void Awake()
+    {
+        base.Awake();
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator2");
+        ultName = "도와줘 멍멍아";
+    }
     protected override void Start()
     {
         base.Start();
@@ -37,11 +45,25 @@ public class Rescuer : Player {
 
         AddO2(-GetSkillUseO2());
     }
-    public override void ActiveUltSkill() {
+
+    public override void ActiveUltSkill()
+    {
+        base.ActiveUltSkill();
+        //if(TileMgr ~ 오른쪽 타일 체크)
+        Action oldact = _playerAct;
+        StartCoroutine(ShowCutScene());
+        _playerAct = oldact;
+        isUsedUlt = true;
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)
     {
         base.OnTriggerEnter2D(other);
+    }
+
+    private void SpawnRobotDog()
+    {
+        robotDot.transform.position = TileMgr.Instance.CellToWorld(_currentTilePos + Vector3Int.right);
+        robotDot.SetActive(true);
     }
 }

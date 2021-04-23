@@ -34,7 +34,7 @@ public class Survivor : Charactor {
     public void TurnEndActive() {
         if (GameMgr.Instance.GameTurn % 1 == 0 && state == State.Panic) {
             _moveDone = false;
-            StartCoroutine(Move());
+            StartCoroutine(MoveTile());
         }
         else
             _moveDone = true;
@@ -53,7 +53,7 @@ public class Survivor : Charactor {
         SmileMark.SetActive(false);
     }
 
-    IEnumerator Move() {
+    IEnumerator MoveTile() {
         yield return null;
 
         for (int i = 0; i < _panicMoveCount; i++) {

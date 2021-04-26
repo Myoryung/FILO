@@ -81,7 +81,13 @@ public class GoalMgr {
 
     public List<Goal> GetMainGoals() {
         return mainGoals;
-	}
+    }
+    public List<Goal> GetSubGoals() {
+        return subGoals;
+    }
+    public int GetDeadline() {
+        return (deadline != null) ? deadline.GetDeadline() : -1;
+    }
 
     public bool IsAllSatisfied() {
         bool isSatisfied = true;

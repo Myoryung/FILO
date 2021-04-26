@@ -344,6 +344,8 @@ public class Player : Charactor
                             TileMgr.Instance.RemoveFire(fPos);
                         }
                     }
+
+                    GameMgr.Instance.OnUseTool();
                 }
                 break;
             }
@@ -359,6 +361,7 @@ public class Player : Charactor
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
                 TileMgr.Instance.CreateFireWall(nPos);
+                GameMgr.Instance.OnUseTool();
                 break;
             }
             else if (Input.GetMouseButtonDown(1) || IsMoving)
@@ -376,6 +379,7 @@ public class Player : Charactor
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
                 TileMgr.Instance.RemoveTempWall(nPos);
+                GameMgr.Instance.OnUseTool();
                 break;
             }
             else if (Input.GetMouseButtonDown(1) || IsMoving)
@@ -389,6 +393,7 @@ public class Player : Charactor
     private void UseO2Can() // 산소캔 사용
     {
         AddO2(45.0f);
+        GameMgr.Instance.OnUseTool();
     }
 
     protected override void OnTriggerEnter2D(Collider2D other) {

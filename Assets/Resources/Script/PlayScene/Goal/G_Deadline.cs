@@ -32,4 +32,8 @@ public class G_Deadline : Goal {
         if (IsImpossible())
             StatusText.text = "실패";
     }
+
+    public int GetDeadline() {
+        return endTime;
+    }
 }

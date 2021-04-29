@@ -42,6 +42,7 @@ public class Player : Charactor
 
     protected virtual void Awake()
     {
+        rbody = GetComponent<Rigidbody2D>();
     }
 
     protected override void Start()
@@ -50,7 +51,6 @@ public class Player : Charactor
 
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
-        rbody = GetComponent<Rigidbody2D>();
         //SetFOV();
 
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
@@ -70,9 +70,9 @@ public class Player : Charactor
         }
     }
 
-    public virtual void StageStartActive() {
+    public override void StageStartActive() {
     }
-    public virtual void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
+    public override void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
         if (_playerAct != Action.Panic) { // 패닉 상태는 산소가 회복되지 않는다
             if (IsInSafetyArea)
@@ -92,14 +92,14 @@ public class Player : Charactor
         }
 
         // 애니메이션 종료
-        if (_anim.GetBool("IsRunning"))
-            _anim.SetBool("IsRunning", false);
+        if (_anim != null)
+        {
+            if (_anim.GetBool("IsRunning"))
+                _anim.SetBool("IsRunning", false);
+        }
 
         // UI 비활성화
-        UI_Actives.SetActive(false);
-        UI_ToolBtns.SetActive(false);
-        if (aroundInteractiveObject != null)
-            aroundInteractiveObject.SetActive_ConditionUI(false);
+        InactiveUIBtns();
     }
     public void OnSetMain() {
         // 이동 제한 해제
@@ -111,14 +111,14 @@ public class Player : Charactor
         rbody.velocity = Vector3.zero;
 
         // 애니메이션 종료
-        if (_anim.GetBool("IsRunning"))
-            _anim.SetBool("IsRunning", false);
+        if (_anim != null)
+        {
+            if (_anim.GetBool("IsRunning"))
+                _anim.SetBool("IsRunning", false);
+        }
 
         // UI 비활성화
-        UI_Actives.SetActive(false);
-        UI_ToolBtns.SetActive(false);
-        if (aroundInteractiveObject != null)
-            aroundInteractiveObject.SetActive_ConditionUI(false);
+        InactiveUIBtns();
     }
 
     public override void Move() {
@@ -134,8 +134,11 @@ public class Player : Charactor
             rbody.velocity = Vector3.zero;
 
             // 애니메이션 종료
-            if (_anim.GetBool("IsRunning"))
-                _anim.SetBool("IsRunning", false);
+            if (_anim != null)
+            {
+                if (_anim.GetBool("IsRunning"))
+                    _anim.SetBool("IsRunning", false);
+            }
             return;
         }
 
@@ -156,10 +159,13 @@ public class Player : Charactor
             if (_body.rotation.y != 0)
                 _body.rotation = Quaternion.identity;
         }
-        
+
         // 애니메이션 시작
-        if (!_anim.GetBool("IsRunning"))
-            _anim.SetBool("IsRunning", true);
+        if (_anim != null)
+        {
+            if (!_anim.GetBool("IsRunning"))
+                _anim.SetBool("IsRunning", true);
+        }
 
         // 산소 소비
         float o2UseRate = 1.0f;
@@ -176,31 +182,33 @@ public class Player : Charactor
 
     public override void Activate() { // 행동 UI (구조, 도구사용)
         if (Input.GetMouseButtonUp(1)) { // 마우스 우클릭 시 UI 표시
-            if (UI_Actives.activeSelf || UI_ToolBtns.activeSelf) { // 이미 켜져있었다면 UI 끄기
-                UI_Actives.SetActive(false);
-                UI_ToolBtns.SetActive(false);
-                if (aroundInteractiveObject != null)
-                    aroundInteractiveObject.SetActive_ConditionUI(false);
+            if (UI_Actives.activeSelf) { // 이미 켜져있었다면 UI 끄기
+                InactiveUIBtns();
             }
             else {
                 UI_Actives.SetActive(true);
             }
         }
 
-        InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
-        if (interactiveObject != null && interactiveObject.IsAvailable())
-            SetActive_InteractBtn(true);
-        else
-            SetActive_InteractBtn(false);
+        if (OperatorNumber != RobotDog.OPERATOR_NUMBER)
+        {
+            InteractiveObject interactiveObject = SearchAroundInteractiveObject(currentTilePos);
+            if (interactiveObject != null && interactiveObject.IsAvailable())
+                SetActive_InteractBtn(true);
+            else
+                SetActive_InteractBtn(false);
 
-        if (UI_Actives.activeSelf) {
-            if (aroundInteractiveObject != null)
-                aroundInteractiveObject.SetActive_ConditionUI(false);
 
-            if (interactiveObject != null && interactiveObject.IsActive())
-                interactiveObject.SetActive_ConditionUI(true);
+            if (UI_Actives.activeSelf)
+            {
+                if (aroundInteractiveObject != null)
+                    aroundInteractiveObject.SetActive_ConditionUI(false);
+
+                if (interactiveObject != null && interactiveObject.IsActive())
+                    interactiveObject.SetActive_ConditionUI(true);
+            }
+            aroundInteractiveObject = interactiveObject;
         }
-        aroundInteractiveObject = interactiveObject;
     }
     protected InteractiveObject SearchAroundInteractiveObject(Vector3Int pos) {
         InteractiveObject activeObject = null;
@@ -453,7 +461,36 @@ public class Player : Charactor
             isInStair = false;
             break;
         }
-	}
+    }
+
+    protected void RenderInteractArea(ref Vector3Int oPos)
+    {
+        Vector3Int direction = GetMouseDirectiontoTilemap();
+
+        Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
+        if (nPos != oPos)
+        { // 기존의 렌더부분과 갱신된 부분이 다르면
+            TileMgr.Instance.RemoveEffect(oPos);            // 기존의 좌표 색 복구
+            TileMgr.Instance.SetEffect(nPos, Color.blue);   // 새로운 좌표 색 변경
+            oPos = nPos;
+        }
+    } //
+
+    protected bool IsMoving
+    { // 현재 움직이는 상태인가 체크하는 함수
+        get { return (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0); }
+    }
+
+    private Vector3Int GetMouseDirectiontoTilemap() // 현재 캐릭터 기준으로 마우스가 어느 위치에 있는지 반환하는 함수
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
+        Vector3Int direction;
+        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
+            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
+        else
+            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
+        return direction;
+    }
 
     public void ChangeFloor(bool isUp) {
         StartCoroutine(CoroutineChangeFloor(isUp));
@@ -476,10 +513,20 @@ public class Player : Charactor
         _playerAct = oldAct;
     }
 
+    private void InactiveUIBtns()
+    {
+        if (UI_Actives != null)
+            UI_Actives.SetActive(false);
+        if (UI_ToolBtns != null)
+            UI_ToolBtns.SetActive(false);
+        if (aroundInteractiveObject != null)
+            aroundInteractiveObject.SetActive_ConditionUI(false);
+    }
+
     public override void AddHP(float value) {
         base.AddHP(value);
 
-        if (CurrentHP <= 0)
+        if (CurrentHP <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
             _playerAct = Action.Retire;
             rbody.velocity = Vector2.zero;
@@ -488,12 +535,12 @@ public class Player : Charactor
     public override void AddO2(float value) {
         base.AddO2(value);
 
-        if (CurrentO2 <= 0)
+        if (CurrentO2 <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
             _playerAct = Action.Retire;
     }
     private void AddMental(int value) {
         _currentMental += value;
-        if(_currentMental <= 0)
+        if(_currentMental <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
             _playerAct = Action.Panic;
             rbody.velocity = Vector2.zero;

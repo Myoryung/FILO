@@ -407,6 +407,14 @@ public class GameMgr : MonoBehaviour {
             players[currPlayerIdx].OnSetMain();
             SetFocusToCurrOperator();
         }
+        if(players[currPlayerIdx].OperatorNumber == RobotDog.OPERATOR_NUMBER)
+        {
+            _mentalText.gameObject.SetActive(false);
+        }
+        else if(!_mentalText.gameObject.activeSelf)
+        {
+            _mentalText.gameObject.SetActive(true);
+        }
     }
     public void OnClickTabletFloor(int floor) {
         if (CurrGameState != GameState.SELECT_OPERATOR) return;
@@ -515,19 +523,23 @@ public class GameMgr : MonoBehaviour {
     }
     public void ChangeNameText() {
         if (_charNameText == null) return;
+        _charNameText.text = "0" + (currPlayerIdx + 1).ToString() + ". ";
 
         switch (players[currPlayerIdx].OperatorNumber) {
         case Captain.OPERATOR_NUMBER:
-            _charNameText.text = "01. 주인공";
+            _charNameText.text += "신화준";
             break;
         case HammerMan.OPERATOR_NUMBER:
-            _charNameText.text = "02. 빅토르";
+            _charNameText.text += "빅토르";
             break;
         case Rescuer.OPERATOR_NUMBER:
-            _charNameText.text = "03. 레  오";
+            _charNameText.text += "레  오";
             break;
         case Nurse.OPERATOR_NUMBER:
-            _charNameText.text = "04. 시노에";
+            _charNameText.text += "시노에";
+            break;
+        case RobotDog.OPERATOR_NUMBER:
+            _charNameText.text += "로봇개";
             break;
         }
     }
@@ -627,6 +639,11 @@ public class GameMgr : MonoBehaviour {
     public void OnExitSafetyArea() {
         isAllPlayerInSafetyArea = false;
         ChangeTimerText();
+    }
+
+    public void InsertRobotDogInPlayerList(RobotDog rd, Player Caller)
+    {
+        players.Insert(players.IndexOf(Caller) + 1, rd);
     }
 
     public void OnCarrySurvivor(Vector3Int pos) {

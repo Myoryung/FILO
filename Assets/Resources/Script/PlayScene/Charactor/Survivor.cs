@@ -31,7 +31,7 @@ public class Survivor : Charactor {
         GameMgr.Instance.AddSurvivor(TileMgr.Instance.WorldToCell(transform.position), this);
     }
 
-    public void TurnEndActive() {
+    public override void TurnEndActive() {
         if (GameMgr.Instance.GameTurn % 1 == 0 && state == State.Panic) {
             _moveDone = false;
             StartCoroutine(MoveTile());

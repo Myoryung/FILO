@@ -150,7 +150,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1110717717658420432
 Transform:
   m_ObjectHideFlags: 0
@@ -261,9 +261,13 @@ MonoBehaviour:
   UI_Actives: {fileID: 1110717718769304385}
   _maxo2: 100
   _useo2: 2
-  _maxHp: 0
-  _movespeed: 4
+  _maxHp: 1000000
+  _movespeed: 500
   _body: {fileID: 8752722308847868979}
+  MTGage: {fileID: 0}
+  UI_ToolBtns: {fileID: 0}
+  _maxMental: 1000000
+  skillUseO2: 0
 --- !u!1 &1110717718083376208
 GameObject:
   m_ObjectHideFlags: 0
@@ -672,13 +676,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: StartRescue
-        m_Mode: 1
+      - m_Target: {fileID: 425494635913986146}
+        m_MethodName: OnClickBehaviorBtn
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

@@ -24,7 +24,8 @@ MonoBehaviour:
   UI_ToolBtns: {fileID: 9099260879050280354}
   _maxMental: 4
   skillUseO2: 10
-  robotDot: {fileID: 0}
+  robotDogPrefab: {fileID: 1110717717658420433, guid: 9beb813b56bbc2044a4486a7c36b7089,
+    type: 3}
 --- !u!1001 &9150938486230838991
 PrefabInstance:
   m_ObjectHideFlags: 0

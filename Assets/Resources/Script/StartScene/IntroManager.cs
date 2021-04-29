@@ -6,13 +6,20 @@ using UnityEngine.UI;
 public class IntroManager : MonoBehaviour //인트로 화면 Mgr 화면 연출용
 {
     public Image rightRedBG;
-    public Image blackBG;
-    public Image loading;
-    public Image loadingCircle;
+    public Image LoadingBG;
+    public Image LoadingBar;
 
     public Image btn;
     public Sprite[] btn_Images;
+    public Image[] borderBuildings;
+    private Sprite loadingDoneBG;
+    public Image glitchEffect;
     private int btn_index = 0;
+    private void Awake()
+    {
+        loadingDoneBG = Resources.Load<Sprite>("Sprite/StartScene/Loading/Loading_2");
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,53 +63,77 @@ public class IntroManager : MonoBehaviour //인트로 화면 Mgr 화면 연출�
 
     IEnumerator FadeoutScene() // 빨간 배경 애니메이션
     {
-        Debug.Log(Time.deltaTime);
         while(true)
         {
-            rightRedBG.rectTransform.Translate(-600 * Time.deltaTime, 0, 0);
-            if(rightRedBG.rectTransform.position.x < 1860)
+            rightRedBG.rectTransform.Translate(600 * Time.deltaTime, 0, 0);
+            for (int i = 0; i < 3; i++)
+            {
+                borderBuildings[i].fillAmount = 1 +(rightRedBG.rectTransform.localPosition.x + 40) / 1920;
+            }
+            if (rightRedBG.rectTransform.localPosition.x > 0)
             {
                 break;
             }
             yield return null;
         }
-        StartCoroutine(CircleSpin()); // Loading bar
-        StartCoroutine(Fadeout()); // 리얼 black fade out
+        StartCoroutine(Loading());
     }
 
-    IEnumerator Fadeout()
+    IEnumerator Loading()
     {
-        float alpha = 0;
-        while(true)
+        LoadingBG.enabled = true;
+        while(LoadingBar.fillAmount < 1.0f)
         {
-            alpha += Time.deltaTime;
-            blackBG.color = new Color(0, 0, 0, alpha);
-            if (blackBG.color.a >= 1.0f)
-            {
-                break;
-            }
+            LoadingBar.fillAmount += Time.deltaTime / 2;
             yield return null;
         }
-        alpha = 0;
-        while (true)
+        LoadingBG.sprite = loadingDoneBG;
+        float count = 0;
+        while(count < 0.15f)
         {
-            alpha += Time.deltaTime;
-            loading.color = new Color(1, 1, 1, alpha);
-            loadingCircle.color = new Color(1, 1, 1, alpha);
-            if (loading.color.a >= 1.0f)
-            {
-                break;
-            }
+            glitchEffect.enabled = true;
             yield return null;
+            glitchEffect.enabled = false;
+            yield return null;
+            count += Time.deltaTime;
         }
+        glitchEffect.enabled = false;
+        // 컴플리트 및 노이즈
     }
 
-    IEnumerator CircleSpin()
-    {
-        while(true)
-        {
-            loadingCircle.rectTransform.Rotate(0, 0, -32 * Time.deltaTime);
-            yield return null;
-        }
-    }
+    //IEnumerator Fadeout()
+    //{
+    //    float alpha = 0;
+    //    while(true)
+    //    {
+    //        alpha += Time.deltaTime;
+    //        blackBG.color = new Color(0, 0, 0, alpha);
+    //        if (blackBG.color.a >= 1.0f)
+    //        {
+    //            break;
+    //        }
+    //        yield return null;
+    //    }
+    //    alpha = 0;
+    //    while (true)
+    //    {
+    //        alpha += Time.deltaTime;
+    //        loading.color = new Color(1, 1, 1, alpha);
+    //        loadingCircle.color = new Color(1, 1, 1, alpha);
+    //        if (loading.color.a >= 1.0f)
+    //        {
+    //            break;
+    //        }
+    //        yield return null;
+    //    }
+    //}
+
+    //IEnumerator CircleSpin()
+    //{
+    //    while(true)
+    //    {
+    //        loadingCircle.rectTransform.Rotate(0, 0, -32 * Time.deltaTime);
+    //        yield return null;
+    //    }
+    //}
 }

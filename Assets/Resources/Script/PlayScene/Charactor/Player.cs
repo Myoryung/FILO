@@ -86,7 +86,7 @@ public class Player : Charactor
             _rescuingSurvivor.CarryCount--;
             if (_rescuingSurvivor.CarryCount <= 0) // 업는턴 값이 0보다 작으면
             {
-                _rescuingSurvivor.TurnOffRender();
+                _rescuingSurvivor.OnStartRescued();
                 _playerAct = Action.Rescue; // Rescue 상태로 변경
             }
         }
@@ -274,8 +274,9 @@ public class Player : Charactor
             if (Input.GetMouseButtonDown(0)) {
                 Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos);
                 if (survivor != null) {
-                    GameMgr.Instance.OnCarrySurvivor(nPos);
                     _rescuingSurvivor = survivor;
+                    _rescuingSurvivor.OnStartCarried();
+                    GameMgr.Instance.OnCarrySurvivor(nPos);
                     _playerAct = Action.Carry; // 업는 상태로 변경
                 }
                 break;
@@ -575,5 +576,13 @@ public class Player : Charactor
     public bool IsInSafetyArea {
         get { return isInSafetyArea; }
 	}
+
+    public bool EqualsRescuingSurvivor(Survivor survivor) {
+        return _rescuingSurvivor == survivor;
+    }
+    public void OnDieRescuingSurvivor() {
+        _rescuingSurvivor = null;
+        _playerAct = Action.Idle;
+    }
 
 }

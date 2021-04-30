@@ -686,6 +686,16 @@ public class GameMgr : MonoBehaviour {
         else
             goalMgr.OnDieSurvivor();
 
+        // 업는중일 경우 플레이어에게 알림
+        if (survivor.CurrState == Survivor.State.Carried) {
+            foreach (Player player in players) {
+                if (player.EqualsRescuingSurvivor(survivor)) {
+                    player.OnDieRescuingSurvivor();
+                    break;
+                }
+            }
+        }
+
         Destroy(survivor.gameObject);
     }
 

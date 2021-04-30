@@ -7,9 +7,15 @@ using UnityEngine.Tilemaps;
 public class Survivor : Charactor {
     public GameObject SmileMark;
 
-    private enum State { Panic, Static }
+    private enum Type { Panic, Static }
     [SerializeField]
-    private State state;
+    private Type type;
+
+    public enum State { Idle, Carried, Rescued }
+    private State state = State.Idle;
+    public State CurrState {
+        get { return state; }
+    }
 
     [SerializeField]
     private bool isImportant = false;
@@ -32,7 +38,7 @@ public class Survivor : Charactor {
     }
 
     public override void TurnEndActive() {
-        if (GameMgr.Instance.GameTurn % 1 == 0 && state == State.Panic) {
+        if (GameMgr.Instance.GameTurn % 1 == 0 && type == Type.Panic && state == State.Idle) {
             _moveDone = false;
             StartCoroutine(MoveTile());
         }
@@ -94,7 +100,7 @@ public class Survivor : Charactor {
             GameMgr.Instance.OnDieSurvivor(this);
         else if (hpRate <= 0.5) {
             _carryCount = 2;
-            state = State.Static;
+            type = Type.Static;
         }
         else
             _carryCount = 1;
@@ -106,8 +112,12 @@ public class Survivor : Charactor {
         get { return isImportant; }
 	}
 
-    public void TurnOffRender() {
+    public void OnStartCarried() {
+        state = State.Carried;
+    }
+    public void OnStartRescued() {
         GetComponent<SpriteRenderer>().enabled = false;
         transform.Find("UI").gameObject.SetActive(false);
+        state = State.Rescued;
     }
 }

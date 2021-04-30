@@ -19,39 +19,28 @@
   <Disasters>
     <Disaster>
       <Type>FALLING_ROCK</Type>
-      <Point>1,2,2</Point>
+      <Point>-5,-5,2</Point>
       <Turn>1</Turn>
     </Disaster>
 
     <Disaster>
-      <Type>SHORT_CIRCUIT</Type>
-      <Point>7,-2,2</Point>
-      <Turn>2</Turn>
+      <Type>FLASH_OVER</Type>
+      <Point>7,-2,3</Point>
+      <Turn>5</Turn>
     </Disaster>
-
-    <Disaster>
-      <Type>FLASHOVER</Type>
-      <Point>5,0,2</Point>
-      <Turn>3</Turn>
-    </Disaster>
-
-    <Disaster>
-      <Type>SMOKE</Type>
-      <Point>3,0,2</Point>
-      <Turn>4</Turn>
-    </Disaster>
+  
   </Disasters>
 
   <Goals>
     <Main>
       <Goal>
         <Type>DEADLINE</Type>
-        <EndTime>18:00</EndTime>
+        <EndTime>18:20</EndTime>
       </Goal>
 
       <Goal>
         <Type>RESCUE_SURVIVOR</Type>
-        <Count>5</Count>
+        <Count>2</Count>
       </Goal>
     </Main>
     <Sub>
@@ -59,11 +48,6 @@
         <Type>ARRIVE</Type>
         <Point>2,0</Point>
         <Point>3,1</Point>
-      </Goal>
-
-      <Goal>
-        <Type>RESCUE_IMPORTANT_SURVIVOR</Type>
-        <Count>1</Count>
       </Goal>
     </Sub>
   </Goals>

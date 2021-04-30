@@ -31,10 +31,10 @@ public class HammerMan : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
-        Action oldact = _playerAct;
+        Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         AddO2(50.0f);
-        _playerAct = oldact;
+        playerAct = oldact;
         isUsedUlt = true;
     }
 
@@ -51,7 +51,7 @@ public class HammerMan : Player {
                     AddO2(-GetSkillUseO2());
 
                     if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
-                        _playerAct = Action.Panic; // 턴제한 추가 필요
+                        playerAct = Action.Panic; // 턴제한 추가 필요
                 }
                 break;
             }

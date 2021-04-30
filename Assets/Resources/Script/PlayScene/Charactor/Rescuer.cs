@@ -57,10 +57,10 @@ public class Rescuer : Player {
         {
             return;
         }
-        Action oldact = _playerAct;
+        Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         SpawnRobotDog();
-        _playerAct = oldact;
+        playerAct = oldact;
         isUsedUlt = true;
     }
 

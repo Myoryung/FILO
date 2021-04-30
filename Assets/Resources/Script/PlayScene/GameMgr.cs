@@ -517,7 +517,7 @@ public class GameMgr : MonoBehaviour {
     private void ChangeStateText(Player player) {
         if (_stateText == null) return;
 
-        switch (player.Act) {
+        switch (player.CurrAct) {
         case Player.Action.Carry:
             _stateText.text = "업 는 중";
             _stateText.color = new Color(1, 0.5f, 0);

@@ -15,7 +15,7 @@ public class Player : Charactor
 
     // 플레이어 스테이터스
     public enum Action { Idle, Walk, Run, Carry, Rescue, ActiveUlt, Interact, Panic, Retire, MoveFloor } // 캐릭터 행동 상태 종류
-    protected Action _playerAct;
+    private Action _playerAct;
 
     private Survivor _rescuingSurvivor; // 현재 구조중인 생존자
     private InteractiveObject aroundInteractiveObject;
@@ -74,20 +74,20 @@ public class Player : Charactor
     }
     public override void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
-        if (_playerAct != Action.Panic) { // 패닉 상태는 산소가 회복되지 않는다
+        if (playerAct != Action.Panic) { // 패닉 상태는 산소가 회복되지 않는다
             if (IsInSafetyArea)
                 AddO2(O2_ADDED_PER_TURN * 2.0f);
             else
                 AddO2(O2_ADDED_PER_TURN);
         }
 
-        if (_playerAct == Action.Carry) // 업는 중이라면
+        if (playerAct == Action.Carry) // 업는 중이라면
         {
             _rescuingSurvivor.CarryCount--;
             if (_rescuingSurvivor.CarryCount <= 0) // 업는턴 값이 0보다 작으면
             {
                 _rescuingSurvivor.OnStartRescued();
-                _playerAct = Action.Rescue; // Rescue 상태로 변경
+                playerAct = Action.Rescue; // Rescue 상태로 변경
             }
         }
 
@@ -127,7 +127,7 @@ public class Player : Charactor
         float ver = Input.GetAxisRaw("Vertical");
 
         if (CurrentHP <= 0 || CurrentO2 <= 0 || _currentMental <= 0 ||
-            Act == Action.Carry || Act == Action.MoveFloor ||
+            playerAct == Action.Carry || playerAct == Action.MoveFloor ||
             (hor == 0.0f && ver == 0.0f)) {
 
             // 이동 종료
@@ -171,7 +171,7 @@ public class Player : Charactor
         float o2UseRate = 1.0f;
         if (isInGas)
             o2UseRate *= 1.5f;
-        if (Act == Action.Rescue)
+        if (playerAct == Action.Rescue)
             o2UseRate *= 1.5f;
 
         AddO2(-UseO2 * o2UseRate * Time.deltaTime);
@@ -259,7 +259,7 @@ public class Player : Charactor
     }
     protected IEnumerator ShowCutScene()
     {
-        _playerAct = Action.ActiveUlt;
+        playerAct = Action.ActiveUlt;
         CutScene.transform.Find("Ilustration").GetComponent<Image>().sprite = cutSceneIlust;
         CutScene.transform.Find("UltText").GetComponent<Text>().text = ultName;
         CutScene.SetActive(true);
@@ -277,7 +277,12 @@ public class Player : Charactor
                     _rescuingSurvivor = survivor;
                     _rescuingSurvivor.OnStartCarried();
                     GameMgr.Instance.OnCarrySurvivor(nPos);
-                    _playerAct = Action.Carry; // 업는 상태로 변경
+                    playerAct = Action.Carry; // 업는 상태로 변경
+
+                    if (_rescuingSurvivor.CarryCount <= 0) {
+                        _rescuingSurvivor.OnStartRescued();
+                        playerAct = Action.Rescue; // Rescue 상태로 변경
+                    }
                 }
                 break;
             }
@@ -428,10 +433,10 @@ public class Player : Charactor
             GameMgr.Instance.OnEnterSafetyArea();
 
             // 구조 종료
-            if (_playerAct == Action.Rescue) {
+            if (playerAct == Action.Rescue) {
                 GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
                 _rescuingSurvivor = null;
-                _playerAct = Action.Idle;
+                playerAct = Action.Idle;
             }
             break;
 
@@ -502,8 +507,8 @@ public class Player : Charactor
         StartCoroutine(CoroutineChangeFloor(isUp));
     }
     private IEnumerator CoroutineChangeFloor(bool isUp){
-        Action oldAct = _playerAct;
-        _playerAct = Action.MoveFloor;
+        Action oldAct = playerAct;
+        playerAct = Action.MoveFloor;
         rbody.velocity = Vector2.zero;
         StartCoroutine(GameMgr.Instance.StartLoading());
         yield return new WaitUntil(() => GameMgr.Instance.CurrentLoadingState
@@ -516,7 +521,7 @@ public class Player : Charactor
 
         TileMgr.Instance.SwitchFloorTilemap(floorNumber);
         GameMgr.Instance.CurrentLoadingState = GameMgr.LoadingState.End;
-        _playerAct = oldAct;
+        playerAct = oldAct;
     }
 
     private void InactiveUIBtns()
@@ -534,7 +539,7 @@ public class Player : Charactor
 
         if (CurrentHP <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
-            _playerAct = Action.Retire;
+            playerAct = Action.Retire;
             rbody.velocity = Vector2.zero;
         }
     }
@@ -542,13 +547,13 @@ public class Player : Charactor
         base.AddO2(value);
 
         if (CurrentO2 <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
-            _playerAct = Action.Retire;
+            playerAct = Action.Retire;
     }
     private void AddMental(int value) {
         _currentMental += value;
         if(_currentMental <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
-            _playerAct = Action.Panic;
+            playerAct = Action.Panic;
             rbody.velocity = Vector2.zero;
         }
         if(_currentMental > _maxMental)
@@ -557,19 +562,39 @@ public class Player : Charactor
         }
     }
 
+    public Action CurrAct {
+        get { return playerAct; }
+    }
+    protected Action playerAct {
+        get { return _playerAct; }
+        set {
+            switch (value) {
+            case Action.Retire:
+            case Action.Panic:
+                if (playerAct == Action.Carry) {
+                    _rescuingSurvivor.OnStopCarried();
+                    _rescuingSurvivor = null;
+                }
+                else if (playerAct == Action.Rescue) {
+                    _rescuingSurvivor.OnStopRescued(currentTilePos);
+                    _rescuingSurvivor = null;
+                }
+                break;
+            }
+            _playerAct = value;
+        }
+    }
+
     protected float GetSkillUseO2() {
         float o2UseRate = 1.0f;
         if (isInGas)
             o2UseRate *= 1.5f;
-        if (Act == Action.Rescue)
+        if (playerAct == Action.Rescue)
             o2UseRate *= 1.5f;
 
         return skillUseO2 * o2UseRate;
     }
 
-    public Action Act {
-        get { return _playerAct; }
-	}
     public float Mental {
         get { return _currentMental; }
 	}
@@ -582,7 +607,7 @@ public class Player : Charactor
     }
     public void OnDieRescuingSurvivor() {
         _rescuingSurvivor = null;
-        _playerAct = Action.Idle;
+        playerAct = Action.Idle;
     }
 
 }

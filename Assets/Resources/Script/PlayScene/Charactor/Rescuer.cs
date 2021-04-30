@@ -8,17 +8,21 @@ public class Rescuer : Player {
     }
 
     [SerializeField]
-    private GameObject robotDot;
+    private GameObject robotDogPrefab = null;
+    private GameObject robotDog = null;
     // Start is called before the first frame update
     protected override void Awake()
     {
         base.Awake();
         cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator2");
+        robotDog = Instantiate<GameObject>(robotDogPrefab, transform.position, Quaternion.identity);
+        //강아지 여러번 생성되는거 방지해야함
         ultName = "도와줘 멍멍아";
     }
     protected override void Start()
     {
         base.Start();
+        //강아지 할당 robotDog
     }
 
     // Update is called once per frame
@@ -49,9 +53,13 @@ public class Rescuer : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
-        //if(TileMgr ~ 오른쪽 타일 체크)
+        if (TileMgr.Instance.ExistObject(_currentTilePos + Vector3Int.right))
+        {
+            return;
+        }
         Action oldact = _playerAct;
         StartCoroutine(ShowCutScene());
+        SpawnRobotDog();
         _playerAct = oldact;
         isUsedUlt = true;
     }
@@ -63,7 +71,8 @@ public class Rescuer : Player {
 
     private void SpawnRobotDog()
     {
-        robotDot.transform.position = TileMgr.Instance.CellToWorld(_currentTilePos + Vector3Int.right);
-        robotDot.SetActive(true);
+        robotDog.transform.position = TileMgr.Instance.CellToWorld(_currentTilePos + Vector3Int.right);
+        GameMgr.Instance.InsertRobotDogInPlayerList(robotDog.GetComponent<RobotDog>(), this);
+        robotDog.SetActive(true);
     }
 }

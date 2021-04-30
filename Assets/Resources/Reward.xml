@@ -1,0 +1,27 @@
+<Rewards>
+  <StageRewards>
+    <Stage>
+      <Number>0</Number>
+      <MainGoal>1000</MainGoal>
+      <SubGoal>500</SubGoal>
+    </Stage>
+    
+    <Stage>
+      <Number>1</Number>
+      <MainGoal>2500</MainGoal>
+      <SubGoal>0</SubGoal>
+    </Stage>
+
+    <Stage>
+      <Number>2</Number>
+      <MainGoal>5000</MainGoal>
+      <SubGoal>1000</SubGoal>
+    </Stage>
+  </StageRewards>
+  
+  <CommonRewards>
+    <SurvivorRescue>500</SurvivorRescue>
+    <SurvivorDead>-300</SurvivorDead>
+    <ToolUse>-100</ToolUse>
+  </CommonRewards>
+</Rewards>

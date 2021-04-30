@@ -307,9 +307,9 @@ public class TileMgr {
         Vector3Int basePos = pos;
         basePos.z = 0;
 
-        EffectTilemaps[floorIndex].SetTile(pos, EffectTile);
-        EffectTilemaps[floorIndex].SetTileFlags(pos, TileFlags.None);
-        EffectTilemaps[floorIndex].SetColor(pos, color);
+        EffectTilemaps[floorIndex].SetTile(basePos, EffectTile);
+        EffectTilemaps[floorIndex].SetTileFlags(basePos, TileFlags.None);
+        EffectTilemaps[floorIndex].SetColor(basePos, color);
     }
     public void RemoveEffect(Vector3Int pos) {
         int floorIndex = pos.z - MinFloor;

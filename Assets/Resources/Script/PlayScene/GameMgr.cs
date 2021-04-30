@@ -35,12 +35,13 @@ public class GameMgr : MonoBehaviour {
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
 
-    private Canvas selectCanvas, playCanvas;
+    private Canvas selectCanvas, playCanvas, reportCanvas;
 
     private DisasterMgr disasterMgr;
     private GameObject disasterAlaram = null;
     private Text disasterAlaramText = null;
 
+    private Report report;
     private GameObject stageEnd = null;
     private Text stageEndText = null;
 
@@ -68,6 +69,8 @@ public class GameMgr : MonoBehaviour {
     public GameState CurrGameState {
         get { return _currGameState; }
     }
+
+    private GameInfo gameInfo;
 
     private bool bStagePlaying = false;
     private bool bSelectOperatorInit = false, bStageStartReady = false, bStageStartBtnClicked = false;
@@ -145,12 +148,16 @@ public class GameMgr : MonoBehaviour {
         for (int i = 1; i < stageContentLines.Length; i++)
             stageContentText += stageContentLines[i] + "\n";
 
-        // Disaster & Goal
+        // Disaster & Goal & PlayState
         XmlNode disastersNode = stageNode.SelectSingleNode("Disasters");
         XmlNode goalsNode = stageNode.SelectSingleNode("Goals");
 
         disasterMgr = new DisasterMgr(disastersNode);
         goalMgr = new GoalMgr(goalsNode);
+        gameInfo = new GameInfo(stage);
+
+        gameInfo.CurrTime = currTime;
+        gameInfo.Deadline = goalMgr.GetDeadline();
 
         StartCoroutine(disasterMgr.UpdateWillActiveDisasterArea()); // 다음 턴 재난 지역 타일맵에 동기화
 
@@ -158,9 +165,11 @@ public class GameMgr : MonoBehaviour {
         GameObject canvas = GameObject.Find("UICanvas");
         selectCanvas = canvas.transform.Find("SelectCanvas").GetComponent<Canvas>();
         playCanvas = canvas.transform.Find("PlayCanvas").GetComponent<Canvas>();
+        reportCanvas = canvas.transform.Find("ReportCanvas").GetComponent<Canvas>();
 
-        selectCanvas.enabled = true;
+        selectCanvas.enabled = false;
         playCanvas.enabled = false;
+        reportCanvas.enabled = false;
 
         // Load Select UI
         Transform operatorCard = selectCanvas.transform.Find("OperatorSelect/OperatorCard");
@@ -231,6 +240,7 @@ public class GameMgr : MonoBehaviour {
     }
     private void SelectOperator() {
         if (!bSelectOperatorInit) {
+            selectCanvas.enabled = true;
             tablet = new Tablet();
             bSelectOperatorInit = true;
         }
@@ -291,6 +301,8 @@ public class GameMgr : MonoBehaviour {
         }
         else if (bStageEndClicked) {
             _currGameState = GameState.STAGE_END;
+            playCanvas.enabled = false;
+            bStagePlaying = false;
             bStageEndClicked = false;
         }
     }
@@ -363,6 +375,7 @@ public class GameMgr : MonoBehaviour {
     private void TurnEnd() {
         GameTurn++;
         currTime += 5;
+        gameInfo.CurrTime = currTime;
         ChangeTimerText();
 
         TileMgr.Instance.UpdateDrone();
@@ -373,9 +386,15 @@ public class GameMgr : MonoBehaviour {
     }
     private void StageEnd() {
         if (!bStageEndSetup) {
-            stageEnd.SetActive(true);
-            stageEndText.text = (goalMgr.IsAllSatisfied()) ? "임무 성공" : "임무 실패";
-            bStagePlaying = false;
+            if (goalMgr.IsAllSatisfied()) {
+                reportCanvas.enabled = true;
+                report = new Report(reportCanvas.gameObject, goalMgr.GetMainGoals(), goalMgr.GetSubGoals(), gameInfo);
+            }
+            else {
+                stageEnd.SetActive(true);
+                stageEndText.text = "임무 실패";
+            }
+
             bStageEndSetup = true;
         }
     }
@@ -406,6 +425,14 @@ public class GameMgr : MonoBehaviour {
             players[prevPlayerIdx].OnUnsetMain();
             players[currPlayerIdx].OnSetMain();
             SetFocusToCurrOperator();
+        }
+        if(players[currPlayerIdx].OperatorNumber == RobotDog.OPERATOR_NUMBER)
+        {
+            _mentalText.gameObject.SetActive(false);
+        }
+        else if(!_mentalText.gameObject.activeSelf)
+        {
+            _mentalText.gameObject.SetActive(true);
         }
     }
     public void OnClickTabletFloor(int floor) {
@@ -515,19 +542,23 @@ public class GameMgr : MonoBehaviour {
     }
     public void ChangeNameText() {
         if (_charNameText == null) return;
+        _charNameText.text = "0" + (currPlayerIdx + 1).ToString() + ". ";
 
         switch (players[currPlayerIdx].OperatorNumber) {
         case Captain.OPERATOR_NUMBER:
-            _charNameText.text = "01. 주인공";
+            _charNameText.text += "신화준";
             break;
         case HammerMan.OPERATOR_NUMBER:
-            _charNameText.text = "02. 빅토르";
+            _charNameText.text += "빅토르";
             break;
         case Rescuer.OPERATOR_NUMBER:
-            _charNameText.text = "03. 레  오";
+            _charNameText.text += "레  오";
             break;
         case Nurse.OPERATOR_NUMBER:
-            _charNameText.text = "04. 시노에";
+            _charNameText.text += "시노에";
+            break;
+        case RobotDog.OPERATOR_NUMBER:
+            _charNameText.text += "로봇개";
             break;
         }
     }
@@ -591,6 +622,7 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnAddImportantSurvivor();
         else
             goalMgr.OnAddSurvivor();
+        gameInfo.OnAddSurvivor();
     }
     public Survivor GetSurvivorAt(Vector3Int pos) {
         if (survivors.ContainsKey(pos))
@@ -629,6 +661,11 @@ public class GameMgr : MonoBehaviour {
         ChangeTimerText();
     }
 
+    public void InsertRobotDogInPlayerList(RobotDog rd, Player Caller)
+    {
+        players.Insert(players.IndexOf(Caller) + 1, rd);
+    }
+
     public void OnCarrySurvivor(Vector3Int pos) {
         survivors.Remove(pos);
     }
@@ -637,6 +674,7 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnRescueImportantSurvivor();
         else
             goalMgr.OnRescueSurvivor();
+        gameInfo.OnRescueSurvivor();
         Destroy(survivor.gameObject);
     }
     public void OnDieSurvivor(Survivor survivor) {
@@ -649,5 +687,9 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnDieSurvivor();
 
         Destroy(survivor.gameObject);
+    }
+
+    public void OnUseTool() {
+        gameInfo.OnUseTool();
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class IntroManager : MonoBehaviour //인트로 화면 Mgr 화면 연출용
 {
@@ -98,6 +99,7 @@ public class IntroManager : MonoBehaviour //인트로 화면 Mgr 화면 연출�
             count += Time.deltaTime;
         }
         glitchEffect.enabled = false;
+        SceneManager.LoadScene("Scenes/PlayScene");
         // 컴플리트 및 노이즈
     }
 

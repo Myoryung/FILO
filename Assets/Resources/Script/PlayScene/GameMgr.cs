@@ -36,7 +36,6 @@ public class GameMgr : MonoBehaviour {
 
     private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
 
-
     private Canvas selectCanvas, playCanvas, reportCanvas;
 
     private DisasterMgr disasterMgr;
@@ -48,7 +47,7 @@ public class GameMgr : MonoBehaviour {
     private Text stageEndText = null;
 
     private Tablet tablet;
-    private Sprite operatorCardNormalSprite, operatorCardSelectedSprite;
+    private Sprite operatorDepoyedSprite;
     private GameObject[] operatorCards = new GameObject[4];
     private int operatorCardNum;
 
@@ -239,8 +238,7 @@ public class GameMgr : MonoBehaviour {
         operatorPrefabs[2] = Resources.Load<GameObject>("Prefabs/Operator/Rescuers");
         operatorPrefabs[3] = Resources.Load<GameObject>("Prefabs/Operator/Nurse");
 
-        operatorCardNormalSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_Card-New");
-        operatorCardSelectedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_Card-Old");
+        operatorDepoyedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_card-Depolyed");
 
         _currGameState = GameState.SELECT_OPERATOR;
     }
@@ -338,7 +336,6 @@ public class GameMgr : MonoBehaviour {
         TileMgr.Instance.SpreadFire();
         TileMgr.Instance.Flaming();
         TileMgr.Instance.MoveGas();
-
         _currGameState = GameState.DISASTER_ALARM;
     }
     private void DisasterAlarm() {
@@ -468,7 +465,7 @@ public class GameMgr : MonoBehaviour {
             tablet.ClearOperatorPair(operatorNumber);
 			Destroy(operators[operatorNumber]);
             operators[operatorNumber] = null;
-            operatorCards[operatorNumber].GetComponent<Image>().sprite = operatorCardNormalSprite;
+            operatorCards[operatorNumber].transform.Find("Depoyed").gameObject.SetActive(false);
         }
         else {
             // 현재 캠에 존재하는 다른 대원 삭제
@@ -477,13 +474,13 @@ public class GameMgr : MonoBehaviour {
                 tablet.ClearOperatorPair(prevOperatorNumber);
                 Destroy(operators[prevOperatorNumber]);
                 operators[prevOperatorNumber] = null;
-                operatorCards[prevOperatorNumber].GetComponent<Image>().sprite = operatorCardNormalSprite;
-			}
+                operatorCards[prevOperatorNumber].transform.Find("Depoyed").gameObject.SetActive(false);
+            }
 
             if (operators[operatorNumber] == null) {
                 operators[operatorNumber] = Instantiate(operatorPrefabs[operatorNumber]);
-				operatorCards[operatorNumber].GetComponent<Image>().sprite = operatorCardSelectedSprite;
-			}
+                operatorCards[operatorNumber].transform.Find("Depoyed").gameObject.SetActive(true);
+            }
 			operators[operatorNumber].transform.position = tablet.GetCurrCamPos();
             tablet.SetOperatorPair(operatorNumber, currCam);
         }

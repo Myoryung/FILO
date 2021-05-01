@@ -65,7 +65,7 @@ public class TileMgr {
             GameObject floor = (GameObject)Object.Instantiate(floorPath, ParentFloor.transform);
             floor.SetActive(true);
             Floors.Add(floor);
-
+            
             floor.name = "Floor" + i;
             Tilemap background = floor.transform.Find("Background").gameObject.GetComponent<Tilemap>();
             BackgroundTilemaps.Add(background);
@@ -115,6 +115,7 @@ public class TileMgr {
             }
         }
     }
+
     public void Flaming() {
         GameObject[] objects = GameObject.FindGameObjectsWithTag("Flaming");
         foreach (GameObject obj in objects)
@@ -459,7 +460,14 @@ public class TileMgr {
 
         return ObjectTilemaps[floorIndex].GetInstantiatedObject(powerSupplyPos).GetComponent<INO_ElevatorPowerSupply>();
     }
+    public void ActiveEleveator(Vector3Int pos)
+    {
+        Vector3Int elevatorPos = elevatorPairs[pos];
+        int floorIndex = elevatorPos.z - MinFloor;
+        elevatorPos.z = 0;
 
+        ObjectTilemaps[floorIndex].GetInstantiatedObject(elevatorPos).GetComponent<Animator>().SetBool("IsActive", true);
+    }
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");
 		if (ExistFlaming(pos))

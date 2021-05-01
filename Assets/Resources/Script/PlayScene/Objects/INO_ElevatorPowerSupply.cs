@@ -22,7 +22,12 @@ public class INO_ElevatorPowerSupply : InteractiveObject {
                     return true;
             }
         }
-
         return false;
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        TileMgr.Instance.ActiveEleveator(tilePos);
     }
 }

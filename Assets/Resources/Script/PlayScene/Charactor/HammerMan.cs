@@ -10,7 +10,7 @@ public class HammerMan : Player {
     protected override void Awake()
     {
         base.Awake();
-        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator1");
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/PlayScene/UI/CutScene/Ultimate_hammer_man");
         ultName = "아직 멈출 수 없다";
     }
     // Start is called before the first frame update
@@ -41,7 +41,7 @@ public class HammerMan : Player {
     IEnumerator RescueHammer() {
         Vector3Int oPos = currentTilePos; // 갱신용 old Pos
         UI_Actives.SetActive(false); // UI 숨기기
-
+        _anim.SetBool("IsUsingActive", true);
         while (true) { // 클릭 작용시까지 반복
             RenderInteractArea(ref oPos);
             if (Input.GetMouseButtonDown(0))
@@ -49,6 +49,7 @@ public class HammerMan : Player {
                 if (TileMgr.Instance.ExistTempWall(oPos)) { // 클릭 좌표에 장애물이 있다면 제거
                     TileMgr.Instance.RemoveTempWall(oPos);
                     AddO2(-GetSkillUseO2());
+                    _anim.SetTrigger("ActiveSkillTrigger");
 
                     if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
                         playerAct = Action.Panic; // 턴제한 추가 필요
@@ -58,9 +59,9 @@ public class HammerMan : Player {
             else if (IsMoving) {
                 break;
             }
-
             yield return null;
         }
+        _anim.SetBool("IsUsingActive", false);
 
         TileMgr.Instance.RemoveEffect(oPos);
     }

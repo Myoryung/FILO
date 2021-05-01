@@ -34,7 +34,7 @@ public class Player : Charactor
     private float startTimeInFire = 0, startTimeInElectric = 0;
 
 	// Local Component
-	private Animator _anim; // 캐릭터 애니메이션
+	protected Animator _anim; // 캐릭터 애니메이션
     
     public virtual int OperatorNumber {
         get { return -1; }
@@ -269,9 +269,11 @@ public class Player : Charactor
     {
         playerAct = Action.ActiveUlt;
         CutScene.transform.Find("Ilustration").GetComponent<Image>().sprite = cutSceneIlust;
-        CutScene.transform.Find("UltText").GetComponent<Text>().text = ultName;
+        CutScene.transform.GetChild(0).Find("UltText").GetComponent<Text>().text = ultName;
         CutScene.SetActive(true);
-        yield return new WaitForSeconds(2.0f);
+        CutScene.GetComponent<Animator>().SetBool("IsActive", true);
+        yield return new WaitForSeconds(3.0f);
+        CutScene.GetComponent<Animator>().SetBool("IsActive", false);
         CutScene.SetActive(false);
     }
     IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
@@ -286,10 +288,12 @@ public class Player : Charactor
                     _rescuingSurvivor.OnStartCarried();
                     GameMgr.Instance.OnCarrySurvivor(nPos);
                     playerAct = Action.Carry; // 업는 상태로 변경
+                    _anim.SetBool("IsRescue", true);
 
                     if (_rescuingSurvivor.CarryCount <= 0) {
                         _rescuingSurvivor.OnStartRescued();
                         playerAct = Action.Rescue; // Rescue 상태로 변경
+                        _anim.SetBool("IsRescue", false);
                     }
                 }
                 break;
@@ -336,6 +340,7 @@ public class Player : Charactor
 
     IEnumerator UseFireExtinguisher() // 소화기 사용 코드 
      {
+        _anim.SetBool("IsRescue", true);
         //좌표 값 변경으로 인해 수정해야 할 코드
         while (true) {
             if (Input.GetMouseButton(0)) {
@@ -369,6 +374,7 @@ public class Player : Charactor
                 break;
             yield return null;
         }
+        _anim.SetBool("IsRescue", false);
     }
     IEnumerator UseFireWall() // 방화벽 설치
     {
@@ -395,6 +401,7 @@ public class Player : Charactor
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
                 TileMgr.Instance.RemoveTempWall(nPos);
+                _anim.SetTrigger("Throw");
                 GameMgr.Instance.OnUseTool();
                 break;
             }
@@ -409,6 +416,7 @@ public class Player : Charactor
     private void UseO2Can() // 산소캔 사용
     {
         AddO2(45.0f);
+        _anim.SetTrigger("UseAirDrink");
         GameMgr.Instance.OnUseTool();
         SoundManager.instance.PlayAirCanUse();
     }
@@ -550,9 +558,12 @@ public class Player : Charactor
 
     public override void AddHP(float value) {
         base.AddHP(value);
+        if(value < 0)
+            _anim.SetTrigger("Hit");
 
         if (CurrentHP <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
+            _anim.SetTrigger("PassOut");
             playerAct = Action.Retire;
             rbody.velocity = Vector2.zero;
         }

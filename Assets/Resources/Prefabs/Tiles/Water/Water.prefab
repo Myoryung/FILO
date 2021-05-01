@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 478873b36d3d82148a2abb8d1dcea622, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.40392157}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -122,9 +122,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccfd23a38165d424ba78627f5a589783, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WaterSprite: {fileID: 21300000, guid: a3f22c020fc122440bc895df784aa1c1, type: 3}
-  WaterElectricSprite: {fileID: 21300000, guid: 495534af3c30ceb42b8ddc2bbd9f78e6,
-    type: 3}
+  electricPtc: {fileID: 402311636262889358}
+  waterRule:
+  - {fileID: 21300000, guid: 478873b36d3d82148a2abb8d1dcea622, type: 3}
+  - {fileID: 21300000, guid: 28231da2a9a2bb14499b412e0482aa2b, type: 3}
+  - {fileID: 21300000, guid: 5ec78b4244e34e64ea82f73c7dea1940, type: 3}
+  spriteRenderer: {fileID: 0}
 --- !u!1001 &4110487222784765375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -209,6 +212,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78339d366f1689d4f96964c38927bbb7, type: 3}
+--- !u!1 &402311636262889358 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4367979356185332273, guid: 78339d366f1689d4f96964c38927bbb7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4110487222784765375}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &402311636262796206 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4367979356185499153, guid: 78339d366f1689d4f96964c38927bbb7,

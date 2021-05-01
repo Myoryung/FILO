@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bf7c34a0dc4e6348bea04faa70406ee, type: 3}
+  m_Name: NPC_sprite
+  m_EditorClassIdentifier: 
+  m_Labels:
+  - m_Name: NPC_body
+    m_Hash: -1283255689
+    m_CategoryList:
+    - m_Name: female_body
+      m_Hash: 29741241
+      m_Sprite: {fileID: -8716966213841238850, guid: eea35dfc1e109404aa92d144c3d16bc5,
+        type: 3}
+    - m_Name: male_body
+      m_Hash: 65332916
+      m_Sprite: {fileID: -8846838144213281293, guid: eea35dfc1e109404aa92d144c3d16bc5,
+        type: 3}
+  - m_Name: NPC_arms
+    m_Hash: -2065702931
+    m_CategoryList:
+    - m_Name: Female_arms
+      m_Hash: -1341811980
+      m_Sprite: {fileID: -265586943158590528, guid: eea35dfc1e109404aa92d144c3d16bc5,
+        type: 3}
+    - m_Name: Male_arms
+      m_Hash: -1236686451
+      m_Sprite: {fileID: -4935848248136264143, guid: eea35dfc1e109404aa92d144c3d16bc5,
+        type: 3}
+  - m_Name: Legs
+    m_Hash: 1563094196
+    m_CategoryList:
+    - m_Name: Female_legs
+      m_Hash: -1578559658
+      m_Sprite: {fileID: 1895232540037657099, guid: eea35dfc1e109404aa92d144c3d16bc5,
+        type: 3}
+    - m_Name: blink
+      m_Hash: 842569181
+      m_Sprite: {fileID: 0}

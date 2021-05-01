@@ -45,7 +45,7 @@ public class Captain : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
-        Action oldact = _playerAct;
+        Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         StartCoroutine(MassExtinguish(oldact));
     }
@@ -117,7 +117,7 @@ public class Captain : Player {
             }
             yield return null;
         }
-        _playerAct = act;
+        playerAct = act;
         for (int i = -ultSkillRange.x; i <= ultSkillRange.x; i++)
         {
             for (int j = -ultSkillRange.y; j <= ultSkillRange.y; j++)

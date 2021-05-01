@@ -10,7 +10,12 @@ PrefabInstance:
     - target: {fileID: 734372011617945173, guid: b356a17a0c553fb43a76d8c181bcc4e0,
         type: 3}
       propertyPath: m_Name
-      value: Survivor
+      value: StaticSurvivor
+      objectReference: {fileID: 0}
+    - target: {fileID: 2174306934657938985, guid: b356a17a0c553fb43a76d8c181bcc4e0,
+        type: 3}
+      propertyPath: type
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6577039438887749277, guid: b356a17a0c553fb43a76d8c181bcc4e0,
         type: 3}

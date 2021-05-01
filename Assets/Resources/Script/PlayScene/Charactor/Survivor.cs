@@ -7,14 +7,21 @@ using UnityEngine.Tilemaps;
 public class Survivor : Charactor {
     public GameObject SmileMark;
 
-    private enum State { Panic, Static }
+    private enum Type { Panic, Static }
     [SerializeField]
-    private State state;
+    private Type type;
+
+    public enum State { Idle, Carried, Rescued }
+    private State state = State.Idle;
+    public State CurrState {
+        get { return state; }
+    }
 
     [SerializeField]
     private bool isImportant = false;
 
-    protected int _carryCount = 1;
+    protected const int IDLE_CARRY_COUNT = 0, INJURY_CARRY_COUNT = 2;
+    protected int _carryCount = 0;
 
     private const int _panicMoveCount = 2;
     private float _speed = 100.0f;
@@ -28,11 +35,12 @@ public class Survivor : Charactor {
     protected override void Start()
     {
         base.Start();
-        GameMgr.Instance.AddSurvivor(TileMgr.Instance.WorldToCell(transform.position), this);
+        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
+        GameMgr.Instance.AddSurvivor(currentTilePos, this);
     }
 
     public override void TurnEndActive() {
-        if (GameMgr.Instance.GameTurn % 1 == 0 && state == State.Panic) {
+        if (GameMgr.Instance.GameTurn % 1 == 0 && type == Type.Panic && state == State.Idle) {
             _moveDone = false;
             StartCoroutine(MoveTile());
         }
@@ -81,6 +89,7 @@ public class Survivor : Charactor {
             }
 
             transform.position = arrivePos;
+            _currentTilePos = nPos;
         }
         _moveDone = true;
     }
@@ -92,12 +101,8 @@ public class Survivor : Charactor {
         float hpRate = CurrentHP / MaxHP;
         if (hpRate <= 0)
             GameMgr.Instance.OnDieSurvivor(this);
-        else if (hpRate <= 0.5) {
-            _carryCount = 2;
-            state = State.Static;
-        }
-        else
-            _carryCount = 1;
+        else if (hpRate <= 0.5)
+            type = Type.Static;
     }
     public bool IsMoveDone {
         get { return _moveDone; }
@@ -106,8 +111,37 @@ public class Survivor : Charactor {
         get { return isImportant; }
 	}
 
-    public void TurnOffRender() {
+    public void OnStartCarried() {
+        _carryCount = (CurrentHP / MaxHP > 0.5) ? IDLE_CARRY_COUNT : INJURY_CARRY_COUNT;
+        state = State.Carried;
+    }
+    public void OnStopCarried() {
+        state = State.Idle;
+    }
+    public void OnStartRescued() {
         GetComponent<SpriteRenderer>().enabled = false;
         transform.Find("UI").gameObject.SetActive(false);
+        state = State.Rescued;
+    }
+    public void OnStopRescued(Vector3Int pos) {
+        List<Vector3Int> candidates = new List<Vector3Int>();
+        for (int y = -1; y <= 1; y++) {
+            for (int x = -1; x <= 1; x++) {
+                if (x == 0 && y == 0) continue;
+                Vector3Int tempPos = currentTilePos + new Vector3Int(x, y, 0);
+                if (!TileMgr.Instance.ExistObject(tempPos))
+                    candidates.Add(tempPos);
+            }
+        }
+
+        int index = Random.Range(0, candidates.Count);
+        Vector3Int targetPos = candidates[index];
+
+        _currentTilePos = targetPos;
+        transform.position = TileMgr.Instance.CellToWorld(_currentTilePos);
+
+        GetComponent<SpriteRenderer>().enabled = true;
+        transform.Find("UI").gameObject.SetActive(true);
+        state = State.Idle;
     }
 }

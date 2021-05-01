@@ -40,7 +40,7 @@ public class Nurse : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
-        Action oldact = _playerAct;
+        Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         StartCoroutine(HealDrone(oldact));
     }
@@ -97,6 +97,6 @@ public class Nurse : Player {
             }
             yield return null;
         }
-        _playerAct = act;
+        playerAct = act;
     }
 }

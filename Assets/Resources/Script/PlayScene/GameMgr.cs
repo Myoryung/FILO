@@ -378,7 +378,7 @@ public class GameMgr : MonoBehaviour {
         gameInfo.CurrTime = currTime;
         ChangeTimerText();
 
-        TileMgr.Instance.UpdateDrone();
+        TileMgr.Instance.UpdateFloorView();
 
         goalMgr.OnTurnEnd(currTime);
 
@@ -517,7 +517,7 @@ public class GameMgr : MonoBehaviour {
     private void ChangeStateText(Player player) {
         if (_stateText == null) return;
 
-        switch (player.Act) {
+        switch (player.CurrAct) {
         case Player.Action.Carry:
             _stateText.text = "업 는 중";
             _stateText.color = new Color(1, 0.5f, 0);
@@ -685,6 +685,16 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnDieImportantSurvivor();
         else
             goalMgr.OnDieSurvivor();
+
+        // 업는중일 경우 플레이어에게 알림
+        if (survivor.CurrState == Survivor.State.Carried) {
+            foreach (Player player in players) {
+                if (player.EqualsRescuingSurvivor(survivor)) {
+                    player.OnDieRescuingSurvivor();
+                    break;
+                }
+            }
+        }
 
         Destroy(survivor.gameObject);
     }

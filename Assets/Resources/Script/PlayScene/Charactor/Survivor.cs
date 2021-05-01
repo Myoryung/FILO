@@ -27,6 +27,8 @@ public class Survivor : Charactor {
     private float _speed = 100.0f;
     private bool _moveDone = false;
 
+    protected Animator _anim;
+
     public int CarryCount {
         get { return _carryCount; }
         set { _carryCount = value; }
@@ -35,6 +37,8 @@ public class Survivor : Charactor {
     protected override void Start()
     {
         base.Start();
+        _anim = GetComponentInChildren<Animator>();
+        if (type == Type.Static) _anim.SetTrigger("Static");
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
         GameMgr.Instance.AddSurvivor(currentTilePos, this);
     }
@@ -63,7 +67,7 @@ public class Survivor : Charactor {
 
     IEnumerator MoveTile() {
         yield return null;
-
+        _anim.SetBool("IsRunning", true);
         for (int i = 0; i < _panicMoveCount; i++) {
             Vector3Int pPos = TileMgr.Instance.WorldToCell(transform.position);
             Vector3Int nPos;
@@ -91,6 +95,7 @@ public class Survivor : Charactor {
             transform.position = arrivePos;
             _currentTilePos = nPos;
         }
+        _anim.SetBool("IsRunning", false);
         _moveDone = true;
     }
 
@@ -102,7 +107,10 @@ public class Survivor : Charactor {
         if (hpRate <= 0)
             GameMgr.Instance.OnDieSurvivor(this);
         else if (hpRate <= 0.5)
+        {
             type = Type.Static;
+            _anim.SetTrigger("Static");
+        }
     }
     public bool IsMoveDone {
         get { return _moveDone; }

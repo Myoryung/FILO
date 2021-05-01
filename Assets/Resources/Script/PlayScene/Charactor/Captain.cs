@@ -14,7 +14,7 @@ public class Captain : Player {
     protected override void Awake()
     {
         base.Awake();
-        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator0");
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/PlayScene/UI/CutScene/Ultimate_leader");
         ultName = "광범위 소화지원";
     }
 

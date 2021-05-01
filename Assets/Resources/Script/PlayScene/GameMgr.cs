@@ -6,6 +6,8 @@ using System.Xml;
 
 public class GameMgr : MonoBehaviour {
     private static GameMgr _instance; // Singleton
+
+    private AudioSource BGM;//BGM(배경음악)오디오 소스
     public static GameMgr Instance // 하이어라키에 존재합니다잉
     {
         get {
@@ -84,7 +86,11 @@ public class GameMgr : MonoBehaviour {
 
     private void Awake()
     {
-        if(_instance == null)
+        BGM = GetComponent<AudioSource>();
+        BGM.volume = 0.2f;
+
+
+        if (_instance == null)
         {
             _instance = this;
         }
@@ -268,6 +274,8 @@ public class GameMgr : MonoBehaviour {
         }
     }
     private void StageReady() {
+        
+        
         selectCanvas.enabled = false;
         playCanvas.enabled = true;
 
@@ -286,6 +294,7 @@ public class GameMgr : MonoBehaviour {
         SetFocusToCurrOperator();
 
         _currGameState = GameState.PLAYER_TURN;
+        BGM.Play();//배경 음악 시작
     }
     private void PlayerTurn() {
         Player currPlayer = players[currPlayerIdx];
@@ -385,6 +394,7 @@ public class GameMgr : MonoBehaviour {
         _currGameState = GameState.PLAYER_TURN;
     }
     private void StageEnd() {
+
         if (!bStageEndSetup) {
             if (goalMgr.IsAllSatisfied()) {
                 reportCanvas.enabled = true;
@@ -397,6 +407,7 @@ public class GameMgr : MonoBehaviour {
 
             bStageEndSetup = true;
         }
+        BGM.Stop();
     }
 
     public void OnClickStageStartBtn() {
@@ -415,6 +426,7 @@ public class GameMgr : MonoBehaviour {
     }
     public void OnClickChangeChar(bool isRight) {
         int prevPlayerIdx = currPlayerIdx;
+        SoundManager.instance.PlayChanger_chracter();
 
         if (isRight && currPlayerIdx+1 < players.Count)
             currPlayerIdx++;

@@ -126,4 +126,21 @@ public class Captain : Player {
             }
         }
     }
+    protected override void OnTriggerEnter2D(Collider2D other)
+    {
+        base.OnTriggerEnter2D(other);
+        switch (other.tag)//대장 피격소리
+        {
+            case "Fire":
+                SoundManager.instance.PlayLeaderHurt();
+                break;
+            case "Ember":
+                SoundManager.instance.PlayLeaderHurt();
+                break;
+            case "Electric":
+            case "Water(Electric)":
+                SoundManager.instance.PlayLeaderHurt();
+                break;
+        }
+    }
 }

@@ -132,12 +132,16 @@ public class Player : Charactor
 
             // 이동 종료
             rbody.velocity = Vector3.zero;
+            
 
             // 애니메이션 종료
             if (_anim != null)
             {
                 if (_anim.GetBool("IsRunning"))
+                {
                     _anim.SetBool("IsRunning", false);
+                    SoundManager_Walk.instance.StopSound();//걷는 소리 정지
+                }
             }
             return;
         }
@@ -146,6 +150,7 @@ public class Player : Charactor
         Vector3 dir = new Vector3(hor, ver, 0.0f);
         dir /= dir.magnitude;
         rbody.velocity = dir * _movespeed;
+
 
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
 
@@ -164,7 +169,10 @@ public class Player : Charactor
         if (_anim != null)
         {
             if (!_anim.GetBool("IsRunning"))
+            {
                 _anim.SetBool("IsRunning", true);
+                SoundManager_Walk.instance.PlayWalkSound();//걷는소리 재생
+            }
         }
 
         // 산소 소비
@@ -309,6 +317,7 @@ public class Player : Charactor
         {
         case 1: // FireExtinguisher
             StartCoroutine(UseFireExtinguisher());
+            
             break;
         case 2: // StickyBomb
             StartCoroutine(UseStickyBomb());
@@ -337,7 +346,7 @@ public class Player : Charactor
             if (Input.GetMouseButton(0)) {
                 Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 mousePos.z = transform.position.z;
-
+                
                 Vector3 localPos = mousePos - transform.position; // 마우스 캐릭터 기준 로컬좌표
                 Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos); // 타일맵에서 마우스 좌표
                 if (_currentTilePos.x - moustIntPos.x <= 2 &&
@@ -349,13 +358,14 @@ public class Player : Charactor
                     offset.x = (localPos.x > 0) ? 1 : -1; // y축으로 퍼질 방향
                     offset.y = (localPos.y > 0) ? 1 : -1; // x축으로 퍼질 방향
                     Vector2 SpreadRange = new Vector2(2, 2); // 불 제거 범위
+                    SoundManager.instance.PlayGunFire();//소화기 사운드 재생
                     for (int i = 0; Mathf.Abs(i) < SpreadRange.x; i+= offset.x) {
                         for (int j = 0; Mathf.Abs(j) < SpreadRange.y; j+= offset.y) {
                             Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
                             TileMgr.Instance.RemoveFire(fPos);
                         }
                     }
-
+                    
                     GameMgr.Instance.OnUseTool();
                 }
                 break;
@@ -408,11 +418,13 @@ public class Player : Charactor
         AddO2(45.0f);
         _anim.SetTrigger("UseAirDrink");
         GameMgr.Instance.OnUseTool();
+        SoundManager.instance.PlayAirCanUse();
     }
 
     protected override void OnTriggerEnter2D(Collider2D other) {
         base.OnTriggerEnter2D(other);
 
+        
         switch (other.tag) {
         case "Fire":
             startTimeInFire = Time.time;
@@ -449,13 +461,15 @@ public class Player : Charactor
             break;
 
         case "UpStair":
-            if (!isInStair) {
+                SoundManager.instance.PlayStairChange();
+                if (!isInStair) {
                 isInStair = true;
                 ChangeFloor(true);
             }
             break;
         case "DownStair":
-            if (!isInStair) {
+                SoundManager.instance.PlayStairChange();
+                if (!isInStair) {
                 isInStair = true;
                 ChangeFloor(false);
             }

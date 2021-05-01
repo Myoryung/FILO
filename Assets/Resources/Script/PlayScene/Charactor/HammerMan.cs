@@ -66,7 +66,21 @@ public class HammerMan : Player {
         TileMgr.Instance.RemoveEffect(oPos);
     }
 
-    protected override void OnTriggerEnter2D(Collider2D other) {
+    protected override void OnTriggerEnter2D(Collider2D other)
+    {
         base.OnTriggerEnter2D(other);
+        switch (other.tag)//해머맨 피격소리 재생
+        {
+            case "Fire":
+                SoundManager.instance.PlayHammermanHurt();
+                break;
+            case "Ember":
+                SoundManager.instance.PlayHammermanHurt();
+                break;
+            case "Electric":
+            case "Water(Electric)":
+                SoundManager.instance.PlayHammermanHurt();
+                break;
+        }
     }
 }

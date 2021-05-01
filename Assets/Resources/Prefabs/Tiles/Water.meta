@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Resources/Sprite/Tile/Object/Sprinkler.meta
+guid: 393a804bfcfe146479f20eee65982ba6
+=======
 guid: c843d9185582a564badc435ef6187fe3
+>>>>>>> 3455a916e647f14890496e8915f0ab36790c765e:Assets/Resources/Prefabs/Tiles/Water.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

@@ -378,7 +378,7 @@ public class GameMgr : MonoBehaviour {
         gameInfo.CurrTime = currTime;
         ChangeTimerText();
 
-        TileMgr.Instance.UpdateDrone();
+        TileMgr.Instance.UpdateFloorView();
 
         goalMgr.OnTurnEnd(currTime);
 

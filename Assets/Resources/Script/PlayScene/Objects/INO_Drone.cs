@@ -3,10 +3,19 @@ using UnityEditor;
 using UnityEngine;
 
 public class INO_Drone : InteractiveObject {
+    private const float FLY_SPEED = 1000, FLY_DISTANCE = 1000;
+    private const float WING_ROTATE_SPEED = 1000;
 
-    private GameObject viewObject;
-    private const int ACTIVE_TURN = 3;
-    private int activeTurnCount = 0;
+    private GameObject wingsObj, wingsMovingObj;
+    private GameObject[] movingWingObjs = new GameObject[4];
+    private float totalMoveAmount;
+
+    private GameObject floorViewObjectPrefab;
+
+    private enum State {
+        IDLE, FLY, END
+    };
+    private State state = State.IDLE;
 
     private void Awake() {
         conditionText = "주변에 구조맨 존재";
@@ -15,22 +24,43 @@ public class INO_Drone : InteractiveObject {
     protected override void Start() {
         base.Start();
 
-        Transform view = transform.Find("View");
-        viewObject = view.gameObject;
-        viewObject.SetActive(false);
-        
-        Vector3 middlePos = TileMgr.Instance.CellToWorld(new Vector3Int(0, 0, tilePos.z));
-        view.transform.position = middlePos;
+        floorViewObjectPrefab = Resources.Load<GameObject>("Prefabs/Tiles/FloorView");
 
-        Vector2 floorSize = TileMgr.Instance.GetFloorSize(tilePos.z);
-        view.Find("MainView").GetComponent<SpriteRenderer>().size = floorSize;
-        view.Find("SubView").GetComponent<SpriteRenderer>().size = floorSize;
+        // 날개 오브젝트 Load
+        wingsObj = transform.Find("Wings").gameObject;
+        wingsMovingObj = transform.Find("Wings_Moving").gameObject;
+
+        movingWingObjs[0] = wingsMovingObj.transform.Find("LT").gameObject;
+        movingWingObjs[1] = wingsMovingObj.transform.Find("RT").gameObject;
+        movingWingObjs[2] = wingsMovingObj.transform.Find("LB").gameObject;
+        movingWingObjs[3] = wingsMovingObj.transform.Find("RB").gameObject;
+
+        wingsObj.SetActive(true);
+        wingsMovingObj.SetActive(false);
+        foreach (GameObject movingWingObj in movingWingObjs)
+            movingWingObj.SetActive(true);
+
     }
 
-    public void TurnUpdate() {
-        if (activeTurnCount > 0) {
-            if (--activeTurnCount == 0) {
-                viewObject.SetActive(false);
+    private void Update() {
+        if (state == State.FLY) {
+            float moveAmount = FLY_SPEED * Time.deltaTime;
+            totalMoveAmount += moveAmount;
+
+            transform.position += Vector3.up * moveAmount;
+            foreach (GameObject wingObj in movingWingObjs)
+                wingObj.transform.Rotate(0, 0, WING_ROTATE_SPEED * Time.deltaTime);
+
+            if (totalMoveAmount >= FLY_DISTANCE) {
+                state = State.END;
+
+                GetComponent<SpriteRenderer>().enabled = false;
+                wingsMovingObj.SetActive(false);
+
+                INO_DroneFloorView floorView = Instantiate(floorViewObjectPrefab).GetComponent<INO_DroneFloorView>();
+                floorView.SetFloor(tilePos.z);
+
+                TileMgr.Instance.RemoveDrone(tilePos);
             }
         }
     }
@@ -50,7 +80,10 @@ public class INO_Drone : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        viewObject.SetActive(true);
-        activeTurnCount = ACTIVE_TURN;
+        state = State.FLY;
+        totalMoveAmount = 0;
+
+        wingsObj.SetActive(false);
+        wingsMovingObj.SetActive(true);
     }
 }

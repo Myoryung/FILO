@@ -139,11 +139,11 @@ public class TileMgr {
                 gas.Move();
         }
     }
-    public void UpdateDrone() {
-        foreach (Tilemap objectTilemap in ObjectTilemaps) {
-            INO_Drone[] drones = objectTilemap.GetComponentsInChildren<INO_Drone>();
-            foreach (INO_Drone drone in drones)
-                drone.TurnUpdate();
+    public void UpdateFloorView() {
+        GameObject[] floorViewObjs = GameObject.FindGameObjectsWithTag("FloorView");
+        foreach (GameObject floorViewObj in floorViewObjs) {
+            INO_DroneFloorView floorView = floorViewObj.GetComponent<INO_DroneFloorView>();
+            floorView.TurnUpdate();
         }
     }
 
@@ -477,7 +477,10 @@ public class TileMgr {
 	}
     public void RemoveFlaming(Vector3Int pos) {
         RemoveObjectTile(pos, "Flaming");
-	}
+    }
+    public void RemoveDrone(Vector3Int pos) {
+        RemoveObjectTile(pos);
+    }
 
     private bool ExistObjectTile(Vector3Int pos, string tag) {
         int floorIndex = pos.z - MinFloor;
@@ -499,13 +502,13 @@ public class TileMgr {
             return true;
         return false;
     }
-    private void RemoveObjectTile(Vector3Int pos, string tag) {
+    private void RemoveObjectTile(Vector3Int pos, string tag = null) {
         int floorIndex = pos.z - MinFloor;
         Vector3Int basePos = pos;
         basePos.z = 0;
 
         GameObject obj = ObjectTilemaps[floorIndex].GetInstantiatedObject(basePos);
-        if (obj != null && obj.CompareTag(tag))
+        if (obj != null && (tag == null || obj.CompareTag(tag)))
             ObjectTilemaps[floorIndex].SetTile(basePos, null);
     }
     private void RemoveEnvironmentTile(Vector3Int pos, string tag) {

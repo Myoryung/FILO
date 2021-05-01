@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class Water : MonoBehaviour {
     public GameObject electricPtc;
-    public Sprite[] waterRule;
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
 
     private HashSet<Vector3Int> originElectrics = new HashSet<Vector3Int>();
@@ -38,17 +37,4 @@ public class Water : MonoBehaviour {
     public bool ExistOriginElectric(Vector3Int pos) {
         return originElectrics.Contains(pos);
 	}
-
-    private void ChangeRuleSprite()
-    {
-        bool top = TileMgr.Instance.ExistWater(_position + Vector3Int.up);
-        bool bottom = TileMgr.Instance.ExistWater(_position + Vector3Int.down);
-        bool left = TileMgr.Instance.ExistWater(_position + Vector3Int.left);
-        bool right = TileMgr.Instance.ExistWater(_position + Vector3Int.right);
-
-        if(top && bottom && left && right)
-        {
-
-        }
-    }
 }

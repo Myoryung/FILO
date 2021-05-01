@@ -233,8 +233,8 @@ public class GameMgr : MonoBehaviour {
         operatorPrefabs[2] = Resources.Load<GameObject>("Prefabs/Operator/Rescuers");
         operatorPrefabs[3] = Resources.Load<GameObject>("Prefabs/Operator/Nurse");
 
-        operatorCardNormalSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/OperatorCardNormal");
-        operatorCardSelectedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/OperatorCardSelected");
+        operatorCardNormalSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_Card-New");
+        operatorCardSelectedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_Card-Old");
 
         _currGameState = GameState.SELECT_OPERATOR;
     }

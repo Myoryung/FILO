@@ -148,10 +148,50 @@ PrefabInstance:
       propertyPath: InitialModule.startRotationY.minMaxState
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
+      value: 0.05882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: startDelay.minMaxState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: startDelay.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: prewarm
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157298170, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5528625206157340760, guid: 3307568e8b2ec68408db759f75aacd49,
         type: 3}
       propertyPath: m_SortingOrder
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206157340762, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3307568e8b2ec68408db759f75aacd49, type: 3}

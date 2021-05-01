@@ -42,6 +42,7 @@ public class HammerMan : Player {
         Vector3Int oPos = currentTilePos; // 갱신용 old Pos
         UI_Actives.SetActive(false); // UI 숨기기
         _anim.SetBool("IsUsingActive", true);
+        
         while (true) { // 클릭 작용시까지 반복
             RenderInteractArea(ref oPos);
             if (Input.GetMouseButtonDown(0))
@@ -50,7 +51,7 @@ public class HammerMan : Player {
                     TileMgr.Instance.RemoveTempWall(oPos);
                     AddO2(-GetSkillUseO2());
                     _anim.SetTrigger("ActiveSkillTrigger");
-
+                    SoundManager.instance.PlayWallCrash();
                     if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
                         playerAct = Action.Panic; // 턴제한 추가 필요
                 }

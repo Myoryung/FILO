@@ -19,6 +19,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip Air_canuse;
     public AudioClip Grenade;
     public AudioClip Siren;
+    public AudioClip WallCrash;
 
     // Start is called before the first frame update
     void Awake()
@@ -68,6 +69,7 @@ public class SoundManager : MonoBehaviour
         myAudio.volume = 0.8f;
         myAudio.PlayOneShot(Air_canuse);
     }
+
     public void PlayGrenade()
     {
         myAudio.volume = 0.8f;
@@ -75,7 +77,12 @@ public class SoundManager : MonoBehaviour
     }
     public void PlaySiren()
     {
-        myAudio.volume = 0.3f;
+        myAudio.volume = 0.15f;
         myAudio.PlayOneShot(Siren);
+    }
+    public void PlayWallCrash()
+    {
+        myAudio.volume = 0.5f;
+        myAudio.PlayOneShot(WallCrash);
     }
 }

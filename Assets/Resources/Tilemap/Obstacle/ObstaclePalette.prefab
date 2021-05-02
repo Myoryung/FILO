@@ -85,6 +85,15 @@ Tilemap:
   m_GameObject: {fileID: 9050285663611125323}
   m_Enabled: 1
   m_Tiles:
+  - first: {x: 5, y: -7, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 40
+      m_TileSpriteIndex: 40
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 40
+      m_AllTileFlags: 1073741825
   - first: {x: 3, y: -6, z: 0}
     second:
       serializedVersion: 2
@@ -527,6 +536,8 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 1ba5df34b0ac3194b9a9852da10b5847, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 76d219d5d1dd85944b4282b76d30c4bc, type: 2}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: b3f311c4a28341948a4b3357c307fe95, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 1
     m_Data: {fileID: -6784693214829365044, guid: 01ebbbed8c22fcb4fb3eb2281ae17deb,
@@ -633,8 +644,10 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 5231751120666413490, guid: f00e480827f64d44883462a8018c503a,
       type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: c23587b2fcc698e419e1017e51e2f664, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 40
+  - m_RefCount: 41
     m_Data:
       e00: 1
       e01: 0
@@ -653,7 +666,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 40
+  - m_RefCount: 41
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray:
   - m_RefCount: 1
@@ -776,6 +789,9 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 8266654891535470065, guid: ea5e57901ca6ae245b5522c21c818dbc,
       type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 1388402989985920551, guid: 438fc1da9d11b6b4bb983cba433eeb50,
+      type: 3}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -4, y: -14, z: 0}
@@ -839,7 +855,7 @@ TilemapRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
-  m_ChunkCullingBounds: {x: 63.5, y: 255.5, z: 0}
+  m_ChunkCullingBounds: {x: 63.5, y: 191.5, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0

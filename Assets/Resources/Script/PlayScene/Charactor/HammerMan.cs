@@ -47,11 +47,13 @@ public class HammerMan : Player {
             RenderInteractArea(ref oPos);
             if (Input.GetMouseButtonDown(0))
             {
-                if (TileMgr.Instance.ExistTempWall(oPos)) { // 클릭 좌표에 장애물이 있다면 제거
+                if (TileMgr.Instance.ExistTempWall(oPos))
+                { // 클릭 좌표에 장애물이 있다면 제거
+                    SoundManager.instance.PlayWallCrash();
+                    _anim.SetTrigger("ActiveSkillTrigger");
+                    yield return new WaitForSeconds(1.7f);
                     TileMgr.Instance.RemoveTempWall(oPos);
                     AddO2(-GetSkillUseO2());
-                    _anim.SetTrigger("ActiveSkillTrigger");
-                    SoundManager.instance.PlayWallCrash();
                     if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position)))
                         playerAct = Action.Panic; // 턴제한 추가 필요
                 }

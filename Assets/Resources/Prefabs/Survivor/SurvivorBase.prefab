@@ -105,6 +105,7 @@ MonoBehaviour:
   SmileMark: {fileID: 5751077555104672519}
   type: 0
   isImportant: 0
+  body: {fileID: 2856924848929877621}
 --- !u!1 &5751077555104672519
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,6 +548,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f1bf23a1b551c9c419aff29f887fbc30, type: 3}
+--- !u!1 &2856924848929877621 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3784913551746435771, guid: f1bf23a1b551c9c419aff29f887fbc30,
+    type: 3}
+  m_PrefabInstance: {fileID: 1379052362191807694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2129655617894007957 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1057622783173320795, guid: f1bf23a1b551c9c419aff29f887fbc30,

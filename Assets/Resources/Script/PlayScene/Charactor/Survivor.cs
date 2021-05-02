@@ -26,6 +26,7 @@ public class Survivor : Charactor {
     private const int _panicMoveCount = 2;
     private float _speed = 100.0f;
     private bool _moveDone = false;
+    public GameObject body = null;
 
     protected Animator _anim;
 
@@ -127,7 +128,7 @@ public class Survivor : Charactor {
         state = State.Idle;
     }
     public void OnStartRescued() {
-        GetComponent<SpriteRenderer>().enabled = false;
+        body.SetActive(false);
         transform.Find("UI").gameObject.SetActive(false);
         state = State.Rescued;
     }
@@ -148,7 +149,7 @@ public class Survivor : Charactor {
         _currentTilePos = targetPos;
         transform.position = TileMgr.Instance.CellToWorld(_currentTilePos);
 
-        GetComponent<SpriteRenderer>().enabled = true;
+        body.SetActive(true);
         transform.Find("UI").gameObject.SetActive(true);
         state = State.Idle;
     }

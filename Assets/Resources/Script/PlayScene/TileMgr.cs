@@ -25,14 +25,12 @@ public class TileMgr {
     private Dictionary<Vector3Int, Vector3Int> doorPairs = new Dictionary<Vector3Int, Vector3Int>(){
         {new Vector3Int(2, 1, 4), new Vector3Int(2, -1, 4)},
     };
-    private Dictionary<Vector3Int, Vector3Int> socketPairs = new Dictionary<Vector3Int, Vector3Int>(){
-        {new Vector3Int(-3, -4, 2), new Vector3Int(-6, -4, 2)},
-        {new Vector3Int(0, -2, 3), new Vector3Int(0, 3, 3)},
+    private Dictionary<Vector3Int, Vector3Int[]> socketPairs = new Dictionary<Vector3Int, Vector3Int[]>(){
+        {new Vector3Int(-18, -13, 3), new Vector3Int[2] { new Vector3Int(-12, -9, 3), new Vector3Int(11, 7, 3)} },
     };
-    private Dictionary<Vector3Int, Vector3Int> elevatorPairs = new Dictionary<Vector3Int, Vector3Int>(){
-        {new Vector3Int(-3, -1, 2), new Vector3Int(-6, -1, 2)},
-        {new Vector3Int(-3, 1, 3), new Vector3Int(0, 2, 3)},
-        {new Vector3Int(3, 1, 3), new Vector3Int(0, 2, 3)},
+    private Dictionary<Vector3Int, Vector3Int[]> elevatorPairs = new Dictionary<Vector3Int, Vector3Int[]>(){
+        {new Vector3Int(10, 7, 3), new Vector3Int[6] { new Vector3Int(-16, 9, 2), new Vector3Int(-13, 9, 2)
+        , new Vector3Int(-16, 9, 3), new Vector3Int(-13, 9, 3), new Vector3Int(-13, 9, 4), new Vector3Int(-16, 9, 4)} }
     };
 
     public static TileMgr Instance {
@@ -65,7 +63,7 @@ public class TileMgr {
             GameObject floor = (GameObject)Object.Instantiate(floorPath, ParentFloor.transform);
             floor.SetActive(true);
             Floors.Add(floor);
-            
+
             floor.name = "Floor" + i;
             Tilemap background = floor.transform.Find("Background").gameObject.GetComponent<Tilemap>();
             BackgroundTilemaps.Add(background);
@@ -142,6 +140,7 @@ public class TileMgr {
     }
     public void UpdateFloorView() {
         GameObject[] floorViewObjs = GameObject.FindGameObjectsWithTag("FloorView");
+        if (floorViewObjs.Length <= 0) return;
         foreach (GameObject floorViewObj in floorViewObjs) {
             INO_DroneFloorView floorView = floorViewObj.GetComponent<INO_DroneFloorView>();
             floorView.TurnUpdate();
@@ -446,27 +445,31 @@ public class TileMgr {
 
         return ObjectTilemaps[floorIndex].GetInstantiatedObject(doorPos).GetComponent<INO_Door>();
     }
-    public INO_Socket GetMatchedSocket(Vector3Int pos) {
-        Vector3Int socketPos = socketPairs[pos];
-        int floorIndex = socketPos.z - MinFloor;
-        socketPos.z = 0;
+    public INO_Socket[] GetMatchedSocket(Vector3Int pos) {
+        INO_Socket[] sockets= new INO_Socket[socketPairs[pos].Length];
+        if (sockets.Length <= 0) return null;
+        for (int i = 0; i < socketPairs[pos].Length; i++)
+        {
+            int floorIndex = socketPairs[pos][i].z - MinFloor;
+            socketPairs[pos][i].z = 0;
+            sockets[i] = ObjectTilemaps[floorIndex].GetInstantiatedObject(socketPairs[pos][i]).GetComponent<INO_Socket>();
+        }
 
-        return ObjectTilemaps[floorIndex].GetInstantiatedObject(socketPos).GetComponent<INO_Socket>();
+        return sockets;
     }
-    public INO_ElevatorPowerSupply GetMatchedPowerSupply(Vector3Int pos) {
-        Vector3Int powerSupplyPos = elevatorPairs[pos];
-        int floorIndex = powerSupplyPos.z - MinFloor;
-        powerSupplyPos.z = 0;
+    public INO_Elevator[] GetMatchedElevators(Vector3Int pos) {
 
-        return ObjectTilemaps[floorIndex].GetInstantiatedObject(powerSupplyPos).GetComponent<INO_ElevatorPowerSupply>();
-    }
-    public void ActiveEleveator(Vector3Int pos)
-    {
-        Vector3Int elevatorPos = elevatorPairs[pos];
-        int floorIndex = elevatorPos.z - MinFloor;
-        elevatorPos.z = 0;
+        INO_Elevator[] elevators = new INO_Elevator[elevatorPairs[pos].Length];
+        if (elevators.Length <= 0) return null;
+        for(int i=0;i < elevatorPairs[pos].Length; i++)
+        {
+            int floorIndex = elevatorPairs[pos][i].z - MinFloor;
+            elevatorPairs[pos][i].z = 0;
+            elevators[i] = ObjectTilemaps[floorIndex].GetInstantiatedObject(elevatorPairs[pos][i]).GetComponent<INO_Elevator>();
+            Debug.Log(elevators[i]);
+        }
 
-        ObjectTilemaps[floorIndex].GetInstantiatedObject(elevatorPos).GetComponent<Animator>().SetBool("IsActive", true);
+        return elevators;
     }
     public void RemoveFire(Vector3Int pos) {
         RemoveEnvironmentTile(pos, "Fire");

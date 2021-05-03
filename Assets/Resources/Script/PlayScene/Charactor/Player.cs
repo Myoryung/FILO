@@ -128,7 +128,7 @@ public class Player : Charactor
 
         if (CurrentHP <= 0 || CurrentO2 <= 0 || _currentMental <= 0 ||
             playerAct == Action.Carry || playerAct == Action.MoveFloor ||
-            (hor == 0.0f && ver == 0.0f)) {
+            playerAct == Action.ActiveUlt || (hor == 0.0f && ver == 0.0f)) {
 
             // 이동 종료
             rbody.velocity = Vector3.zero;
@@ -340,7 +340,7 @@ public class Player : Charactor
 
     IEnumerator UseFireExtinguisher() // 소화기 사용 코드 
      {
-        _anim.SetBool("IsRescue", true);
+        _anim.SetBool("IsFireExt", true);
         //좌표 값 변경으로 인해 수정해야 할 코드
         while (true) {
             if (Input.GetMouseButton(0)) {
@@ -374,7 +374,7 @@ public class Player : Charactor
                 break;
             yield return null;
         }
-        _anim.SetBool("IsRescue", false);
+        _anim.SetBool("IsFireExt", false);
     }
     IEnumerator UseFireWall() // 방화벽 설치
     {
@@ -563,7 +563,11 @@ public class Player : Charactor
 
         if (CurrentHP <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
-            _anim.SetTrigger("PassOut");
+            if (playerAct != Action.Retire)
+            {
+                Debug.Log("HI");
+                _anim.SetBool("PassOut", true);
+            }
             playerAct = Action.Retire;
             rbody.velocity = Vector2.zero;
         }

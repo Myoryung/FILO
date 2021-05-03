@@ -6,10 +6,10 @@ using System;
 public class INO_Elevator : InteractiveObject {
     [SerializeField]
     private bool isUp;
-    
+    public bool IsAble = false;
+
     public override bool IsAvailable() {
-        INO_ElevatorPowerSupply powerSupply = TileMgr.Instance.GetMatchedPowerSupply(tilePos);
-        return powerSupply.ExistAroundElectric();
+        return IsAble;
     }
 
     public override void Activate() {

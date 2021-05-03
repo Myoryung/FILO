@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // UI 용
+using UnityEngine.SceneManagement;
 using System.Xml;
 
 public class GameMgr : MonoBehaviour {
@@ -21,6 +22,7 @@ public class GameMgr : MonoBehaviour {
     private Text _mentalText, _stateText, _charNameText;
     private Text startBtnText, timerText = null;
     private Image _fadeImage = null;
+    private Image _CardProfile = null;
 
     public enum LoadingState { Begin, Stay, End}
     private LoadingState _loadingState;
@@ -48,6 +50,7 @@ public class GameMgr : MonoBehaviour {
 
     private Tablet tablet;
     private Sprite operatorDepoyedSprite;
+    private Sprite[] operatorProfileImage = new Sprite[2];
     private GameObject[] operatorCards = new GameObject[4];
     private int operatorCardNum;
 
@@ -222,6 +225,7 @@ public class GameMgr : MonoBehaviour {
 		_mentalText = playCanvas.transform.Find("PlayerCard/CurrentMental").GetComponent<Text>();
         _stateText = playCanvas.transform.Find("PlayerCard/CurrentState").GetComponent<Text>();
         _charNameText = playCanvas.transform.Find("PlayerCard/Player_KorName").GetComponent<Text>();
+        _CardProfile = playCanvas.transform.Find("PlayerCard/Player_Image").GetComponent<Image>();
 
         disasterAlaram = playCanvas.transform.Find("MiddleUI/DisasterAlarm").gameObject;
         disasterAlaramText = disasterAlaram.transform.Find("Text").GetComponent<Text>();
@@ -237,6 +241,9 @@ public class GameMgr : MonoBehaviour {
         operatorPrefabs[1] = Resources.Load<GameObject>("Prefabs/Operator/HammerMan");
         operatorPrefabs[2] = Resources.Load<GameObject>("Prefabs/Operator/Rescuers");
         operatorPrefabs[3] = Resources.Load<GameObject>("Prefabs/Operator/Nurse");
+
+        operatorProfileImage[0] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-leader");
+        operatorProfileImage[1] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-hammerman");
 
         operatorDepoyedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_card-Depolyed");
 
@@ -298,6 +305,25 @@ public class GameMgr : MonoBehaviour {
         Player currPlayer = players[currPlayerIdx];
         currPlayer.Move();
         currPlayer.Activate();
+
+        bool[] gameOverCheck = new bool[players.Count];
+        for(int i=0; i<players.Count; i++)
+        {
+            if (players[i].CurrAct == Player.Action.Retire || players[i].CurrAct == Player.Action.Panic)
+            {
+                gameOverCheck[i] = true;
+            }
+        }
+        bool reStart = true;
+        for(int i=0; i<gameOverCheck.Length; i++)
+        {
+            if (gameOverCheck[i] == false)
+            {
+                reStart = false;
+                break;
+            }
+        }
+        if (reStart) SceneManager.LoadScene("Scenes/PlayScene");
 
         if (bTurnEndClicked) {
             // 캐릭터들의 턴 종료 행동 함수 호출
@@ -433,6 +459,8 @@ public class GameMgr : MonoBehaviour {
         if (prevPlayerIdx != currPlayerIdx) {
             players[prevPlayerIdx].OnUnsetMain();
             players[currPlayerIdx].OnSetMain();
+            TileMgr.Instance.SwitchFloorTilemap((int)players[currPlayerIdx].transform.position.z);
+            _CardProfile.sprite = operatorProfileImage[currPlayerIdx];
             SetFocusToCurrOperator();
         }
         if(players[currPlayerIdx].OperatorNumber == RobotDog.OPERATOR_NUMBER)

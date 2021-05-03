@@ -118,6 +118,7 @@ public class Captain : Player {
             yield return null;
         }
         playerAct = act;
+        isUsedUlt = true;
         for (int i = -ultSkillRange.x; i <= ultSkillRange.x; i++)
         {
             for (int j = -ultSkillRange.y; j <= ultSkillRange.y; j++)

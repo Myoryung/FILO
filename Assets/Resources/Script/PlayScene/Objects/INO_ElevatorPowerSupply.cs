@@ -3,15 +3,17 @@ using UnityEditor;
 using UnityEngine;
 
 public class INO_ElevatorPowerSupply : InteractiveObject {
+
+    public Sprite[] pwSupplySprite;
+    private bool IsAble = false;
     private void Awake() {
         conditionText = "주변에 전기 존재";
     }
-
     public override bool IsActive() {
         return true;
     }
     public override bool IsAvailable() {
-        return false;
+        return ExistAroundElectric();
     }
 
     public bool ExistAroundElectric() {
@@ -28,6 +30,32 @@ public class INO_ElevatorPowerSupply : InteractiveObject {
     public override void Activate()
     {
         base.Activate();
-        TileMgr.Instance.ActiveEleveator(tilePos);
+        INO_Elevator[] elevators = TileMgr.Instance.GetMatchedElevators(tilePos);
+        if (!IsAble)
+        {
+            GetComponent<SpriteRenderer>().sprite = pwSupplySprite[0];
+            IsAble = true;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().sprite = pwSupplySprite[1];
+            IsAble = false;
+        }
+        for (int i = 0; i < elevators.Length; i++)
+        {
+            if (elevators[i] != null)
+            {
+                if (!elevators[i].IsAble)
+                {
+                    elevators[i].IsAble = true;
+                    elevators[i].GetComponent<Animator>().SetBool("IsActive", true);
+                }
+                else
+                {
+                    elevators[i].IsAble = false;
+                    elevators[i].GetComponent<Animator>().SetBool("IsActive", false);
+                }
+            }
+        }
     }
 }

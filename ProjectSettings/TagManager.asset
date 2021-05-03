@@ -27,6 +27,7 @@ TagManager:
   - Flammable
   - Flaming
   - Door
+  - FloorView
   layers:
   - Default
   - TransparentFX
@@ -43,7 +44,7 @@ TagManager:
   - Electric
   - OperatorOverlapable
   - UnSelectable
-  - 
+  - FogOfWar
   - 
   - 
   - 
@@ -66,4 +67,7 @@ TagManager:
     locked: 0
   - name: FogOfWar
     uniqueID: 2880710905
+    locked: 0
+  - name: Buttons
+    uniqueID: 3719545213
     locked: 0

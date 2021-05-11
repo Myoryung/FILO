@@ -21,7 +21,7 @@ public class INO_CircuitBreaker : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        INO_Socket[] sockets = TileMgr.Instance.GetMatchedSocket(tilePos, floor); if (!IsAble)
+        INO_Socket[] sockets = TileMgr.Instance.GetMatchedSockets(tilePos, floor); if (!IsAble)
         {
             GetComponent<SpriteRenderer>().sprite = cbSprite[0];
             IsAble = true;

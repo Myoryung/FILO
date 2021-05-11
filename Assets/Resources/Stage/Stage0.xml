@@ -15,6 +15,71 @@
     신이시여 제게 두려움에 떠는 아이를 구할 힘을
     주소서...
   </StageContent>
+
+  <Objects>
+    <Door>
+      <Pair>
+        <Controller>
+          <Point>2, 1</Point>
+          <Floor>4</Floor>
+        </Controller>
+        <Target>
+          <Point>2, -1</Point>
+          <Floor>4</Floor>
+        </Target>
+      </Pair>
+    </Door>
+    
+    <Socket>
+      <Pair>
+        <Controller>
+          <Point>-18, -13</Point>
+          <Floor>3</Floor>
+        </Controller>
+        <Target>
+          <Point>-12, -9</Point>
+          <Floor>3</Floor>
+        </Target>
+        <Target>
+          <Point>11, 7</Point>
+          <Floor>3</Floor>
+        </Target>
+      </Pair>
+    </Socket>
+    
+    <Elevator>
+      <Pair>
+        <Controller>
+          <Point>10, 7</Point>
+          <Floor>3</Floor>
+        </Controller>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>2</Floor>
+        </Target>
+        <Target>
+          <Point>-13, 9</Point>
+          <Floor>2</Floor>
+        </Target>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>3</Floor>
+        </Target>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>3</Floor>
+        </Target>
+        <Target>
+          <Point>-13, 9</Point>
+          <Floor>4</Floor>
+        </Target>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>4</Floor>
+        </Target>
+      </Pair>
+    </Elevator>
+  </Objects>
   
   <Disasters>
     <Disaster>

@@ -22,16 +22,9 @@ public class TileMgr {
 
     public readonly int FloorSize, MinFloor, MaxFloor, StartFloor;
 
-    private Dictionary<Vector3Int, Vector3Int> doorPairs = new Dictionary<Vector3Int, Vector3Int>(){
-        {new Vector3Int(2, 1, 4), new Vector3Int(2, -1, 4)},
-    };
-    private Dictionary<Vector3Int, Vector3Int[]> socketPairs = new Dictionary<Vector3Int, Vector3Int[]>(){
-        {new Vector3Int(-18, -13, 3), new Vector3Int[2] { new Vector3Int(-12, -9, 3), new Vector3Int(11, 7, 3)} },
-    };
-    private Dictionary<Vector3Int, Vector3Int[]> elevatorPairs = new Dictionary<Vector3Int, Vector3Int[]>(){
-        {new Vector3Int(10, 7, 3), new Vector3Int[6] { new Vector3Int(-16, 9, 2), new Vector3Int(-13, 9, 2)
-        , new Vector3Int(-16, 9, 3), new Vector3Int(-13, 9, 3), new Vector3Int(-13, 9, 4), new Vector3Int(-16, 9, 4)} }
-    };
+    private Dictionary<Position, Position[]> doorPairs = new Dictionary<Position, Position[]>();
+    private Dictionary<Position, Position[]> socketPairs = new Dictionary<Position, Position[]>();
+    private Dictionary<Position, Position[]> elevatorPairs = new Dictionary<Position, Position[]>();
 
     public static TileMgr Instance {
         get { return m_instance; }
@@ -49,6 +42,7 @@ public class TileMgr {
         TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
         doc.LoadXml(textAsset.text);
 
+        // 층 정보
         XmlNode floorNode = doc.SelectSingleNode("Stage/Floors");
         FloorSize = int.Parse(floorNode.SelectSingleNode("FloorSize").InnerText);
         MinFloor = int.Parse(floorNode.SelectSingleNode("MinFloor").InnerText);
@@ -56,6 +50,7 @@ public class TileMgr {
         StartFloor = int.Parse(floorNode.SelectSingleNode("StartFloor").InnerText);
         _currentFloor = StartFloor - MinFloor;
 
+        // 타일맵
         GameObject ParentFloor = GameObject.Find("Floor");
         for (int i = MinFloor; i <= MaxFloor; i++) {
             Object floorPath = Resources.Load("Stage/Stage" + stage + "/Floor" + i);
@@ -75,6 +70,46 @@ public class TileMgr {
             WarningTilemaps.Add(floor.transform.Find("Warning").gameObject.GetComponent<Tilemap>());
         }
         SwitchFloorTilemap(StartFloor);
+
+        // 오브젝트 정보
+        XmlNode objectNode = doc.SelectSingleNode("Stage/Objects");
+        XmlNode doorNode = objectNode.SelectSingleNode("Door");
+        XmlNode socketNode = objectNode.SelectSingleNode("Socket");
+        XmlNode elevatorNode = objectNode.SelectSingleNode("Elevator");
+
+        foreach (XmlNode pairNode in doorNode.SelectNodes("Pair")) {
+            XmlNode controllerNode = pairNode.SelectSingleNode("Controller");
+            XmlNodeList targetNodes = pairNode.SelectNodes("Target");
+
+            Position controller = new Position(controllerNode);
+            Position[] targets = new Position[targetNodes.Count];
+            for (int i = 0; i < targetNodes.Count; i++)
+                targets[i] = new Position(targetNodes[i]);
+
+            doorPairs.Add(controller, targets);
+        }
+        foreach (XmlNode pairNode in socketNode.SelectNodes("Pair")) {
+            XmlNode controllerNode = pairNode.SelectSingleNode("Controller");
+            XmlNodeList targetNodes = pairNode.SelectNodes("Target");
+
+            Position controller = new Position(controllerNode);
+            Position[] targets = new Position[targetNodes.Count];
+            for (int i = 0; i < targetNodes.Count; i++)
+                targets[i] = new Position(targetNodes[i]);
+
+            socketPairs.Add(controller, targets);
+        }
+        foreach (XmlNode pairNode in elevatorNode.SelectNodes("Pair")) {
+            XmlNode controllerNode = pairNode.SelectSingleNode("Controller");
+            XmlNodeList targetNodes = pairNode.SelectNodes("Target");
+
+            Position controller = new Position(controllerNode);
+            Position[] targets = new Position[targetNodes.Count];
+            for (int i = 0; i < targetNodes.Count; i++)
+                targets[i] = new Position(targetNodes[i]);
+
+            elevatorPairs.Add(controller, targets);
+        }
 
         // Load Prefab
         FireTile = Resources.Load<TileBase>("Tilemap/Environment/Fire");
@@ -383,38 +418,44 @@ public class TileMgr {
 	public OperatorSpawn[] GetOperatorSpawns(int floor) {
         return SpawnTilemaps[floor - MinFloor].transform.GetComponentsInChildren<OperatorSpawn>();
     }
-	public INO_Door GetMatchedDoor(Vector3Int pos, int floor) {
-        Vector3Int doorPos = doorPairs[pos];
-        int floorIndex = doorPos.z - MinFloor;
-        doorPos.z = 0;
+	public INO_Door[] GetMatchedDoors(Vector3Int pos, int floor) {
+        Position controller = new Position(pos.x, pos.y, floor);
+        List<INO_Door> doors = new List<INO_Door>();
 
-        return ObjectTilemaps[floorIndex].GetInstantiatedObject(doorPos).GetComponent<INO_Door>();
-    }
-    public INO_Socket[] GetMatchedSocket(Vector3Int pos, int floor) {
-        INO_Socket[] sockets= new INO_Socket[socketPairs[pos].Length];
-        if (sockets.Length <= 0) return null;
-        for (int i = 0; i < socketPairs[pos].Length; i++)
-        {
-            int floorIndex = socketPairs[pos][i].z - MinFloor;
-            socketPairs[pos][i].z = 0;
-            sockets[i] = ObjectTilemaps[floorIndex].GetInstantiatedObject(socketPairs[pos][i]).GetComponent<INO_Socket>();
+        if (doorPairs.ContainsKey(controller)) {
+            foreach (Position targetPos in doorPairs[controller]) {
+                int floorIndex = targetPos.floor - MinFloor;
+                doors.Add(ObjectTilemaps[floorIndex].GetInstantiatedObject(targetPos.Point).GetComponent<INO_Door>());
+            }
         }
 
-        return sockets;
+        return doors.ToArray();
+    }
+    public INO_Socket[] GetMatchedSockets(Vector3Int pos, int floor) {
+        Position controller = new Position(pos.x, pos.y, floor);
+        List<INO_Socket> sockets = new List<INO_Socket>();
+
+        if (socketPairs.ContainsKey(controller)) {
+            foreach (Position targetPos in socketPairs[controller]) {
+                int floorIndex = targetPos.floor - MinFloor;
+                sockets.Add(ObjectTilemaps[floorIndex].GetInstantiatedObject(targetPos.Point).GetComponent<INO_Socket>());
+            }
+        }
+
+        return sockets.ToArray();
     }
     public INO_Elevator[] GetMatchedElevators(Vector3Int pos, int floor) {
+        Position controller = new Position(pos.x, pos.y, floor);
+        List<INO_Elevator> elevators = new List<INO_Elevator>();
 
-        INO_Elevator[] elevators = new INO_Elevator[elevatorPairs[pos].Length];
-        if (elevators.Length <= 0) return null;
-        for(int i=0;i < elevatorPairs[pos].Length; i++)
-        {
-            int floorIndex = elevatorPairs[pos][i].z - MinFloor;
-            elevatorPairs[pos][i].z = 0;
-            elevators[i] = ObjectTilemaps[floorIndex].GetInstantiatedObject(elevatorPairs[pos][i]).GetComponent<INO_Elevator>();
-            Debug.Log(elevators[i]);
+        if (elevatorPairs.ContainsKey(controller)) {
+            foreach (Position targetPos in elevatorPairs[controller]) {
+                int floorIndex = targetPos.floor - MinFloor;
+                elevators.Add(ObjectTilemaps[floorIndex].GetInstantiatedObject(targetPos.Point).GetComponent<INO_Elevator>());
+            }
         }
 
-        return elevators;
+        return elevators.ToArray();
     }
 
     public void RemoveFire(Vector3Int pos, int floor) {

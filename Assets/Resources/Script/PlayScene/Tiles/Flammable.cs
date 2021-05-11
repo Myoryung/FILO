@@ -14,8 +14,7 @@ public class Flammable : MonoBehaviour {
 
     public void Flaming() {
         if (flamingCount++ >= 5) {
-            Vector3Int pos = TileMgr.Instance.WorldToCell(transform.position);
-            TileMgr.Instance.RemoveFlaming(pos);
+            Destroy(this);
 		}
 	}
 }

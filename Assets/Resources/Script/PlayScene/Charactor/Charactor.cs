@@ -27,6 +27,11 @@ public abstract class Charactor : MonoBehaviour {
 
     protected int inFireCount = 0, inEmberCount = 0, inElectricCount = 0;
 
+    protected int floor;
+    public int Floor {
+        set { floor = value; }
+        get { return floor; }
+    }
     protected Vector3Int _currentTilePos = Vector3Int.zero; // 현재 캐릭터의 타일맵 좌표
     public Vector3Int currentTilePos
     {

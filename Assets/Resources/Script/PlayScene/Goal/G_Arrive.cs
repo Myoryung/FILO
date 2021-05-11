@@ -5,17 +5,19 @@ using System.Collections.Generic;
 
 public class G_Arrive : Goal {
 
-    private Dictionary<Vector3Int, bool> points = new Dictionary<Vector3Int, bool>();
+    private Dictionary<KeyValuePair<Vector3Int, int>, bool> points = new Dictionary<KeyValuePair<Vector3Int, int>, bool>();
     int arriveCount = 0;
 
     public G_Arrive(GameObject textObject, XmlNode goalNode) : base(GoalType.ARRIVE, textObject) {
         // Load XML
-        XmlNodeList pointNodes = goalNode.SelectNodes("Point");
-        foreach (XmlNode pointNode in pointNodes) {
-            string[] pointTokens = pointNode.InnerText.Split(',');
+        XmlNodeList targetNodes = goalNode.SelectNodes("Target");
+        foreach (XmlNode targetNode in targetNodes) {
+            string[] pointTokens = targetNode.SelectSingleNode("Point").InnerText.Split(',');
+            int x = int.Parse(pointTokens[0]), y = int.Parse(pointTokens[1]);
+            int floor = int.Parse(targetNode.SelectSingleNode("Floor").InnerText);
 
-            Vector3Int point = new Vector3Int(int.Parse(pointTokens[0]), int.Parse(pointTokens[1]), 0);
-            points.Add(point, false);
+            Vector3Int point = new Vector3Int(x, y, 0);
+            points.Add(new KeyValuePair<Vector3Int, int>(point, floor), false);
         }
 
         // Set Text
@@ -23,9 +25,10 @@ public class G_Arrive : Goal {
         RefreshText();
     }
 
-    public void CheckArriveAt(Vector3Int point) {
-        if (points.ContainsKey(point) && !points[point]) {
-            points[point] = true;
+    public void CheckArriveAt(Vector3Int point, int floor) {
+        KeyValuePair<Vector3Int, int> key = new KeyValuePair<Vector3Int, int>(point, floor);
+        if (points.ContainsKey(key) && !points[key]) {
+            points[key] = true;
             arriveCount++;
             RefreshText();
         }

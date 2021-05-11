@@ -19,13 +19,15 @@
   <Disasters>
     <Disaster>
       <Type>FALLING_ROCK</Type>
-      <Point>-5,-5,2</Point>
+      <Point>-5,-5</Point>
+      <Floor>2</Floor>
       <Turn>1</Turn>
     </Disaster>
 
     <Disaster>
       <Type>FLASH_OVER</Type>
-      <Point>7,-2,3</Point>
+      <Point>7,-2</Point>
+      <Floor>3</Floor>
       <Turn>5</Turn>
     </Disaster>
   
@@ -46,8 +48,14 @@
     <Sub>
       <Goal>
         <Type>ARRIVE</Type>
-        <Point>2,0</Point>
-        <Point>3,1</Point>
+        <Target>
+          <Floor>2</Floor>
+          <Point>2,0</Point>
+        </Target>
+        <Target>
+          <Floor>2</Floor>
+          <Point>3,1</Point>
+        </Target>
       </Goal>
     </Sub>
   </Goals>

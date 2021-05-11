@@ -20,12 +20,12 @@ public class DisasterMgr {
             string[] pointStr = disasterNode.SelectSingleNode("Point").InnerText.Replace(" ", "").Split(',');
             int x = int.Parse(pointStr[0]);
             int y = int.Parse(pointStr[1]);
-            int z = int.Parse(pointStr[2]);
-            Vector3Int point = new Vector3Int(x, y, z);
+            Vector3Int point = new Vector3Int(x, y, 0);
 
+            int floor = int.Parse(disasterNode.SelectSingleNode("Floor").InnerText);
             int turn = int.Parse(disasterNode.SelectSingleNode("Turn").InnerText);
 
-            disasters.Add(new Disaster(type, point, turn));
+            disasters.Add(new Disaster(type, point, floor, turn));
         }
 
         disasters.Sort(delegate (Disaster e1, Disaster e2) {
@@ -60,7 +60,7 @@ public class DisasterMgr {
 
     private DisasterObject CreateDisasterObject(Disaster disaster) {
         Object obj = null;
-        Vector3 pos = TileMgr.Instance.CellToWorld(disaster.position);
+        Vector3 pos = TileMgr.Instance.CellToWorld(disaster.position, disaster.floor);
 
         switch (disaster.type) {
         case Disaster.DisasterType.FALLING_ROCK:  obj = FallingRock;   break;
@@ -105,7 +105,7 @@ public class DisasterMgr {
             // 재난 범위에 타일 생성
             for (int i = minRange.x; i <= maxRange.x; i++) {
 				for (int j = minRange.y; j <= maxRange.y; j++)
-                    TileMgr.Instance.SetWarning(nextDis.position + new Vector3Int(i, j, 0)); 
+                    TileMgr.Instance.SetWarning(nextDis.position + new Vector3Int(i, j, 0), nextDis.floor); 
 			}
 
 			int checkTurn = GameMgr.Instance.GameTurn;
@@ -114,7 +114,7 @@ public class DisasterMgr {
             // 타일 삭제 부분
             for (int i = minRange.x; i <= maxRange.x; i++) {
 				for (int j = minRange.y; j <= maxRange.y; j++)
-                    TileMgr.Instance.RemoveWarning(nextDis.position + new Vector3Int(i, j, 0));
+                    TileMgr.Instance.RemoveWarning(nextDis.position + new Vector3Int(i, j, 0), nextDis.floor);
 			}
 		}
 	}

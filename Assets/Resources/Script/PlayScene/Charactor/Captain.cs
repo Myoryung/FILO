@@ -54,7 +54,7 @@ public class Captain : Player {
         for (int i = -(SkillRange.x/2); i < (Mathf.Ceil(SkillRange.x)/2); i++) {
             for (int j = -(SkillRange.y/2); j<(Mathf.Ceil(SkillRange.y)/2); j++) {
                 Vector3Int SearchPos = currentTilePos + new Vector3Int(i, j, 0);
-                TileMgr.Instance.TurnWarning(SearchPos, true);
+                TileMgr.Instance.TurnWarning(SearchPos, floor, true);
             }
         }
     }
@@ -67,14 +67,14 @@ public class Captain : Player {
             clearArea = (int)(Mathf.Ceil(SkillRange.x) / 2);
             for (int i = -clearArea; i <= clearArea; i++) {
                 Vector3Int SearchPos = OldPos + new Vector3Int(clearArea * nPos.x, i, 0);
-                TileMgr.Instance.TurnWarning(SearchPos, false);
+                TileMgr.Instance.TurnWarning(SearchPos, floor, false);
             }
         }
         if (nPos.y != 0) {
             clearArea = (int)(Mathf.Ceil(SkillRange.y) / 2);
             for (int i = -clearArea; i <= clearArea; i++) {
                 Vector3Int SearchPos = OldPos + new Vector3Int(i, clearArea * nPos.y, 0);
-                TileMgr.Instance.TurnWarning(SearchPos, false);
+                TileMgr.Instance.TurnWarning(SearchPos, floor, false);
             }
         }
     }
@@ -85,14 +85,14 @@ public class Captain : Player {
         {
             for (int j = -ultSkillRange.y; j <= ultSkillRange.y; j++)
             {
-                TileMgr.Instance.SetEffect(_currentTilePos + new Vector3Int(i, j, 0), new Color(1, 1, 0, 0.3f));
+                TileMgr.Instance.SetEffect(_currentTilePos + new Vector3Int(i, j, 0), floor, new Color(1, 1, 0, 0.3f));
             }
         }
         while (true)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = transform.position.z;
-            Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos); // 타일맵에서 마우스 좌표
+            Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos, floor); // 타일맵에서 마우스 좌표
             // 마우스 위에 사용 시 적용범위 타일 표시
             if (Input.GetMouseButton(0))
             {
@@ -109,7 +109,7 @@ public class Captain : Player {
                         for (int j = -SpreadRange.y; j < SpreadRange.y; j++)
                         {
                             Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
-                            TileMgr.Instance.RemoveFire(fPos);
+                            TileMgr.Instance.RemoveFire(fPos, floor);
                         }
                     }
                 }
@@ -123,7 +123,7 @@ public class Captain : Player {
         {
             for (int j = -ultSkillRange.y; j <= ultSkillRange.y; j++)
             {
-                TileMgr.Instance.SetEffect(_currentTilePos + new Vector3Int(i, j, 0), new Color(1, 1, 1, 0));
+                TileMgr.Instance.SetEffect(_currentTilePos + new Vector3Int(i, j, 0), floor, new Color(1, 1, 1, 0));
             }
         }
     }

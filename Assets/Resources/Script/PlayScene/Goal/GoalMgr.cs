@@ -110,9 +110,9 @@ public class GoalMgr {
         return isImpossible;
 	}
 
-    public void CheckArriveAt(Vector3Int pos) {
+    public void CheckArriveAt(Vector3Int pos, int floor) {
         if (arrive != null)
-            arrive.CheckArriveAt(pos);
+            arrive.CheckArriveAt(pos, floor);
     }
     public void OnTurnEnd(int currTime) {
         if (deadline != null)

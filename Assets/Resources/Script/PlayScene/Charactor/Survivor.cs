@@ -40,8 +40,9 @@ public class Survivor : Charactor {
         base.Start();
         _anim = GetComponentInChildren<Animator>();
         if (type == Type.Static) _anim.SetTrigger("Static");
-        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
-        GameMgr.Instance.AddSurvivor(currentTilePos, this);
+        floor = transform.parent.parent.GetComponent<Floor>().floor;
+        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
+        GameMgr.Instance.AddSurvivor(this);
     }
 
     public override void TurnEndActive() {
@@ -70,7 +71,7 @@ public class Survivor : Charactor {
         yield return null;
         _anim.SetBool("IsRunning", true);
         for (int i = 0; i < _panicMoveCount; i++) {
-            Vector3Int pPos = TileMgr.Instance.WorldToCell(transform.position);
+            Vector3Int pPos = TileMgr.Instance.WorldToCell(transform.position, floor);
             Vector3Int nPos;
 
             while (true) {
@@ -78,14 +79,12 @@ public class Survivor : Charactor {
                 int randy = Random.Range(-1, 2);
                 nPos = pPos + new Vector3Int(randx, randy, 0);
 
-                if (GameMgr.Instance.GetSurvivorAt(nPos) != null)
+                if (GameMgr.Instance.GetSurvivorAt(nPos, floor) != null)
                     continue;
                 break;
             }
 
-            GameMgr.Instance.OnMoveSurvivor(pPos, nPos);
-
-            Vector3 arrivePos = TileMgr.Instance.CellToWorld(nPos);
+            Vector3 arrivePos = TileMgr.Instance.CellToWorld(nPos, floor);
 
             float delta = _speed * Time.deltaTime;
             while (Vector3.Distance(arrivePos, transform.position) > delta) {
@@ -132,13 +131,13 @@ public class Survivor : Charactor {
         transform.Find("UI").gameObject.SetActive(false);
         state = State.Rescued;
     }
-    public void OnStopRescued(Vector3Int pos) {
+    public void OnStopRescued(Vector3Int pos, int floor) {
         List<Vector3Int> candidates = new List<Vector3Int>();
         for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
                 if (x == 0 && y == 0) continue;
-                Vector3Int tempPos = currentTilePos + new Vector3Int(x, y, 0);
-                if (!TileMgr.Instance.ExistObject(tempPos))
+                Vector3Int tempPos = pos + new Vector3Int(x, y, 0);
+                if (!TileMgr.Instance.ExistObject(tempPos, floor))
                     candidates.Add(tempPos);
             }
         }
@@ -146,8 +145,9 @@ public class Survivor : Charactor {
         int index = Random.Range(0, candidates.Count);
         Vector3Int targetPos = candidates[index];
 
+        this.floor = floor;
         _currentTilePos = targetPos;
-        transform.position = TileMgr.Instance.CellToWorld(_currentTilePos);
+        transform.position = TileMgr.Instance.CellToWorld(_currentTilePos, floor);
 
         body.SetActive(true);
         transform.Find("UI").gameObject.SetActive(true);

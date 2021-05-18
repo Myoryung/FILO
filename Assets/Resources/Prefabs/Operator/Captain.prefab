@@ -606,6 +606,16 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4767361718779809088, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4767361718779809088, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: maskCutawayDst
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 7436734194785782349, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
       propertyPath: m_LocalPosition.y

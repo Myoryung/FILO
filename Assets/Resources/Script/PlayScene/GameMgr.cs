@@ -90,16 +90,12 @@ public class GameMgr : MonoBehaviour {
     {
         BGM = GetComponent<AudioSource>();
         BGM.volume = 0.2f;
-
-
-        if (_instance == null)
-        {
-            _instance = this;
-        }
-        else
+        
+        if (_instance)
         {
             Destroy(this.gameObject);
         }
+        _instance = this;
     }
 
     private void Update() {
@@ -129,8 +125,9 @@ public class GameMgr : MonoBehaviour {
 
     private void StageSetup() {
         // Create TileMgr Instance
+        Debug.Log("Stage Setup");
         TileMgr.CreateInstance(stage);
-
+        
         // Load XML
         XmlDocument doc = new XmlDocument();
         TextAsset textAsset = (TextAsset)Resources.Load("Stage/Stage" + stage);
@@ -323,7 +320,11 @@ public class GameMgr : MonoBehaviour {
                 break;
             }
         }
-        if (reStart) SceneManager.LoadScene("Scenes/PlayScene");
+        if (reStart)
+        {
+            
+            SceneManager.LoadScene(1);
+        }
 
         if (bTurnEndClicked) {
             // 캐릭터들의 턴 종료 행동 함수 호출
@@ -696,6 +697,18 @@ public class GameMgr : MonoBehaviour {
     public void OnExitSafetyArea() {
         isAllPlayerInSafetyArea = false;
         ChangeTimerText();
+    }
+    public void InvokeNurseTrauma()
+    {
+        foreach(Player player in players)
+        {
+            if (player.OperatorNumber == Nurse.OPERATOR_NUMBER
+                && !player.IsOverComeTrauma)
+            {
+                player.AddO2(-10.0f);
+                return;
+            }
+        }
     }
 
     public void InsertRobotDogInPlayerList(RobotDog rd, Player Caller)

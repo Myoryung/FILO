@@ -31,6 +31,15 @@ public class Rescuer : Player {
         base.Update();
     }
 
+    public override void TurnEndActive()
+    {
+        base.TurnEndActive();
+        if (isOverComeTrauma)
+            AddO2(5.0f);
+        else if (GameMgr.Instance.GetAroundPlayerCount(currentTilePos, 3) <= 0)
+            AddO2(-10.0f);
+    }
+
     public override void ActiveSkill() {
         if (CurrentO2 < GetSkillUseO2())
             return;
@@ -53,6 +62,8 @@ public class Rescuer : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
+        if (isUsedUlt)
+            return;
         if (TileMgr.Instance.ExistObject(_currentTilePos + Vector3Int.right))
         {
             return;

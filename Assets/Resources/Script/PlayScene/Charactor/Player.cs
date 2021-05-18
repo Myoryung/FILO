@@ -28,6 +28,8 @@ public class Player : Charactor
     private float skillUseO2; // 스킬 발동 시 사용되는 산소량
     private const float O2_ADDED_PER_TURN = 10.0f; // 턴 종료시마다 회복되는 산소량
     protected bool isUsedUlt = false;
+    protected bool isOverComeTrauma = false;
+    protected int overcomeTraumaCount = 0;
 
     // 타일 충돌체크용 값
     private bool isInSafetyArea = false, isInGas = false, isInStair = false;
@@ -258,8 +260,6 @@ public class Player : Charactor
     }
     public virtual void ActiveSkill() { }
     public virtual void ActiveUltSkill() {
-        if (isUsedUlt)
-            return;
     }
     private void OnClickInteractBtn() {
         if (aroundInteractiveObject != null && aroundInteractiveObject.IsAvailable())
@@ -276,7 +276,7 @@ public class Player : Charactor
         CutScene.GetComponent<Animator>().SetBool("IsActive", false);
         CutScene.SetActive(false);
     }
-    IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
+    protected virtual IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
     {
         Vector3Int nPos = currentTilePos;
         while (true) {
@@ -457,6 +457,13 @@ public class Player : Charactor
                 GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
                 _rescuingSurvivor = null;
                 playerAct = Action.Idle;
+                if(OperatorNumber == Nurse.OPERATOR_NUMBER){
+                    overcomeTraumaCount++;
+                    if (overcomeTraumaCount >= 3)
+                    {
+                        isOverComeTrauma = true;
+                    }
+                }
             }
             break;
 
@@ -565,18 +572,29 @@ public class Player : Charactor
         {
             if (playerAct != Action.Retire)
             {
-                Debug.Log("HI");
                 _anim.SetBool("PassOut", true);
             }
             playerAct = Action.Retire;
             rbody.velocity = Vector2.zero;
+            if(OperatorNumber != Nurse.OPERATOR_NUMBER)
+            {
+                GameMgr.Instance.InvokeNurseTrauma();
+            }
         }
     }
     public override void AddO2(float value) {
         base.AddO2(value);
 
         if (CurrentO2 <= 0 && OperatorNumber != RobotDog.OPERATOR_NUMBER)
+        {
             playerAct = Action.Retire;
+            if (OperatorNumber == Rescuer.OPERATOR_NUMBER)
+            {
+                overcomeTraumaCount++;
+                if (overcomeTraumaCount >= 2)
+                    isOverComeTrauma = true;
+            }
+        }
     }
     private void AddMental(int value) {
         _currentMental += value;
@@ -630,6 +648,10 @@ public class Player : Charactor
     public bool IsInSafetyArea {
         get { return isInSafetyArea; }
 	}
+    public bool IsOverComeTrauma
+    {
+        get { return isOverComeTrauma; }
+    }
 
     public bool EqualsRescuingSurvivor(Survivor survivor) {
         return _rescuingSurvivor == survivor;

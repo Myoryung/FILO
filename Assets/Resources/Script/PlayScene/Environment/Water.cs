@@ -7,11 +7,6 @@ public class Water : MonoBehaviour {
     private BoxCollider2D boxCollider;
 
     private HashSet<Vector3Int> originElectrics = new HashSet<Vector3Int>();
-    private Vector3Int _position;
-    public Vector3Int position {
-        set { _position = value; }
-        get { return _position; }
-    }
 
     private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -34,7 +29,4 @@ public class Water : MonoBehaviour {
             electricPtc.SetActive(false);
         }
     }
-    public bool ExistOriginElectric(Vector3Int pos) {
-        return originElectrics.Contains(pos);
-	}
 }

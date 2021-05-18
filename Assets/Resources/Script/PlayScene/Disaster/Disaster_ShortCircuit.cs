@@ -18,6 +18,6 @@ public class Disaster_ShortCircuit : DisasterObject {
 	}
 
 	protected override void Active() {
-		TileMgr.Instance.CreateElectric(Pos);
+		TileMgr.Instance.CreateElectric(Pos, Floor);
 	}
 }

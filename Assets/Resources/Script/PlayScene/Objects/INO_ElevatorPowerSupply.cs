@@ -20,7 +20,7 @@ public class INO_ElevatorPowerSupply : InteractiveObject {
         for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
                 Vector3Int pos = tilePos + new Vector3Int(x, y, 0);
-                if (TileMgr.Instance.ExistElectric(pos))
+                if (TileMgr.Instance.ExistElectric(pos, floor))
                     return true;
             }
         }
@@ -30,7 +30,7 @@ public class INO_ElevatorPowerSupply : InteractiveObject {
     public override void Activate()
     {
         base.Activate();
-        INO_Elevator[] elevators = TileMgr.Instance.GetMatchedElevators(tilePos);
+        INO_Elevator[] elevators = TileMgr.Instance.GetMatchedElevators(tilePos, floor);
         if (!IsAble)
         {
             GetComponent<SpriteRenderer>().sprite = pwSupplySprite[0];

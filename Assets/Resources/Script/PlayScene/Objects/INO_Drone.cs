@@ -60,7 +60,7 @@ public class INO_Drone : InteractiveObject {
                 INO_DroneFloorView floorView = Instantiate(floorViewObjectPrefab).GetComponent<INO_DroneFloorView>();
                 floorView.SetFloor(tilePos.z);
 
-                TileMgr.Instance.RemoveDrone(tilePos);
+                TileMgr.Instance.RemoveDrone(tilePos, floor);
             }
         }
     }

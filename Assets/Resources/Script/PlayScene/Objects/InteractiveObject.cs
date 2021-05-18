@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public abstract class InteractiveObject : MonoBehaviour
 {
     protected Vector3Int tilePos;
+    protected int floor;
     private bool IsBeenUsed = false;
 
     private GameObject conditionCanvas;
@@ -13,8 +14,6 @@ public abstract class InteractiveObject : MonoBehaviour
     private bool isConditionInit = false;
 
 	protected virtual void Start() {
-        tilePos = TileMgr.Instance.WorldToCell(transform.position);
-
         conditionCanvas = transform.Find("Canvas").gameObject;
         conditionCanvas.SetActive(false);
         if (conditionText != null) {
@@ -29,6 +28,9 @@ public abstract class InteractiveObject : MonoBehaviour
 
             isConditionInit = true;
         }
+
+        floor = transform.parent.parent.GetComponent<Floor>().floor;
+        tilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
     }
 
     public virtual bool IsActive() {

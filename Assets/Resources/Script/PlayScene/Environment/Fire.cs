@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Fire : MonoBehaviour {
+    private int floor;
     private Vector3Int tilePos;
 
     [SerializeField]
@@ -11,19 +12,18 @@ public class Fire : MonoBehaviour {
     private List<Vector3Int> EmberArea = new List<Vector3Int>();
     
     private void Start() {
-        tilePos = TileMgr.Instance.WorldToCell(transform.position);
-
-        transform.Translate(0, 0, -1);
         Ember = Instantiate(EmberPrefab, transform);
         Ember.SetActive(false);
+        floor = transform.parent.parent.GetComponent<Floor>().floor;
+        tilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
     }
 
     public void MoveEmber() {
         // 빈 영역 확인
         for (int y = -2; y <= 2; y++) {
             for (int x = -2; x <= 2; x++) {
-                Vector3Int tempPos = TilePos + new Vector3Int(x, y, 0);
-                if (!TileMgr.Instance.ExistObject(tempPos) && !TileMgr.Instance.ExistEnvironment(tempPos))
+                Vector3Int tempPos = tilePos + new Vector3Int(x, y, 0);
+                if (!TileMgr.Instance.ExistObject(tempPos, floor) && !TileMgr.Instance.ExistEnvironment(tempPos, floor))
                     EmberArea.Add(tempPos);
             }
 		}
@@ -36,11 +36,11 @@ public class Fire : MonoBehaviour {
         int index = Random.Range(0, EmberArea.Count);
         Vector3Int nPos = EmberArea[index];
 
-        Ember.transform.position = TileMgr.Instance.CellToWorld(nPos);
+        Ember.transform.position = TileMgr.Instance.CellToWorld(nPos, floor);
         Ember.SetActive(true);
     }
 
     public Vector3Int TilePos {
         get { return tilePos; }
-	}
+    }
 }

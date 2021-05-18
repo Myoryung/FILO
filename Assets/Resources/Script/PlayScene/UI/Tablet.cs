@@ -158,6 +158,9 @@ public class Tablet {
         OperatorSpawn currSpawn = operatorSpawnsList[currFloorIndex][currCam];
         return currSpawn.transform.position;
     }
+    public int GetCurrFloor() {
+        return currFloor;
+    }
     public KeyValuePair<int, int> GetCurrCam() {
         int currFloorIndex = currFloor - TileMgr.Instance.MinFloor;
         int currCam = currCams[currFloorIndex];

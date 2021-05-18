@@ -13,6 +13,10 @@ public abstract class DisasterObject : MonoBehaviour {
     BoxCollider2D boxCollider;
 
     private bool bActive = false;
+    private int floor;
+    public int Floor {
+        get { return floor; }
+    }
     private Vector3Int _pos;
     public Vector3Int Pos {
         set { _pos = value; }

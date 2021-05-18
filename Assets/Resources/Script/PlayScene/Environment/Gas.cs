@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Gas : MonoBehaviour {
-    private Vector3Int tilePos;
     private int dirCount = 0;
-    
-    private void Start() {
-        tilePos = TileMgr.Instance.WorldToCell(transform.position);
-    }
 
     public void Move() {
         Vector3Int dir = Vector3Int.zero;
@@ -19,8 +14,7 @@ public class Gas : MonoBehaviour {
         case 3: dir = Vector3Int.up;    break;
         }
 
-        tilePos += dir;
-        transform.position = TileMgr.Instance.CellToWorld(tilePos);
+        transform.position += dir;
 
         if (++dirCount >= 4)
             dirCount = 0;

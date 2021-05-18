@@ -55,7 +55,6 @@ public class Player : Charactor
         _currentMental = _maxMental;
         //SetFOV();
 
-        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
         CutScene = GameObject.Find("MiddleUI").transform.Find("CutScene").gameObject;
     }
 
@@ -73,6 +72,7 @@ public class Player : Charactor
     }
 
     public override void StageStartActive() {
+        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
     }
     public override void TurnEndActive() // 캐릭터가 턴이 끝날 때 호출되는 함수
     {
@@ -154,7 +154,7 @@ public class Player : Charactor
         rbody.velocity = dir * _movespeed;
 
 
-        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position);
+        _currentTilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
 
         // 이동 방향에 따라 캐릭터 이미지 회전
         bool isRight = hor > 0;
@@ -187,7 +187,7 @@ public class Player : Charactor
         AddO2(-UseO2 * o2UseRate * Time.deltaTime);
 
         // 트리거 실행
-        GameMgr.Instance.OnMovePlayer(currentTilePos);
+        GameMgr.Instance.OnMovePlayer(currentTilePos, floor);
     }
 
     public override void Activate() { // 행동 UI (구조, 도구사용)
@@ -227,7 +227,7 @@ public class Player : Charactor
         for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
                 Vector3Int targetPos = pos + new Vector3Int(x, y, 0);
-                InteractiveObject ino = TileMgr.Instance.GetInteractiveObject(targetPos);
+                InteractiveObject ino = TileMgr.Instance.GetInteractiveObject(targetPos, floor);
                 if (ino == null) continue;
 
                 if (ino.IsActive() && activeObject == null)
@@ -282,11 +282,11 @@ public class Player : Charactor
         while (true) {
             RenderInteractArea(ref nPos); // 구조 영역선택
             if (Input.GetMouseButtonDown(0)) {
-                Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos);
+                Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos, floor);
                 if (survivor != null) {
                     _rescuingSurvivor = survivor;
                     _rescuingSurvivor.OnStartCarried();
-                    GameMgr.Instance.OnCarrySurvivor(nPos);
+                    GameMgr.Instance.OnCarrySurvivor(survivor);
                     playerAct = Action.Carry; // 업는 상태로 변경
                     _anim.SetBool("IsRescue", true);
 
@@ -304,7 +304,7 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos); // 구조 영역 선택한거 원상복구
+        TileMgr.Instance.RemoveEffect(nPos, floor); // 구조 영역 선택한거 원상복구
     }
 
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
@@ -348,7 +348,7 @@ public class Player : Charactor
                 mousePos.z = transform.position.z;
                 
                 Vector3 localPos = mousePos - transform.position; // 마우스 캐릭터 기준 로컬좌표
-                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos); // 타일맵에서 마우스 좌표
+                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos, floor); // 타일맵에서 마우스 좌표
                 if (_currentTilePos.x - moustIntPos.x <= 2 &&
                     _currentTilePos.x - moustIntPos.x >= -2 &&
                     _currentTilePos.y - moustIntPos.y <= 2 &&
@@ -362,7 +362,7 @@ public class Player : Charactor
                     for (int i = 0; Mathf.Abs(i) < SpreadRange.x; i+= offset.x) {
                         for (int j = 0; Mathf.Abs(j) < SpreadRange.y; j+= offset.y) {
                             Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
-                            TileMgr.Instance.RemoveFire(fPos);
+                            TileMgr.Instance.RemoveFire(fPos, floor);
                         }
                     }
                     
@@ -382,7 +382,7 @@ public class Player : Charactor
         while (true) {
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.CreateFireWall(nPos);
+                TileMgr.Instance.CreateFireWall(nPos, floor);
                 GameMgr.Instance.OnUseTool();
                 break;
             }
@@ -391,7 +391,7 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos);
+        TileMgr.Instance.RemoveEffect(nPos, floor);
     }
     IEnumerator UseStickyBomb() // 점착폭탄 설치
     {
@@ -400,7 +400,7 @@ public class Player : Charactor
         while (true) {
             RenderInteractArea(ref nPos);
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.RemoveTempWall(nPos);
+                TileMgr.Instance.RemoveTempWall(nPos, floor);
                 _anim.SetTrigger("Throw");
                 GameMgr.Instance.OnUseTool();
                 break;
@@ -410,7 +410,7 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos);
+        TileMgr.Instance.RemoveEffect(nPos, floor);
     }
 
     private void UseO2Can() // 산소캔 사용
@@ -510,8 +510,8 @@ public class Player : Charactor
         Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
         if (nPos != oPos)
         { // 기존의 렌더부분과 갱신된 부분이 다르면
-            TileMgr.Instance.RemoveEffect(oPos);            // 기존의 좌표 색 복구
-            TileMgr.Instance.SetEffect(nPos, Color.blue);   // 새로운 좌표 색 변경
+            TileMgr.Instance.RemoveEffect(oPos, floor);            // 기존의 좌표 색 복구
+            TileMgr.Instance.SetEffect(nPos, floor, Color.blue);   // 새로운 좌표 색 변경
             oPos = nPos;
         }
     } //
@@ -543,12 +543,11 @@ public class Player : Charactor
         yield return new WaitUntil(() => GameMgr.Instance.CurrentLoadingState
                                         == GameMgr.LoadingState.Stay);
         
-        int floorNumber = _currentTilePos.z + ((isUp) ? 1 : -1);
-        _currentTilePos.z = floorNumber;
-        transform.position = TileMgr.Instance.CellToWorld(currentTilePos);
+        floor += (isUp) ? 1 : -1;
+        transform.position = TileMgr.Instance.CellToWorld(currentTilePos, floor);
         Camera.main.GetComponent<FollowCam>().SetPosition(transform.position);
 
-        TileMgr.Instance.SwitchFloorTilemap(floorNumber);
+        TileMgr.Instance.SwitchFloorTilemap(floor);
         GameMgr.Instance.CurrentLoadingState = GameMgr.LoadingState.End;
         playerAct = oldAct;
     }
@@ -623,7 +622,7 @@ public class Player : Charactor
                     _rescuingSurvivor = null;
                 }
                 else if (playerAct == Action.Rescue) {
-                    _rescuingSurvivor.OnStopRescued(currentTilePos);
+                    _rescuingSurvivor.OnStopRescued(currentTilePos, floor);
                     _rescuingSurvivor = null;
                 }
                 break;

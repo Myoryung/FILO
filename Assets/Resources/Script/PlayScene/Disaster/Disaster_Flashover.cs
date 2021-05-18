@@ -21,7 +21,7 @@ public class Disaster_Flashover : DisasterObject {
 		for (int x = 0; x <= 1; x++) {
 			for (int y = 0; y <= 1; y++) {
 				Vector3Int targetPos = Pos + new Vector3Int(x, y, 0);
-				TileMgr.Instance.CreateFire(targetPos);
+				TileMgr.Instance.CreateFire(targetPos, Floor);
 			}
 		}
 	}

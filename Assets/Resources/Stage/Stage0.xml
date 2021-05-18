@@ -15,17 +15,84 @@
     신이시여 제게 두려움에 떠는 아이를 구할 힘을
     주소서...
   </StageContent>
+
+  <Objects>
+    <Door>
+      <Pair>
+        <Controller>
+          <Point>2, 1</Point>
+          <Floor>4</Floor>
+        </Controller>
+        <Target>
+          <Point>2, -1</Point>
+          <Floor>4</Floor>
+        </Target>
+      </Pair>
+    </Door>
+    
+    <Socket>
+      <Pair>
+        <Controller>
+          <Point>-18, -13</Point>
+          <Floor>3</Floor>
+        </Controller>
+        <Target>
+          <Point>-12, -9</Point>
+          <Floor>3</Floor>
+        </Target>
+        <Target>
+          <Point>11, 7</Point>
+          <Floor>3</Floor>
+        </Target>
+      </Pair>
+    </Socket>
+    
+    <Elevator>
+      <Pair>
+        <Controller>
+          <Point>10, 7</Point>
+          <Floor>3</Floor>
+        </Controller>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>2</Floor>
+        </Target>
+        <Target>
+          <Point>-13, 9</Point>
+          <Floor>2</Floor>
+        </Target>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>3</Floor>
+        </Target>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>3</Floor>
+        </Target>
+        <Target>
+          <Point>-13, 9</Point>
+          <Floor>4</Floor>
+        </Target>
+        <Target>
+          <Point>-16, 9</Point>
+          <Floor>4</Floor>
+        </Target>
+      </Pair>
+    </Elevator>
+  </Objects>
   
   <Disasters>
     <Disaster>
       <Type>FALLING_ROCK</Type>
-      <Point>-5,-5,2</Point>
+      <Point>-5,-5</Point>
+      <Floor>2</Floor>
       <Turn>1</Turn>
     </Disaster>
 
     <Disaster>
       <Type>FLASH_OVER</Type>
-      <Point>7,-2,3</Point>
+      <Point>7,-2</Point>
+      <Floor>3</Floor>
       <Turn>5</Turn>
     </Disaster>
   
@@ -46,8 +113,14 @@
     <Sub>
       <Goal>
         <Type>ARRIVE</Type>
-        <Point>2,0</Point>
-        <Point>3,1</Point>
+        <Target>
+          <Floor>2</Floor>
+          <Point>2,0</Point>
+        </Target>
+        <Target>
+          <Floor>2</Floor>
+          <Point>3,1</Point>
+        </Target>
       </Goal>
     </Sub>
   </Goals>

@@ -49,7 +49,7 @@ public class HammerMan : Player {
             RenderInteractArea(ref oPos);
             if (Input.GetMouseButtonDown(0))
             {
-                if (TileMgr.Instance.ExistTempWall(oPos))
+                if (TileMgr.Instance.ExistTempWall(oPos, floor))
                 { // 클릭 좌표에 장애물이 있다면 제거
                     SoundManager.instance.PlayWallCrash();
                     _anim.SetTrigger("ActiveSkillTrigger");
@@ -73,7 +73,7 @@ public class HammerMan : Player {
         }
         _anim.SetBool("IsUsingActive", false);
 
-        TileMgr.Instance.RemoveEffect(oPos);
+        TileMgr.Instance.RemoveEffect(oPos, floor);
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)

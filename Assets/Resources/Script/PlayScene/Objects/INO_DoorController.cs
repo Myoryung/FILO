@@ -11,8 +11,8 @@ public class INO_DoorController : InteractiveObject {
         if (!IsAvailable()) return;
         base.Activate();
 
-        INO_Door door = TileMgr.Instance.GetMatchedDoor(tilePos);
-        if (door != null)
+        INO_Door[] doors = TileMgr.Instance.GetMatchedDoors(tilePos, floor);
+        foreach (INO_Door door in doors)
             door.Activate();
     }
 }

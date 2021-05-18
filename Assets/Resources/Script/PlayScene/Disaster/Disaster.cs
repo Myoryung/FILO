@@ -7,12 +7,14 @@ public class Disaster {
 
     public readonly DisasterType type;
     public readonly Vector3Int position;
+    public readonly int floor;
     private int leftTurn;
 
-    public Disaster(DisasterType type, Vector3Int position, int turn) {
+    public Disaster(DisasterType type, Vector3Int position, int floor, int turn) {
         this.type = type;
         this.position = position;
         this.leftTurn = turn;
+        this.floor = floor;
 	}
 
     public virtual void Update() {

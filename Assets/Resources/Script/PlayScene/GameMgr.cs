@@ -36,7 +36,7 @@ public class GameMgr : MonoBehaviour {
     private List<Player> players = new List<Player>(); // 사용할 캐릭터들의 Components
     private int currPlayerIdx = 0;
 
-    private Dictionary<Vector3Int, Survivor> survivors = new Dictionary<Vector3Int, Survivor>();
+    private List<Survivor> survivors = new List<Survivor>();
 
     private Canvas selectCanvas, playCanvas, reportCanvas;
 
@@ -342,13 +342,13 @@ public class GameMgr : MonoBehaviour {
     }
     private void SurvivorTurn() {
         if (!bSurvivorActive) {
-            foreach (Survivor survivor in survivors.Values)
+            foreach (Survivor survivor in survivors)
                 survivor.TurnEndActive();
             bSurvivorActive = true;
         }
         else {
             bool moveDone = true;
-            foreach (Survivor survivor in survivors.Values) {
+            foreach (Survivor survivor in survivors) {
                 if (!survivor.IsMoveDone)
                     moveDone = false;
             }
@@ -460,7 +460,7 @@ public class GameMgr : MonoBehaviour {
         if (prevPlayerIdx != currPlayerIdx) {
             players[prevPlayerIdx].OnUnsetMain();
             players[currPlayerIdx].OnSetMain();
-            TileMgr.Instance.SwitchFloorTilemap((int)players[currPlayerIdx].transform.position.z);
+            TileMgr.Instance.SwitchFloorTilemap(players[currPlayerIdx].Floor);
             _CardProfile.sprite = operatorProfileImage[currPlayerIdx];
             SetFocusToCurrOperator();
         }
@@ -511,6 +511,7 @@ public class GameMgr : MonoBehaviour {
                 operatorCards[operatorNumber].transform.Find("Depoyed").gameObject.SetActive(true);
             }
 			operators[operatorNumber].transform.position = tablet.GetCurrCamPos();
+            operators[operatorNumber].GetComponent<Charactor>().Floor = tablet.GetCurrFloor();
             tablet.SetOperatorPair(operatorNumber, currCam);
         }
     }
@@ -654,30 +655,25 @@ public class GameMgr : MonoBehaviour {
         players[currPlayerIdx].ChangeFloor(isUp);
 	}
 
-    public void AddSurvivor(Vector3Int pos, Survivor survivor) {
-        survivors.Add(pos, survivor);
+    public void AddSurvivor(Survivor survivor) {
+        survivors.Add(survivor);
         if (survivor.IsImportant)
             goalMgr.OnAddImportantSurvivor();
         else
             goalMgr.OnAddSurvivor();
         gameInfo.OnAddSurvivor();
     }
-    public Survivor GetSurvivorAt(Vector3Int pos) {
-        if (survivors.ContainsKey(pos))
-            return survivors[pos];
+    public Survivor GetSurvivorAt(Vector3Int pos, int floor) {
+        foreach (Survivor survivor in survivors) {
+            if (survivor.Floor == floor && survivor.currentTilePos == pos)
+                return survivor;
+        }
         return null;
     }
 
-    public void OnMoveSurvivor(Vector3Int oldPos, Vector3Int newPos) {
-        if (survivors.ContainsKey(oldPos)) {
-            Survivor survivor = survivors[oldPos];
-            survivors.Remove(oldPos);
-            survivors.Add(newPos, survivor);
-        }
-    }
-    public void OnMovePlayer(Vector3Int playerTilePos) {
+    public void OnMovePlayer(Vector3Int playerTilePos, int floor) {
         TileMgr.Instance.MoveEmbers();
-        goalMgr.CheckArriveAt(playerTilePos);
+        goalMgr.CheckArriveAt(playerTilePos, floor);
     }
     public void OnEnterSafetyArea() {
         bool isAllPlayerInSafetyArea = true;
@@ -716,8 +712,8 @@ public class GameMgr : MonoBehaviour {
         players.Insert(players.IndexOf(Caller) + 1, rd);
     }
 
-    public void OnCarrySurvivor(Vector3Int pos) {
-        survivors.Remove(pos);
+    public void OnCarrySurvivor(Survivor survivor) {
+        survivors.Remove(survivor);
     }
     public void OnRescueSurvivor(Survivor survivor) {
         if (survivor.IsImportant)
@@ -728,8 +724,7 @@ public class GameMgr : MonoBehaviour {
         Destroy(survivor.gameObject);
     }
     public void OnDieSurvivor(Survivor survivor) {
-        Vector3Int tilePos = TileMgr.Instance.WorldToCell(survivor.transform.position);
-        survivors.Remove(tilePos);
+        survivors.Remove(survivor);
 
         if (survivor.IsImportant)
             goalMgr.OnDieImportantSurvivor();

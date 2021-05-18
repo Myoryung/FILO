@@ -71,7 +71,7 @@ public class Nurse : Player {
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(oPos);
+        TileMgr.Instance.RemoveEffect(oPos, floor);
     }
 
     IEnumerator HealDrone(Action act)

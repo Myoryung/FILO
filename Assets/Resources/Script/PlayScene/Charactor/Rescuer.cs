@@ -46,11 +46,11 @@ public class Rescuer : Player {
 
         int range = 5;
         int offset = -(range / 2);
-        Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position);
+        Vector3Int nPos = TileMgr.Instance.WorldToCell(transform.position, floor);
         for(int i = offset; i < range + offset; i++) {
             for(int j = offset; j < range + offset; j++) {
                 Vector3Int targetPos = nPos + new Vector3Int(i, j, 0);
-                Survivor survivor = GameMgr.Instance.GetSurvivorAt(targetPos);
+                Survivor survivor = GameMgr.Instance.GetSurvivorAt(targetPos, floor);
                 if (survivor != null)
                     survivor.ActiveSmileMark();
             }
@@ -82,7 +82,7 @@ public class Rescuer : Player {
 
     private void SpawnRobotDog()
     {
-        robotDog.transform.position = TileMgr.Instance.CellToWorld(_currentTilePos + Vector3Int.right);
+        robotDog.transform.position = TileMgr.Instance.CellToWorld(_currentTilePos + Vector3Int.right, floor);
         GameMgr.Instance.InsertRobotDogInPlayerList(robotDog.GetComponent<RobotDog>(), this);
         robotDog.SetActive(true);
     }

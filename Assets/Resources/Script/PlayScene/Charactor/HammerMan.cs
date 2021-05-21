@@ -31,6 +31,8 @@ public class HammerMan : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
+        if (isUsedUlt)
+            return;
         Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         AddO2(50.0f);
@@ -52,9 +54,14 @@ public class HammerMan : Player {
                     SoundManager.instance.PlayWallCrash();
                     _anim.SetTrigger("ActiveSkillTrigger");
                     yield return new WaitForSeconds(1.7f);
-                    TileMgr.Instance.RemoveTempWall(oPos, floor);
+                    TileMgr.Instance.RemoveTempWall(oPos);
+                    overcomeTraumaCount++;
+                    if (overcomeTraumaCount >= 5)
+                        isOverComeTrauma = true;
                     AddO2(-GetSkillUseO2());
-                    if (GameMgr.Instance.GetSurvivorAt(oPos - TileMgr.Instance.WorldToCell(transform.position, floor), floor))
+                    if (isOverComeTrauma)
+                        AddO2(10.0f);
+                    else if (GameMgr.Instance.GetSurvivorAt(oPos + (oPos - TileMgr.Instance.WorldToCell(transform.position))))
                         playerAct = Action.Panic; // 턴제한 추가 필요
                 }
                 break;

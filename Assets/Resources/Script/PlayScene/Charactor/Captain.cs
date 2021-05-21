@@ -45,6 +45,8 @@ public class Captain : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
+        if (isUsedUlt)
+            return;
         Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         StartCoroutine(MassExtinguish(oldact));

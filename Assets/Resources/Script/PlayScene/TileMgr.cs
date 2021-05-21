@@ -29,9 +29,14 @@ public class TileMgr {
     public static TileMgr Instance {
         get { return m_instance; }
     }
-    public static void CreateInstance(int stage) {
-        if (m_instance == null)
-            m_instance = new TileMgr(stage);
+    public static void CreateInstance(int stage)
+    {
+        if (m_instance != null)
+        {
+            Debug.Log("Destroy TileMgr");
+            m_instance = null;
+        }
+        m_instance = new TileMgr(stage);
     }
 
     private TileMgr(int stage) {

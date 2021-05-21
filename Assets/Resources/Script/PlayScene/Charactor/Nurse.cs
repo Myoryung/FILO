@@ -40,6 +40,8 @@ public class Nurse : Player {
     public override void ActiveUltSkill()
     {
         base.ActiveUltSkill();
+        if (isUsedUlt)
+            return;
         Action oldact = playerAct;
         StartCoroutine(ShowCutScene());
         StartCoroutine(HealDrone(oldact));

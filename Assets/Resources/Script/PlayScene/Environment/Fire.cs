@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Fire : MonoBehaviour {
     private int floor;
@@ -37,6 +38,7 @@ public class Fire : MonoBehaviour {
         Vector3Int nPos = EmberArea[index];
 
         Ember.transform.position = TileMgr.Instance.CellToWorld(nPos, floor);
+        Ember.GetComponent<SortingGroup>().sortingOrder = TileMgr.GetOrder(Ember.transform.position, nPos);
         Ember.SetActive(true);
     }
 

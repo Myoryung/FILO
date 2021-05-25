@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3905043619231652553}
   - component: {fileID: 865399640325198062}
   - component: {fileID: -9052476737092046922}
+  - component: {fileID: -4190176908340277518}
   m_Layer: 9
   m_Name: Pillar3
   m_TagString: Untagged
@@ -135,3 +136,14 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 127.9}
   m_EdgeRadius: 0
+--- !u!210 &-4190176908340277518
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8266654891535470065}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

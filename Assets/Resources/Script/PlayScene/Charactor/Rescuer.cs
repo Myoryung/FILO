@@ -64,7 +64,7 @@ public class Rescuer : Player {
         base.ActiveUltSkill();
         if (isUsedUlt)
             return;
-        if (TileMgr.Instance.ExistObject(_currentTilePos + Vector3Int.right))
+        if (TileMgr.Instance.ExistObject(_currentTilePos + Vector3Int.right, floor))
         {
             return;
         }

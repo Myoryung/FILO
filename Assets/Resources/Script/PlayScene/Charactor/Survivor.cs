@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 
@@ -94,6 +95,10 @@ public class Survivor : Charactor {
 
             transform.position = arrivePos;
             _currentTilePos = nPos;
+
+            // Sorting Order 수정
+            int order = TileMgr.GetOrder(transform.position, _currentTilePos);
+            GetComponent<SortingGroup>().sortingOrder = order;
         }
         _anim.SetBool("IsRunning", false);
         _moveDone = true;

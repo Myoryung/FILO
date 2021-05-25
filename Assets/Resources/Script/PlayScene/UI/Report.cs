@@ -131,4 +131,8 @@ public class Report {
         rewardItemObj.transform.Find("Name").GetComponent<Text>().text = name;
         rewardItemObj.transform.Find("Reward").GetComponent<Text>().text = reward;
     }
+
+    public int Reward {
+        get { return totalReward; }
+    }
 }

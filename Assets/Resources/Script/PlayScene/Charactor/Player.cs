@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 
 public class Player : Charactor
@@ -153,8 +154,11 @@ public class Player : Charactor
         dir /= dir.magnitude;
         rbody.velocity = dir * _movespeed;
 
-
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
+
+        // Sorting Order 수정
+        int order = TileMgr.GetOrder(transform.position, _currentTilePos);
+        GetComponent<SortingGroup>().sortingOrder = order;
 
         // 이동 방향에 따라 캐릭터 이미지 회전
         bool isRight = hor > 0;
@@ -199,6 +203,7 @@ public class Player : Charactor
                 UI_Actives.SetActive(true);
             }
         }
+        UI_Actives.transform.Find("RescueBtn").GetComponent<Button>().interactable = (_rescuingSurvivor == null);
 
         if (OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
@@ -618,11 +623,11 @@ public class Player : Charactor
             case Action.Retire:
             case Action.Panic:
                 if (playerAct == Action.Carry) {
-                    _rescuingSurvivor.OnStopCarried();
+                    GameMgr.Instance.OnStopCarrySurvivor(_rescuingSurvivor);
                     _rescuingSurvivor = null;
                 }
                 else if (playerAct == Action.Rescue) {
-                    _rescuingSurvivor.OnStopRescued(currentTilePos, floor);
+                    GameMgr.Instance.OnStopRescueSurvivor(this, _rescuingSurvivor);
                     _rescuingSurvivor = null;
                 }
                 break;

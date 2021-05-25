@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7424240009019935249}
   - component: {fileID: 5480927377571555803}
   - component: {fileID: 2174306934657938985}
+  - component: {fileID: 8717742234739816600}
   m_Layer: 8
   m_Name: SurvivorBase
   m_TagString: Survivor
@@ -106,6 +107,17 @@ MonoBehaviour:
   type: 0
   isImportant: 0
   body: {fileID: 2856924848929877621}
+--- !u!210 &8717742234739816600
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734372011617945173}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &5751077555104672519
 GameObject:
   m_ObjectHideFlags: 0

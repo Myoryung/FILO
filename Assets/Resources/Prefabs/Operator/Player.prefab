@@ -143,6 +143,7 @@ GameObject:
   - component: {fileID: 52279160280372633}
   - component: {fileID: 6139787915764308413}
   - component: {fileID: 4767361718779809088}
+  - component: {fileID: -7543249577773263216}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -266,6 +267,17 @@ MonoBehaviour:
   maskCutawayDst: 100
   viewRedMeshFilter: {fileID: 2053485658274703687}
   viewBlueMeshFilter: {fileID: 1595976282822734713}
+--- !u!210 &-7543249577773263216
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 52279160280372634}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &52279160323031586
 GameObject:
   m_ObjectHideFlags: 0

@@ -64,3 +64,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Game data file
+Assets/GameData.ini
+Assets/GameData.ini.meta

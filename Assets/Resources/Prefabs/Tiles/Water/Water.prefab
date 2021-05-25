@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4590955753097690915}
   - component: {fileID: 125394157836616107}
   - component: {fileID: 7217411047426782338}
+  - component: {fileID: -7916630587190560651}
   m_Layer: 4
   m_Name: Water
   m_TagString: Water
@@ -123,11 +124,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   electricPtc: {fileID: 402311636262889358}
-  waterRule:
-  - {fileID: 21300000, guid: 478873b36d3d82148a2abb8d1dcea622, type: 3}
-  - {fileID: 21300000, guid: 28231da2a9a2bb14499b412e0482aa2b, type: 3}
-  - {fileID: 21300000, guid: 5ec78b4244e34e64ea82f73c7dea1940, type: 3}
   spriteRenderer: {fileID: 0}
+--- !u!210 &-7916630587190560651
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8880772214709725211}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1001 &4110487222784765375
 PrefabInstance:
   m_ObjectHideFlags: 0

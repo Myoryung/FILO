@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 511650357875400261}
   - component: {fileID: 5620848936048200019}
   - component: {fileID: 8054405493820395730}
+  - component: {fileID: 3699885397921270471}
   m_Layer: 0
   m_Name: Ember
   m_TagString: Ember
@@ -71,6 +72,17 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 127, y: 127}
   m_EdgeRadius: 0
+--- !u!210 &3699885397921270471
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511650357875400263}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1001 &5110895776066637435
 PrefabInstance:
   m_ObjectHideFlags: 0

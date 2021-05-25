@@ -101,6 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3274604519782500076}
   - component: {fileID: 3565129872050101379}
+  - component: {fileID: -5488817707423578424}
   m_Layer: 0
   m_Name: InteractiveObject
   m_TagString: Wall
@@ -173,6 +174,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!210 &-5488817707423578424
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8498692799874255803}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &8584884021857797435
 GameObject:
   m_ObjectHideFlags: 0

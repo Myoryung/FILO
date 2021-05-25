@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 
 public class Player : Charactor
@@ -153,8 +154,11 @@ public class Player : Charactor
         dir /= dir.magnitude;
         rbody.velocity = dir * _movespeed;
 
-
         _currentTilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
+
+        // Sorting Order 수정
+        int order = TileMgr.GetOrder(transform.position, _currentTilePos);
+        GetComponent<SortingGroup>().sortingOrder = order;
 
         // 이동 방향에 따라 캐릭터 이미지 회전
         bool isRight = hor > 0;

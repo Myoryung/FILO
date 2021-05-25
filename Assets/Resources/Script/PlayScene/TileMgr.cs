@@ -529,4 +529,24 @@ public class TileMgr {
         Vector2 size = new Vector2(tilemap.cellSize.x * bounds.size.x, tilemap.cellSize.y * bounds.size.y);
         return size;
     }
+    public Vector3 CellSize {
+        get { return BackgroundTilemaps[_currentFloor].cellSize; }
+    }
+    public BoundsInt CellBounds {
+        get { return BackgroundTilemaps[_currentFloor].cellBounds; }
+    }
+
+    public static int GetOrder(Vector3 worldPos, Vector3Int cellPos) {
+        return GetOrder(worldPos, cellPos, Instance.CellBounds, Instance.CellSize);
+    }
+    private static int GetOrder(Vector3 worldPos, Vector3Int cellPos, BoundsInt bounds, Vector3 cellSize) {
+        int yMax = bounds.yMax;
+        float yEndInCell = (cellPos.y+1) * cellSize.y;
+        float yRateInCell = (worldPos.y - yEndInCell) / cellSize.y;
+
+        int primaryOrder = -(cellPos.y - yMax) * 10;
+        int additionalOrder = 10 - (int)(yRateInCell * 10);
+
+        return primaryOrder + additionalOrder;
+    }
 }

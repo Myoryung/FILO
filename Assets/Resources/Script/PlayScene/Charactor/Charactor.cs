@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public abstract class Charactor : MonoBehaviour {
@@ -43,6 +44,10 @@ public abstract class Charactor : MonoBehaviour {
         _currento2 = _maxo2;
         _currentHp = _maxHp;
         rbody = GetComponent<Rigidbody2D>();
+
+        // Sorting Order 수정
+        int order = TileMgr.GetOrder(transform.position, _currentTilePos);
+        GetComponent<SortingGroup>().sortingOrder = order;
     }
 
     public virtual void Move() { }

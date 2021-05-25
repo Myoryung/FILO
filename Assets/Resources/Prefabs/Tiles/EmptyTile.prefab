@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6105118175974437785}
   - component: {fileID: 5262140287417853439}
+  - component: {fileID: -8940213186089153184}
   m_Layer: 9
   m_Name: EmptyTile
   m_TagString: Untagged
@@ -81,3 +82,14 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!210 &-8940213186089153184
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388402989985920551}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

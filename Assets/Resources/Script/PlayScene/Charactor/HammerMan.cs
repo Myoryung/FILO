@@ -54,14 +54,14 @@ public class HammerMan : Player {
                     SoundManager.instance.PlayWallCrash();
                     _anim.SetTrigger("ActiveSkillTrigger");
                     yield return new WaitForSeconds(1.7f);
-                    TileMgr.Instance.RemoveTempWall(oPos);
+                    TileMgr.Instance.RemoveTempWall(oPos, floor);
                     overcomeTraumaCount++;
                     if (overcomeTraumaCount >= 5)
                         isOverComeTrauma = true;
                     AddO2(-GetSkillUseO2());
                     if (isOverComeTrauma)
                         AddO2(10.0f);
-                    else if (GameMgr.Instance.GetSurvivorAt(oPos + (oPos - TileMgr.Instance.WorldToCell(transform.position))))
+                    else if (GameMgr.Instance.GetSurvivorAt(oPos + (oPos - TileMgr.Instance.WorldToCell(transform.position, floor)), floor))
                         playerAct = Action.Panic; // 턴제한 추가 필요
                 }
                 break;

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3042702405425496230}
   - component: {fileID: 3905043619231652553}
+  - component: {fileID: 6549394070245964882}
   m_Layer: 0
   m_Name: BrokenLight1_0
   m_TagString: Untagged
@@ -82,3 +83,14 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!210 &6549394070245964882
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8266654891535470065}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

@@ -125,7 +125,7 @@ public class TileMgr {
 
     public void SpreadFire() {
         for (int floor = MinFloor; floor <= MaxFloor; floor++) {
-            Fire[] fires = EnvironmentTilemaps[floor].GetComponentsInChildren<Fire>();
+            Fire[] fires = EnvironmentTilemaps[floor - MinFloor].GetComponentsInChildren<Fire>();
             Dictionary<Vector3Int, float> createProb = new Dictionary<Vector3Int, float>();
 
             // 확률 계산

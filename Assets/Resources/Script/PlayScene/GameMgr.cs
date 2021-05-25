@@ -423,6 +423,10 @@ public class GameMgr : MonoBehaviour {
             if (goalMgr.IsAllSatisfied()) {
                 reportCanvas.enabled = true;
                 report = new Report(reportCanvas.gameObject, goalMgr.GetMainGoals(), goalMgr.GetSubGoals(), gameInfo);
+
+                GameData gameData = new GameData();
+                gameData.Money += report.Reward;
+                gameData.Save();
             }
             else {
                 stageEnd.SetActive(true);

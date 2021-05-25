@@ -203,6 +203,7 @@ public class Player : Charactor
                 UI_Actives.SetActive(true);
             }
         }
+        UI_Actives.transform.Find("RescueBtn").GetComponent<Button>().interactable = (_rescuingSurvivor == null);
 
         if (OperatorNumber != RobotDog.OPERATOR_NUMBER)
         {
@@ -622,11 +623,11 @@ public class Player : Charactor
             case Action.Retire:
             case Action.Panic:
                 if (playerAct == Action.Carry) {
-                    _rescuingSurvivor.OnStopCarried();
+                    GameMgr.Instance.OnStopCarrySurvivor(_rescuingSurvivor);
                     _rescuingSurvivor = null;
                 }
                 else if (playerAct == Action.Rescue) {
-                    _rescuingSurvivor.OnStopRescued(currentTilePos, floor);
+                    GameMgr.Instance.OnStopRescueSurvivor(this, _rescuingSurvivor);
                     _rescuingSurvivor = null;
                 }
                 break;

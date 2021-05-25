@@ -719,6 +719,10 @@ public class GameMgr : MonoBehaviour {
     public void OnCarrySurvivor(Survivor survivor) {
         survivors.Remove(survivor);
     }
+    public void OnStopCarrySurvivor(Survivor survivor) {
+        survivor.OnStopCarried();
+        survivors.Add(survivor);
+    }
     public void OnRescueSurvivor(Survivor survivor) {
         if (survivor.IsImportant)
             goalMgr.OnRescueImportantSurvivor();
@@ -726,6 +730,10 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnRescueSurvivor();
         gameInfo.OnRescueSurvivor();
         Destroy(survivor.gameObject);
+    }
+    public void OnStopRescueSurvivor(Player player, Survivor survivor) {
+        survivor.OnStopRescued(player.currentTilePos, player.Floor);
+        survivors.Add(survivor);
     }
     public void OnDieSurvivor(Survivor survivor) {
         survivors.Remove(survivor);

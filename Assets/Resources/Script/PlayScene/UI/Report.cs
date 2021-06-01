@@ -8,8 +8,10 @@ public class Report {
     private int REWARD_MAIN_GOAL, REWARD_SUB_GOAL;
     private int REWARD_SURVIVOR_RESCUE, REWARD_SURVIVOR_DEAD, REWARD_TOOL_USE;
 
-    private const string RANK_SPRITE_PATH = "Sprite/Report_UI/Rank/";
-    private Image rankImage;
+    private readonly Sprite RANK_BAR_WHITE = Resources.Load<Sprite>("Sprite/Report_UI/RankBar_White");
+    private readonly Sprite RANK_BAR_RED = Resources.Load<Sprite>("Sprite/Report_UI/RankBar_Red");
+    private GameObject rankObj;
+    private Text rankText;
 
     private readonly GameObject GOAL_TEXT_PREFAB = Resources.Load<GameObject>("Prefabs/UI/Report/GoalText");
     private GameObject mainGoalsObj, subGoalsObj;
@@ -41,44 +43,51 @@ public class Report {
 
         // Load Object
         Transform reportTF = reportObj.transform;
-        rankImage = reportTF.Find("Rank").Find("RankChar").GetComponent<Image>();
+        rankObj = reportTF.Find("Rank").gameObject;
+        rankText = rankObj.transform.Find("RankText").GetComponent<Text>();
 
         mainGoalsObj = reportTF.Find("MainGoals").gameObject;
         subGoalsObj = reportTF.Find("SubGoals").gameObject;
 
         rewardsObj = reportTF.Find("Rewards").gameObject;
 
-        // Set Rank
-        char rank = GetRank(info);
-        rankImage.sprite = Resources.Load<Sprite>(RANK_SPRITE_PATH + rank);
+        // Rank Bar
+        int rank = GetRank(info);
+        Transform rankBars = rankObj.transform.Find("RankBars");
+
+        for (int i = 0; i < rank; i++)
+            rankBars.GetChild(i).GetComponent<Image>().sprite = RANK_BAR_RED;
+        for (int i = rank; i < rankBars.childCount; i++)
+            rankBars.GetChild(i).GetComponent<Image>().sprite = RANK_BAR_WHITE;
+
+        // Rank Text
+        char rankChar = GetRankChar(rank);
+        rankText.text = string.Format("{0} rank", rankChar);
+
 
         // Create Main Goal Text
         for (int i = 0; i < mainGoals.Count; i++) {
             GameObject goalTextObj = GameObject.Instantiate(GOAL_TEXT_PREFAB, mainGoalsObj.transform);
-            goalTextObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -10*(i+1) + -40*i);
-
-            string text = string.Format("{0}. {1}", i+1, mainGoals[i].GetExplanationText());
-            goalTextObj.GetComponent<Text>().text = text;
+            goalTextObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(175, -80*i);
+            goalTextObj.GetComponent<Text>().text = mainGoals[i].GetExplanationText();
         }
 
         // Create Sub Goal Text
         for (int i = 0; i < subGoals.Count; i++) {
             GameObject goalTextObj = GameObject.Instantiate(GOAL_TEXT_PREFAB, subGoalsObj.transform);
-            goalTextObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -10*(i+1) + -40*i);
-
-            string text = string.Format("{0}. {1}", i+1, subGoals[i].GetExplanationText());
-            goalTextObj.GetComponent<Text>().text = text;
+            goalTextObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(175, -80*i);
+            goalTextObj.GetComponent<Text>().text = subGoals[i].GetExplanationText();
         }
 
         // Set SubGoals Object
         if (subGoals.Count == 0)
             subGoalsObj.SetActive(false);
         else
-            subGoalsObj.transform.localPosition = mainGoalsObj.transform.localPosition + new Vector3(0, -50*(mainGoals.Count+1));
+            subGoalsObj.transform.localPosition = mainGoalsObj.transform.localPosition + new Vector3(0, -80*mainGoals.Count);
 
         // Create Reward Item
         for (int i = 0; i < mainGoals.Count; i++) {
-            string name = string.Format("메인 목표 [{0}]", i+1);
+            string name = mainGoals[i].GetExplanationText();
             string reward = string.Format("{0}$", REWARD_MAIN_GOAL);
 
             totalReward += REWARD_MAIN_GOAL;
@@ -86,7 +95,7 @@ public class Report {
         }
 
         for (int i = 0; i < subGoals.Count; i++) {
-            string name = string.Format("서브 목표 [{0}]", i+1);
+            string name = subGoals[i].GetExplanationText();
             string reward = "0$";
 
             if (subGoals[i].IsSatisfied()) {
@@ -109,24 +118,34 @@ public class Report {
         AddRewardItem("합계", string.Format("{0}$", totalReward));
     }
 
-    private char GetRank(GameInfo info) {
+    private int GetRank(GameInfo info) {
         float rescueRate = info.RescuedSurvivorNum / info.SurvivorNum;
         if (rescueRate >= 1) {
             if (info.Deadline - info.CurrTime >= 20)
-                return 'S';
+                return 5;
             else if (info.Deadline - info.CurrTime >= 10)
-                return 'A';
+                return 4;
             else
-                return 'B';
+                return 3;
         }
         else if (rescueRate >= 0.5)
-            return 'C';
+            return 2;
         else
-            return 'D';
+            return 1;
+    }
+    private char GetRankChar(int rank) {
+        switch (rank) {
+        case 5: return 'S';
+        case 4: return 'A';
+        case 3: return 'B';
+        case 2: return 'C';
+        case 1: return 'D';
+        }
+        return 'D';
     }
     private void AddRewardItem(string name, string reward) {
         GameObject rewardItemObj = GameObject.Instantiate(REWARD_ITEM_PREFAB, rewardsObj.transform);
-        rewardItemObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -40*rewardItemCount++);
+        rewardItemObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -50*rewardItemCount++);
 
         rewardItemObj.transform.Find("Name").GetComponent<Text>().text = name;
         rewardItemObj.transform.Find("Reward").GetComponent<Text>().text = reward;

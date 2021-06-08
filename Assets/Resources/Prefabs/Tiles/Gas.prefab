@@ -58,7 +58,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 127, y: 127}
+  m_Size: {x: 1.27, y: 1.27}
   m_EdgeRadius: 0
 --- !u!114 &7563483890127639367
 MonoBehaviour:
@@ -149,6 +149,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206143143098, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528625206143143098, guid: 3307568e8b2ec68408db759f75aacd49,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.28
       objectReference: {fileID: 0}
     - target: {fileID: 5528625206157298168, guid: 3307568e8b2ec68408db759f75aacd49,
         type: 3}

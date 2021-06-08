@@ -160,7 +160,7 @@ Transform:
   m_GameObject: {fileID: 52279160280372634}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 1}
   m_Children:
   - {fileID: 52279161434657067}
   - {fileID: 7436734194785782349}
@@ -214,7 +214,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 128, y: 128}
+  m_Size: {x: 1.28, y: 1.28}
   m_EdgeRadius: 0
 --- !u!114 &6139787915764308413
 MonoBehaviour:
@@ -234,7 +234,7 @@ MonoBehaviour:
   _maxo2: 70
   _useo2: 2
   _maxHp: 60
-  _movespeed: 500
+  _movespeed: 5
   _body: {fileID: 0}
   MTGage: {fileID: 52279160919607317}
   UI_ToolBtns: {fileID: 52279162120692589}
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab799967e946a594d98ef331ed4ad6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewRadius: 300
+  viewRadius: 3
   viewAngle: 360
   targetMask:
     serializedVersion: 2
@@ -261,7 +261,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   visibleTargets: []
-  meshResolution: 0.5
+  meshResolution: 0.1
   edgeResolveIterations: 4
   edgeDstThreshold: 0.5
   maskCutawayDst: 100
@@ -2496,7 +2496,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 80, y: 128}
+  m_Size: {x: 0.8, y: 1.28}
   m_EdgeRadius: 0
 --- !u!1 &6450860427471312110
 GameObject:

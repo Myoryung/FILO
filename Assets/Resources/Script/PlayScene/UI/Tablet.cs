@@ -29,7 +29,7 @@ public class Tablet {
         GameObject tablet = GameObject.Find("UICanvas/SelectCanvas/Tablet");
         Transform tabletUI = tablet.transform.Find("UI");
 
-        tabletMiddlePos = tablet.transform.localPosition + tabletUI.localPosition;
+        tabletMiddlePos = (tablet.transform.localPosition + tabletUI.localPosition) / 100.0f;
 
 		// Code
 		tabletCodeTop = tabletUI.Find("CodeTop").GetComponent<Image>();

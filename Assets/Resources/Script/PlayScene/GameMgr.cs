@@ -242,7 +242,7 @@ public class GameMgr : MonoBehaviour {
         operatorProfileImage[0] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-leader");
         operatorProfileImage[1] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-hammerman");
 
-        operatorDepoyedSprite = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operater_card-Depolyed");
+        operatorDepoyedSprite = Resources.Load<Sprite>("Sprite/PlayScene/OperatorSelect_UI/Operator/Operater_card-Depolyed");
 
         _currGameState = GameState.SELECT_OPERATOR;
     }

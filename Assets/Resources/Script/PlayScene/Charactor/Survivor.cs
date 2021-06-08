@@ -25,7 +25,7 @@ public class Survivor : Charactor {
     protected int _carryCount = 0;
 
     private const int _panicMoveCount = 2;
-    private float _speed = 100.0f;
+    private float _speed = 1.0f;
     private bool _moveDone = false;
     public GameObject body = null;
 

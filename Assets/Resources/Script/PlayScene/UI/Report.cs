@@ -8,8 +8,8 @@ public class Report {
     private int REWARD_MAIN_GOAL, REWARD_SUB_GOAL;
     private int REWARD_SURVIVOR_RESCUE, REWARD_SURVIVOR_DEAD, REWARD_TOOL_USE;
 
-    private readonly Sprite RANK_BAR_WHITE = Resources.Load<Sprite>("Sprite/Report_UI/RankBar_White");
-    private readonly Sprite RANK_BAR_RED = Resources.Load<Sprite>("Sprite/Report_UI/RankBar_Red");
+    private readonly Sprite RANK_BAR_WHITE = Resources.Load<Sprite>("Sprite/PlayScene/Report_UI/RankBar_White");
+    private readonly Sprite RANK_BAR_RED = Resources.Load<Sprite>("Sprite/PlayScene/Report_UI/RankBar_Red");
     private GameObject rankObj;
     private Text rankText;
 

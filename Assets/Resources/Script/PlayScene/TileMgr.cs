@@ -379,9 +379,23 @@ public class TileMgr {
         ObjectTilemaps[floor - MinFloor].SetTile(pos, FireWallTile);
 	}
 
-    public bool ExistObject(Vector3Int pos, int floor) {
+    public bool ExistObject(Vector3Int pos, int floor)
+    {
         return ObjectTilemaps[floor - MinFloor].GetTile(pos) != null;
-	}
+    }
+    public bool ExistObstacle(Vector3Int pos, int floor)
+    {
+        if (ObjectTilemaps[floor - MinFloor].GetTile(pos) != null)
+        {
+            if (ObjectTilemaps[floor - MinFloor].GetInstantiatedObject(pos).layer
+                == LayerMask.NameToLayer("Obstacle"))
+                return true;
+            else
+                return false;
+        }
+        else
+            return false;
+    }
     public bool ExistEnvironment(Vector3Int pos, int floor) {
         return EnvironmentTilemaps[floor - MinFloor].GetTile(pos) != null;
 	}

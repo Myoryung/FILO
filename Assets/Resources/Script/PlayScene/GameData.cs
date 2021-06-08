@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ public class GameData {
     [Serializable]
     private class Data {
         public int money;
+        public List<bool> IsStageCleared;
+        public List<char> StageRanks;
 
         public Data() {
             money = 0;

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3905043619231652553}
   - component: {fileID: 6549394070245964882}
   m_Layer: 0
-  m_Name: Chair1
+  m_Name: Chair_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,6 +91,6 @@ SortingGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8266654891535470065}
   m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -447261967
+  m_SortingLayer: 4
   m_SortingOrder: 0

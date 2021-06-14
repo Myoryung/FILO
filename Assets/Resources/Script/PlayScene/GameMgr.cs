@@ -640,20 +640,20 @@ public class GameMgr : MonoBehaviour {
         _loadingState = LoadingState.Begin;
     }
 
-    public List<Player> GetAroundPlayers(Vector3Int pos, int range) {
+    public List<Player> GetAroundPlayers(Vector3Int pos, int floor, int range) {
         List<Player> players = new List<Player>();
 
         foreach (Player player in this.players) {
-            if ((player.currentTilePos - pos).magnitude < range)
+            if (player.Floor == floor && (player.currentTilePos - pos).magnitude < range)
                 players.Add(player);
         }
         return players;
     }
-    public int GetAroundPlayerCount(Vector3Int pos, int range) {
-        return GetAroundPlayers(pos, range).Count;
+    public int GetAroundPlayerCount(Vector3Int pos, int floor, int range) {
+        return GetAroundPlayers(pos, floor, range).Count;
     }
-    public List<Player> GetPlayersAt(Vector3Int pos) {
-        return GetAroundPlayers(pos, 1);
+    public List<Player> GetPlayersAt(Vector3Int pos, int floor) {
+        return GetAroundPlayers(pos, floor, 1);
     }
     public void ChangeFloorPlayer(bool isUp) {
         players[currPlayerIdx].ChangeFloor(isUp);

@@ -48,20 +48,27 @@ public class Nurse : Player {
     }
 
     IEnumerator Heal() {
-        Vector3Int oPos = currentTilePos; // 갱신용 old Pos
         UI_Actives.SetActive(false); // UI 숨기기
 
-        while (true) { // 클릭 작용시까지 반복
-            RenderInteractArea(ref oPos);
-            if (Input.GetMouseButtonDown(0)) {
-                List<Player> players = GameMgr.Instance.GetPlayersAt(oPos);
-                foreach (Player player in players) {
-                    player.AddHP(30.0f);
-                    player.AddO2(20.0f);
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Cross, 1);
+        effector.Enable();
 
-                    // 산소 소비
-                    AddO2(-GetSkillUseO2());
-                    break;
+        while (true) { // 클릭 작용시까지 반복
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            List<Player> targetPlayers = GameMgr.Instance.GetPlayersAt(mousePos, floor);
+            bool isPossible = effector.IsInArea(mousePos) && targetPlayers.Count > 0;
+            effector.Set(mousePos, isPossible);
+
+            if (Input.GetMouseButtonDown(0)) {
+                if (isPossible) {
+                    foreach (Player targetPlayer in targetPlayers) {
+                        targetPlayer.AddHP(30.0f);
+                        targetPlayer.AddO2(20.0f);
+
+                        // 산소 소비
+                        AddO2(-GetSkillUseO2());
+                        break;
+                    }
                 }
                 break;
             }
@@ -71,7 +78,7 @@ public class Nurse : Player {
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(oPos, floor);
+        effector.Disable();
     }
 
     IEnumerator HealDrone(Action act)

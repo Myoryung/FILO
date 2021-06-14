@@ -283,12 +283,18 @@ public class Player : Charactor
     }
     protected virtual IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
     {
-        Vector3Int nPos = currentTilePos;
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Cross, 1);
+        effector.Enable();
+
         while (true) {
-            RenderInteractArea(ref nPos); // 구조 영역선택
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            Survivor survivor = GameMgr.Instance.GetSurvivorAt(mousePos, floor);
+            bool isPossible = effector.IsInArea(mousePos) && survivor != null;
+
+            effector.Set(mousePos, isPossible);
+
             if (Input.GetMouseButtonDown(0)) {
-                Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos, floor);
-                if (survivor != null) {
+                if (isPossible) {
                     _rescuingSurvivor = survivor;
                     _rescuingSurvivor.OnStartCarried();
                     GameMgr.Instance.OnCarrySurvivor(survivor);
@@ -309,7 +315,7 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos, floor); // 구조 영역 선택한거 원상복구
+        effector.Disable();
     }
 
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
@@ -508,6 +514,144 @@ public class Player : Charactor
         }
     }
 
+
+    protected class InteractEffector {
+        public enum Type { Cross, Diamond };
+        private static readonly Color COLOR_BG = new Color(0, 0, 1, 0.2f);
+        private static readonly Color COLOR_POSSIBLE = new Color(0, 1, 0, 0.4f);
+        private static readonly Color COLOR_IMPOSSIBLE = new Color(1, 0, 0, 0.4f);
+
+        public Vector3Int pos;
+        public int floor;
+        public Type type;
+        public int size;
+
+        private Vector3Int prevMousePos;
+        private bool existPrevMousePos;
+
+        public InteractEffector(Vector3Int pos, int floor, Type type, int size) {
+            this.pos = pos;
+            this.floor = floor;
+            this.type = type;
+            this.size = size;
+        }
+
+
+        public void Enable() {
+            switch (type) {
+            case Type.Cross:    Enable_Cross();     break;
+            case Type.Diamond:  Enable_Diamond();   break;
+            }
+
+            existPrevMousePos = false;
+        }
+        public void Disable() {
+            switch (type) {
+            case Type.Cross:    Disable_Cross();    break;
+            case Type.Diamond:  Disable_Diamond();  break;
+            }
+        }
+
+        public void Set(Vector3Int mousePos, bool isPossible) {
+            if (existPrevMousePos) {
+                if (prevMousePos == mousePos)
+                    return;
+
+                TileMgr.Instance.SetEffect(prevMousePos, floor, COLOR_BG);
+                existPrevMousePos = false;
+            }
+
+            if (IsInArea(mousePos)) {
+                TileMgr.Instance.SetEffect(mousePos, floor, isPossible ? COLOR_POSSIBLE : COLOR_IMPOSSIBLE);
+                prevMousePos = mousePos;
+                existPrevMousePos = true;
+            }
+        }
+
+        private void Enable_Cross() {
+            Vector3Int xPos = pos, yPos = pos;
+            xPos.x -= size;
+            yPos.y -= size;
+
+            for (int i = -size; i <= size; i++) {
+                TileMgr.Instance.SetEffect(xPos, floor, COLOR_BG);
+                TileMgr.Instance.SetEffect(yPos, floor, COLOR_BG);
+
+                xPos.x++;
+                yPos.y++;
+            }
+        }
+        private void Enable_Diamond() {
+            Vector3Int tPos = pos;
+            tPos.y -= size;
+
+            for (int i = -size, len = 1; i <= size; i++) {
+                tPos.x = pos.x - len;
+
+                for (int j = -len; j <= len; j++) {
+                    TileMgr.Instance.SetEffect(tPos, floor, COLOR_BG);
+
+                    tPos.x++;
+                }
+
+                tPos.y++;
+
+                if (i < 0)
+                    len++;
+                else
+                    len--;
+            }
+        }
+        private void Disable_Cross() {
+            Vector3Int xPos = pos, yPos = pos;
+            xPos.x -= size;
+            yPos.y -= size;
+
+            for (int i = -size; i <= size; i++) {
+                TileMgr.Instance.RemoveEffect(xPos, floor);
+                TileMgr.Instance.RemoveEffect(yPos, floor);
+
+                xPos.x++;
+                yPos.y++;
+            }
+        }
+        private void Disable_Diamond() {
+            Vector3Int tPos = pos;
+            tPos.y -= size;
+
+            for (int i = -size, len = 1; i <= size; i++) {
+                tPos.x = pos.x - len;
+
+                for (int j = -len; j <= len; j++) {
+                    TileMgr.Instance.RemoveEffect(tPos, floor);
+
+                    tPos.x++;
+                }
+
+                tPos.y++;
+
+                if (i < 0)
+                    len++;
+                else
+                    len--;
+            }
+        }
+
+        public bool IsInArea(Vector3Int tPos) {
+            Vector3Int diff = tPos - pos;
+
+            switch (type) {
+            case Type.Cross:
+                return (diff.x == 0 && Mathf.Abs(diff.y) <= size)
+                    || (diff.y == 0 && Mathf.Abs(diff.x) <= size);
+            case Type.Diamond:
+                return Mathf.Abs(diff.x) + Mathf.Abs(diff.y) <= size;
+            }
+
+            return false;
+        }
+    }
+
     protected void RenderInteractArea(ref Vector3Int oPos)
     {
         Vector3Int direction = GetMouseDirectiontoTilemap();
@@ -526,6 +670,9 @@ public class Player : Charactor
         get { return (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0); }
     }
 
+    private Vector3Int GetMousePosOnTilemap() {
+        return TileMgr.Instance.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition), Floor);
+    }
     private Vector3Int GetMouseDirectiontoTilemap() // 현재 캐릭터 기준으로 마우스가 어느 위치에 있는지 반환하는 함수
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표

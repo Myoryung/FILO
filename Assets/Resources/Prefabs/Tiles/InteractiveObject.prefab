@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2400399953061862988}
   - component: {fileID: 8323966978785023214}
   - component: {fileID: 403130057018742107}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -320,7 +320,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1954677255
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &3275814042205113310

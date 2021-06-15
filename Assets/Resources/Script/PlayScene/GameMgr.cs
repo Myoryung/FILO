@@ -730,6 +730,8 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnRescueSurvivor();
         gameInfo.OnRescueSurvivor();
         Destroy(survivor.gameObject);
+
+        ChangeTimerText();
     }
     public void OnStopRescueSurvivor(Player player, Survivor survivor) {
         survivor.OnStopRescued(player.currentTilePos, player.Floor);

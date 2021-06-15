@@ -47,6 +47,14 @@ public class Nurse : Player {
         StartCoroutine(HealDrone(oldact));
     }
 
+    protected override void RescueSuccess() {
+        base.RescueSuccess();
+        
+        overcomeTraumaCount++;
+        if (overcomeTraumaCount >= 3)
+            isOverComeTrauma = true;
+    }
+
     IEnumerator Heal() {
         UI_Actives.SetActive(false); // UI 숨기기
 

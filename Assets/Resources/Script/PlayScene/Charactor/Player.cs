@@ -91,6 +91,8 @@ public class Player : Charactor
             {
                 _rescuingSurvivor.OnStartRescued();
                 playerAct = Action.Rescue; // Rescue 상태로 변경
+                if (isInSafetyArea)
+                    RescueSuccess();
             }
         }
 
@@ -305,6 +307,9 @@ public class Player : Charactor
                         _rescuingSurvivor.OnStartRescued();
                         playerAct = Action.Rescue; // Rescue 상태로 변경
                         _anim.SetBool("IsRescue", false);
+
+                        if (isInSafetyArea)
+                            RescueSuccess();
                     }
                 }
                 break;
@@ -465,20 +470,8 @@ public class Player : Charactor
         case "Beacon":
             isInSafetyArea = true;
             GameMgr.Instance.OnEnterSafetyArea();
-
-            // 구조 종료
-            if (playerAct == Action.Rescue) {
-                GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
-                _rescuingSurvivor = null;
-                playerAct = Action.Idle;
-                if(OperatorNumber == Nurse.OPERATOR_NUMBER){
-                    overcomeTraumaCount++;
-                    if (overcomeTraumaCount >= 3)
-                    {
-                        isOverComeTrauma = true;
-                    }
-                }
-            }
+            if (playerAct == Action.Rescue)
+                RescueSuccess();
             break;
 
         case "UpStair":
@@ -515,6 +508,14 @@ public class Player : Charactor
             isInStair = false;
             break;
         }
+    }
+    protected virtual void RescueSuccess() {
+        if (playerAct != Action.Rescue) return;
+
+        GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
+        _rescuingSurvivor = null;
+
+        playerAct = Action.Idle;
     }
 
 

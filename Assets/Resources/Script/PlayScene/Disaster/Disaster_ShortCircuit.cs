@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 public class Disaster_ShortCircuit : DisasterObject {
 
 	private static Sprite[] ObjectSprites = null;
-	private const string RESOURCE_PATH = "Sprite/Disaster/ShortCircuit";
+	private const string RESOURCE_PATH = "Sprite/PlayScene/Disaster/ShortCircuit";
 
 	protected override void Start() {
 		if (ObjectSprites == null)

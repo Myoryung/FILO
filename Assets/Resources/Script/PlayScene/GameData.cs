@@ -7,16 +7,12 @@ using UnityEngine;
 public class GameData {
     [Serializable]
     private class Data {
-        public int money;
-        public List<bool> IsStageCleared;
-        public List<char> StageRanks;
-
-        public Data() {
-            money = 0;
-        }
+        public int money = 0;
+        public List<char> stageRanks = new List<char>();
     }
 
     private const string FILE_PATH = "Assets/GameData.ini";
+    private const char NOT_CLEAR_RANK = 'N';
     private Data data = null;
 
 
@@ -49,6 +45,22 @@ public class GameData {
 
         formatter.Serialize(stream, data);
         stream.Close();
+    }
+
+    public void SetRank(int stage, char rank) {
+        while (data.stageRanks.Count <= stage)
+            data.stageRanks.Add(NOT_CLEAR_RANK);
+
+        data.stageRanks[stage] = rank;
+    }
+    public char GetRank(int stage) {
+        if (data.stageRanks.Count <= stage)
+            return NOT_CLEAR_RANK;
+        return data.stageRanks[stage];
+    }
+
+    public bool IsCleared(int stage) {
+        return GetRank(stage) != NOT_CLEAR_RANK;
     }
 
     public int Money {

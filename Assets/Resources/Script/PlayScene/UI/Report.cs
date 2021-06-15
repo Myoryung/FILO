@@ -19,7 +19,9 @@ public class Report {
     private readonly GameObject REWARD_ITEM_PREFAB = Resources.Load<GameObject>("Prefabs/UI/Report/RewardItem");
     private GameObject rewardsObj;
     private int rewardItemCount = 0;
+
     private int totalReward = 0;
+    private char rankChar;
 
     public Report(GameObject reportObj, List<Goal> mainGoals, List<Goal> subGoals, GameInfo info) {
         // Load XML
@@ -61,9 +63,8 @@ public class Report {
             rankBars.GetChild(i).GetComponent<Image>().sprite = RANK_BAR_WHITE;
 
         // Rank Text
-        char rankChar = GetRankChar(rank);
+        rankChar = GetRankChar(rank);
         rankText.text = string.Format("{0} rank", rankChar);
-
 
         // Create Main Goal Text
         for (int i = 0; i < mainGoals.Count; i++) {
@@ -153,5 +154,8 @@ public class Report {
 
     public int Reward {
         get { return totalReward; }
+    }
+    public char Rank {
+        get { return rankChar; }
     }
 }

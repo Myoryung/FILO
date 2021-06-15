@@ -418,7 +418,6 @@ public class GameMgr : MonoBehaviour {
         _currGameState = GameState.PLAYER_TURN;
     }
     private void StageEnd() {
-
         if (!bStageEndSetup) {
             if (goalMgr.IsAllSatisfied()) {
                 reportCanvas.enabled = true;
@@ -426,6 +425,7 @@ public class GameMgr : MonoBehaviour {
 
                 GameData gameData = new GameData();
                 gameData.Money += report.Reward;
+                gameData.SetRank(_stage, report.Rank);
                 gameData.Save();
             }
             else {

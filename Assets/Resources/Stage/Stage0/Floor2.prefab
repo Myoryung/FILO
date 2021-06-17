@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1244767155613970368}
   - component: {fileID: 1244767155613970366}
   - component: {fileID: 1244767155613970369}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Warning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,8 +134,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1206936789
+  m_SortingLayer: 3
   m_SortingOrder: 3
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 63.5, y: 63.5, z: 0}
@@ -6190,7 +6190,7 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 12
-    m_Data: {r: 0.7371351, g: 0.45979622, b: 0.46433157, a: 1}
+    m_Data: {r: 0.70835465, g: 0.3067536, b: 0.438564, a: 1}
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
   - m_RefCount: 641
@@ -12237,7 +12237,7 @@ GameObject:
   - component: {fileID: 1244767156883819141}
   - component: {fileID: 1244767156883819139}
   - component: {fileID: 1244767156883819138}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12332,8 +12332,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1206936789
+  m_SortingLayer: 3
   m_SortingOrder: 4
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 63.5, y: 63.5, z: 0}

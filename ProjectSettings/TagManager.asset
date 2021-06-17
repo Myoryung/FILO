@@ -68,6 +68,15 @@ TagManager:
   - name: FogOfWar
     uniqueID: 2880710905
     locked: 0
-  - name: Buttons
-    uniqueID: 3719545213
+  - name: Wall
+    uniqueID: 2318489679
+    locked: 0
+  - name: Effect
+    uniqueID: 3088030507
+    locked: 0
+  - name: Obejct
+    uniqueID: 3847705329
+    locked: 0
+  - name: UI
+    uniqueID: 2340290041
     locked: 0

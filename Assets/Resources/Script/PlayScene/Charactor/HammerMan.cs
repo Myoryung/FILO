@@ -41,27 +41,33 @@ public class HammerMan : Player {
     }
 
     IEnumerator RescueHammer() {
-        Vector3Int oPos = currentTilePos; // 갱신용 old Pos
         UI_Actives.SetActive(false); // UI 숨기기
         _anim.SetBool("IsUsingActive", true);
-        
+
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Cross, 1);
+        effector.Enable();
+
         while (true) { // 클릭 작용시까지 반복
-            RenderInteractArea(ref oPos);
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            bool existTempWall = TileMgr.Instance.ExistTempWall(mousePos, floor);
+            bool isPossible = effector.IsInArea(mousePos) && existTempWall;
+
+            effector.Set(mousePos, isPossible);
+
             if (Input.GetMouseButtonDown(0))
             {
-                if (TileMgr.Instance.ExistTempWall(oPos, floor))
-                { // 클릭 좌표에 장애물이 있다면 제거
+                if (isPossible) { // 클릭 좌표에 장애물이 있다면 제거
                     SoundManager.instance.PlayWallCrash();
                     _anim.SetTrigger("ActiveSkillTrigger");
                     yield return new WaitForSeconds(1.7f);
-                    TileMgr.Instance.RemoveTempWall(oPos, floor);
+                    TileMgr.Instance.RemoveTempWall(mousePos, floor);
                     overcomeTraumaCount++;
                     if (overcomeTraumaCount >= 5)
                         isOverComeTrauma = true;
                     AddO2(-GetSkillUseO2());
                     if (isOverComeTrauma)
                         AddO2(10.0f);
-                    else if (GameMgr.Instance.GetSurvivorAt(oPos + (oPos - TileMgr.Instance.WorldToCell(transform.position, floor)), floor))
+                    else if (GameMgr.Instance.GetSurvivorAt(mousePos + (mousePos - TileMgr.Instance.WorldToCell(transform.position, floor)), floor))
                         playerAct = Action.Panic; // 턴제한 추가 필요
                 }
                 break;
@@ -73,7 +79,7 @@ public class HammerMan : Player {
         }
         _anim.SetBool("IsUsingActive", false);
 
-        TileMgr.Instance.RemoveEffect(oPos, floor);
+        effector.Disable();
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)

@@ -36,7 +36,7 @@ public class Rescuer : Player {
         base.TurnEndActive();
         if (isOverComeTrauma)
             AddO2(5.0f);
-        else if (GameMgr.Instance.GetAroundPlayerCount(currentTilePos, 3) <= 0)
+        else if (GameMgr.Instance.GetAroundPlayerCount(currentTilePos, floor, 3) <= 0)
             AddO2(-10.0f);
     }
 

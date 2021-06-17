@@ -5,7 +5,7 @@ using UnityEngine;
 public class Disaster_FallingRock : DisasterObject {
 
 	private static Sprite[] ObjectSprites = null;
-	private const string RESOURCE_PATH = "Sprite/Disaster/FallingRock";
+	private const string RESOURCE_PATH = "Sprite/PlayScene/Disaster/FallingRock";
 
 	protected override void Start() {
 		if (ObjectSprites == null)

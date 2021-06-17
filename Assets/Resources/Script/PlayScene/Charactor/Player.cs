@@ -91,6 +91,8 @@ public class Player : Charactor
             {
                 _rescuingSurvivor.OnStartRescued();
                 playerAct = Action.Rescue; // Rescue 상태로 변경
+                if (isInSafetyArea)
+                    RescueSuccess();
             }
         }
 
@@ -283,12 +285,18 @@ public class Player : Charactor
     }
     protected virtual IEnumerator Rescue() // 구조 버튼 누를 시 호출되는 함수
     {
-        Vector3Int nPos = currentTilePos;
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Cross, 1);
+        effector.Enable();
+
         while (true) {
-            RenderInteractArea(ref nPos); // 구조 영역선택
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            Survivor survivor = GameMgr.Instance.GetSurvivorAt(mousePos, floor);
+            bool isPossible = effector.IsInArea(mousePos) && survivor != null;
+
+            effector.Set(mousePos, isPossible);
+
             if (Input.GetMouseButtonDown(0)) {
-                Survivor survivor = GameMgr.Instance.GetSurvivorAt(nPos, floor);
-                if (survivor != null) {
+                if (isPossible) {
                     _rescuingSurvivor = survivor;
                     _rescuingSurvivor.OnStartCarried();
                     GameMgr.Instance.OnCarrySurvivor(survivor);
@@ -299,6 +307,9 @@ public class Player : Charactor
                         _rescuingSurvivor.OnStartRescued();
                         playerAct = Action.Rescue; // Rescue 상태로 변경
                         _anim.SetBool("IsRescue", false);
+
+                        if (isInSafetyArea)
+                            RescueSuccess();
                     }
                 }
                 break;
@@ -309,7 +320,7 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos, floor); // 구조 영역 선택한거 원상복구
+        effector.Disable();
     }
 
     public void OpenToolBtns() // 도구 버튼 누를 시 호출되는 함수
@@ -346,31 +357,18 @@ public class Player : Charactor
     IEnumerator UseFireExtinguisher() // 소화기 사용 코드 
      {
         _anim.SetBool("IsFireExt", true);
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Diamond, 2);
+        effector.Enable();
+
         //좌표 값 변경으로 인해 수정해야 할 코드
         while (true) {
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            bool isPossible = effector.IsInArea(mousePos) && TileMgr.Instance.ExistFire(mousePos, floor);
+            effector.Set(mousePos, isPossible);
+
             if (Input.GetMouseButton(0)) {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                mousePos.z = transform.position.z;
-                
-                Vector3 localPos = mousePos - transform.position; // 마우스 캐릭터 기준 로컬좌표
-                Vector3Int moustIntPos = TileMgr.Instance.WorldToCell(mousePos, floor); // 타일맵에서 마우스 좌표
-                if (_currentTilePos.x - moustIntPos.x <= 2 &&
-                    _currentTilePos.x - moustIntPos.x >= -2 &&
-                    _currentTilePos.y - moustIntPos.y <= 2 &&
-                    _currentTilePos.y - moustIntPos.y >= -2) // 누른 위치가 캐릭터 기준 2칸 이내라면
-                {
-                    Vector3Int offset = Vector3Int.zero; // 소화기가 퍼져나갈 크기
-                    offset.x = (localPos.x > 0) ? 1 : -1; // y축으로 퍼질 방향
-                    offset.y = (localPos.y > 0) ? 1 : -1; // x축으로 퍼질 방향
-                    Vector2 SpreadRange = new Vector2(2, 2); // 불 제거 범위
-                    SoundManager.instance.PlayGunFire();//소화기 사운드 재생
-                    for (int i = 0; Mathf.Abs(i) < SpreadRange.x; i+= offset.x) {
-                        for (int j = 0; Mathf.Abs(j) < SpreadRange.y; j+= offset.y) {
-                            Vector3Int fPos = moustIntPos + new Vector3Int(i, j, 0); // 탐색할 타일 좌표
-                            TileMgr.Instance.RemoveFire(fPos, floor);
-                        }
-                    }
-                    
+                if (isPossible) {
+                    TileMgr.Instance.RemoveFire(mousePos, floor);
                     GameMgr.Instance.OnUseTool();
                 }
                 break;
@@ -379,16 +377,26 @@ public class Player : Charactor
                 break;
             yield return null;
         }
+
+        effector.Disable();
         _anim.SetBool("IsFireExt", false);
     }
     IEnumerator UseFireWall() // 방화벽 설치
     {
-        Vector3Int nPos = currentTilePos;
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Cross, 1);
+        effector.Enable();
+
         while (true) {
-            RenderInteractArea(ref nPos);
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            bool isPossible = effector.IsInArea(mousePos) && !TileMgr.Instance.ExistObject(mousePos, floor)
+                && GameMgr.Instance.GetPlayersAt(mousePos, Floor).Count == 0 && GameMgr.Instance.GetSurvivorAt(mousePos, Floor) == null;
+            effector.Set(mousePos, isPossible);
+
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.CreateFireWall(nPos, floor);
-                GameMgr.Instance.OnUseTool();
+                if (isPossible) {
+                    TileMgr.Instance.CreateFireWall(mousePos, floor);
+                    GameMgr.Instance.OnUseTool();
+                }
                 break;
             }
             else if (Input.GetMouseButtonDown(1) || IsMoving)
@@ -396,18 +404,24 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos, floor);
+        effector.Disable();
     }
     IEnumerator UseStickyBomb() // 점착폭탄 설치
     {
-        Vector3Int nPos = currentTilePos;
+        InteractEffector effector = new InteractEffector(currentTilePos, Floor, InteractEffector.Type.Cross, 1);
+        effector.Enable();
 
         while (true) {
-            RenderInteractArea(ref nPos);
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            bool isPossible = effector.IsInArea(mousePos) && TileMgr.Instance.ExistTempWall(mousePos, Floor);
+            effector.Set(mousePos, isPossible);
+
             if (Input.GetMouseButtonDown(0)) {
-                TileMgr.Instance.RemoveTempWall(nPos, floor);
-                _anim.SetTrigger("Throw");
-                GameMgr.Instance.OnUseTool();
+                if (isPossible) {
+                    TileMgr.Instance.RemoveTempWall(mousePos, floor);
+                    _anim.SetTrigger("Throw");
+                    GameMgr.Instance.OnUseTool();
+                }
                 break;
             }
             else if (Input.GetMouseButtonDown(1) || IsMoving)
@@ -415,7 +429,7 @@ public class Player : Charactor
             yield return null;
         }
 
-        TileMgr.Instance.RemoveEffect(nPos, floor);
+        effector.Disable();
     }
 
     private void UseO2Can() // 산소캔 사용
@@ -456,20 +470,8 @@ public class Player : Charactor
         case "Beacon":
             isInSafetyArea = true;
             GameMgr.Instance.OnEnterSafetyArea();
-
-            // 구조 종료
-            if (playerAct == Action.Rescue) {
-                GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
-                _rescuingSurvivor = null;
-                playerAct = Action.Idle;
-                if(OperatorNumber == Nurse.OPERATOR_NUMBER){
-                    overcomeTraumaCount++;
-                    if (overcomeTraumaCount >= 3)
-                    {
-                        isOverComeTrauma = true;
-                    }
-                }
-            }
+            if (playerAct == Action.Rescue)
+                RescueSuccess();
             break;
 
         case "UpStair":
@@ -507,34 +509,160 @@ public class Player : Charactor
             break;
         }
     }
+    protected virtual void RescueSuccess() {
+        if (playerAct != Action.Rescue) return;
 
-    protected void RenderInteractArea(ref Vector3Int oPos)
-    {
-        Vector3Int direction = GetMouseDirectiontoTilemap();
+        GameMgr.Instance.OnRescueSurvivor(_rescuingSurvivor);
+        _rescuingSurvivor = null;
 
-        Vector3Int nPos = currentTilePos + direction; // 새 좌표 갱신
-        if (nPos != oPos)
-        { // 기존의 렌더부분과 갱신된 부분이 다르면
-            TileMgr.Instance.RemoveEffect(oPos, floor);            // 기존의 좌표 색 복구
-            TileMgr.Instance.SetEffect(nPos, floor, Color.blue);   // 새로운 좌표 색 변경
-            oPos = nPos;
+        playerAct = Action.Idle;
+    }
+
+
+    protected class InteractEffector {
+        public enum Type { Cross, Diamond };
+        private static readonly Color COLOR_BG = new Color(0, 0, 1, 0.2f);
+        private static readonly Color COLOR_POSSIBLE = new Color(0, 1, 0, 0.4f);
+        private static readonly Color COLOR_IMPOSSIBLE = new Color(1, 0, 0, 0.4f);
+
+        public Vector3Int pos;
+        public int floor;
+        public Type type;
+        public int size;
+
+        private Vector3Int prevMousePos;
+        private bool existPrevMousePos;
+
+        public InteractEffector(Vector3Int pos, int floor, Type type, int size) {
+            this.pos = pos;
+            this.floor = floor;
+            this.type = type;
+            this.size = size;
         }
-    } //
+
+
+        public void Enable() {
+            switch (type) {
+            case Type.Cross:    Enable_Cross();     break;
+            case Type.Diamond:  Enable_Diamond();   break;
+            }
+
+            existPrevMousePos = false;
+        }
+        public void Disable() {
+            switch (type) {
+            case Type.Cross:    Disable_Cross();    break;
+            case Type.Diamond:  Disable_Diamond();  break;
+            }
+        }
+
+        public void Set(Vector3Int mousePos, bool isPossible) {
+            if (existPrevMousePos) {
+                if (prevMousePos == mousePos)
+                    return;
+
+                TileMgr.Instance.SetEffect(prevMousePos, floor, COLOR_BG);
+                existPrevMousePos = false;
+            }
+
+            if (IsInArea(mousePos)) {
+                TileMgr.Instance.SetEffect(mousePos, floor, isPossible ? COLOR_POSSIBLE : COLOR_IMPOSSIBLE);
+                prevMousePos = mousePos;
+                existPrevMousePos = true;
+            }
+        }
+
+        private void Enable_Cross() {
+            Vector3Int xPos = pos, yPos = pos;
+            xPos.x -= size;
+            yPos.y -= size;
+
+            for (int i = -size; i <= size; i++) {
+                TileMgr.Instance.SetEffect(xPos, floor, COLOR_BG);
+                TileMgr.Instance.SetEffect(yPos, floor, COLOR_BG);
+
+                xPos.x++;
+                yPos.y++;
+            }
+        }
+        private void Enable_Diamond() {
+            Vector3Int tPos = pos;
+            tPos.y -= size;
+
+            for (int i = -size, len = 0; i <= size; i++) {
+                tPos.x = pos.x - len;
+
+                for (int j = -len; j <= len; j++) {
+                    TileMgr.Instance.SetEffect(tPos, floor, COLOR_BG);
+
+                    tPos.x++;
+                }
+
+                tPos.y++;
+
+                if (i < 0)
+                    len++;
+                else
+                    len--;
+            }
+        }
+        private void Disable_Cross() {
+            Vector3Int xPos = pos, yPos = pos;
+            xPos.x -= size;
+            yPos.y -= size;
+
+            for (int i = -size; i <= size; i++) {
+                TileMgr.Instance.RemoveEffect(xPos, floor);
+                TileMgr.Instance.RemoveEffect(yPos, floor);
+
+                xPos.x++;
+                yPos.y++;
+            }
+        }
+        private void Disable_Diamond() {
+            Vector3Int tPos = pos;
+            tPos.y -= size;
+
+            for (int i = -size, len = 0; i <= size; i++) {
+                tPos.x = pos.x - len;
+
+                for (int j = -len; j <= len; j++) {
+                    TileMgr.Instance.RemoveEffect(tPos, floor);
+
+                    tPos.x++;
+                }
+
+                tPos.y++;
+
+                if (i < 0)
+                    len++;
+                else
+                    len--;
+            }
+        }
+
+        public bool IsInArea(Vector3Int tPos) {
+            Vector3Int diff = tPos - pos;
+
+            switch (type) {
+            case Type.Cross:
+                return (diff.x == 0 && Mathf.Abs(diff.y) <= size)
+                    || (diff.y == 0 && Mathf.Abs(diff.x) <= size);
+            case Type.Diamond:
+                return Mathf.Abs(diff.x) + Mathf.Abs(diff.y) <= size;
+            }
+
+            return false;
+        }
+    }
 
     protected bool IsMoving
     { // 현재 움직이는 상태인가 체크하는 함수
         get { return (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0); }
     }
 
-    private Vector3Int GetMouseDirectiontoTilemap() // 현재 캐릭터 기준으로 마우스가 어느 위치에 있는지 반환하는 함수
-    {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position; // 마우스 로컬 좌표
-        Vector3Int direction;
-        if (Mathf.Abs(mousePos.x) > Mathf.Abs(mousePos.y))
-            direction = (mousePos.x > 0) ? Vector3Int.right : Vector3Int.left;
-        else
-            direction = (mousePos.y > 0) ? Vector3Int.up : Vector3Int.down;
-        return direction;
+    protected Vector3Int GetMousePosOnTilemap() {
+        return TileMgr.Instance.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition), Floor);
     }
 
     public void ChangeFloor(bool isUp) {

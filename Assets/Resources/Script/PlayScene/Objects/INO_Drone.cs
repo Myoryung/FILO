@@ -68,7 +68,7 @@ public class INO_Drone : InteractiveObject {
     public override bool IsAvailable() {
         if (!base.IsAvailable()) return false;
 
-        List<Player> players = GameMgr.Instance.GetAroundPlayers(tilePos, 2);
+        List<Player> players = GameMgr.Instance.GetAroundPlayers(tilePos, floor, 2);
         foreach (Player player in players) {
             if (player.OperatorNumber == Rescuer.OPERATOR_NUMBER)
                 return true;

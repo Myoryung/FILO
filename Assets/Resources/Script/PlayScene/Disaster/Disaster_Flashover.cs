@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 public class Disaster_Flashover : DisasterObject {
 
 	private static Sprite[] ObjectSprites = null;
-	private const string RESOURCE_PATH = "Sprite/Disaster/Flashover";
+	private const string RESOURCE_PATH = "Sprite/PlayScene/Disaster/Flashover";
 
 	protected override void Start() {
 		if (ObjectSprites == null)

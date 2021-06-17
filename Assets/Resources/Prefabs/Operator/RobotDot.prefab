@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 1110717717658420434}
   - component: {fileID: 5618986305024367627}
   - component: {fileID: 425494635913986146}
+  - component: {fileID: -4944061968347361807}
   m_Layer: 0
   m_Name: RobotDot
   m_TagString: Player
@@ -268,6 +269,17 @@ MonoBehaviour:
   UI_ToolBtns: {fileID: 0}
   _maxMental: 1000000
   skillUseO2: 0
+--- !u!210 &-4944061968347361807
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110717717658420433}
+  m_Enabled: 1
+  m_SortingLayerID: -447261967
+  m_SortingLayer: 4
+  m_SortingOrder: 0
 --- !u!1 &1110717718083376208
 GameObject:
   m_ObjectHideFlags: 0

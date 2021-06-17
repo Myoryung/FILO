@@ -5,7 +5,7 @@ using UnityEngine;
 public class Disaster_Smoke : DisasterObject {
 
 	private static Sprite[] ObjectSprites = null;
-	private const string RESOURCE_PATH = "Sprite/Disaster/Smoke";
+	private const string RESOURCE_PATH = "Sprite/PlayScene/Disaster/Smoke";
 
 	protected override void Start() {
 		if (ObjectSprites == null)

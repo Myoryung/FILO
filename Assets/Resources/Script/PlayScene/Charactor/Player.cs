@@ -96,6 +96,9 @@ public class Player : Charactor
             }
         }
 
+        if (isInGas)
+            AddHP(-10);
+
         // 애니메이션 종료
         if (_anim != null)
         {

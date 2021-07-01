@@ -54,7 +54,6 @@ public class Player : Charactor
 
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
-        //SetFOV();
 
         CutScene = GameObject.Find("MiddleUI").transform.Find("CutScene").gameObject;
     }
@@ -330,25 +329,15 @@ public class Player : Charactor
     {
         UI_ToolBtns.SetActive(!UI_ToolBtns.activeSelf); // 도구 UI 보이기
     }
-    public void UseTool(int toolnum) // 도구 UI의 버튼 누를 시 호출되는 함수
+    public void UseTool(Tool tool) // 도구 UI의 버튼 누를 시 호출되는 함수
     {
-        switch(toolnum)
+        switch(tool)
         {
-        case 1: // FireExtinguisher
-            StartCoroutine(UseFireExtinguisher());
-            
-            break;
-        case 2: // StickyBomb
-            StartCoroutine(UseStickyBomb());
-            break;
-        case 3: // FireWall
-            StartCoroutine(UseFireWall());
-            break;
-        case 4: // SmokeAbsorption
-            break;
-        case 5: // O2Can
-            UseO2Can();
-            break;
+        case Tool.FIRE_EX:      StartCoroutine(UseFireExtinguisher());  break;
+        case Tool.STICKY_BOMB:  StartCoroutine(UseStickyBomb());        break;
+        case Tool.FIREWALL:     StartCoroutine(UseFireWall());          break;
+        case Tool.FLARE:        break;
+        case Tool.O2_CAN:       UseO2Can();                             break;
         }
 
         UI_Actives.SetActive(false);
@@ -471,6 +460,10 @@ public class Player : Charactor
         _anim.SetTrigger("UseAirDrink");
         GameMgr.Instance.OnUseTool();
         SoundManager.instance.PlayAirCanUse();
+    }
+
+    public void AddTool(Tool tool) {
+        PlayerToolUIMgr.AddToolBtn(UI_ToolBtns.transform, UseTool, tool);
     }
 
     protected override void OnTriggerEnter2D(Collider2D other) {

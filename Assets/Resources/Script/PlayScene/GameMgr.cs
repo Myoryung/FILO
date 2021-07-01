@@ -271,9 +271,19 @@ public class GameMgr : MonoBehaviour {
         if (bStageStartReady && bStageStartBtnClicked) {
             bStageStartBtnClicked = false;
 
-            foreach (GameObject oper in operators) {
-                if (oper != null)
-                    players.Add(oper.GetComponent<Player>());
+            GameData gameData = new GameData();
+            for (int i = 0; i < operators.Length; i++) {
+                if (operators[i] == null) continue;
+
+                Player player = operators[i].GetComponent<Player>();
+                
+                // 도구 추가
+                for (int j = 0; j < 2; j++) {
+                    Tool tool = gameData.GetTool(player.OperatorNumber, j);
+                    player.AddTool(tool);
+                }
+
+                players.Add(player);
             }
 
             tablet = null;

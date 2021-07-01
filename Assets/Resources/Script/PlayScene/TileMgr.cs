@@ -170,11 +170,11 @@ public class TileMgr {
                 fire.MoveEmber();
         }
     }
-    public void MoveGas() {
+    public void UpdateGas() {
         foreach (Tilemap environmentTilemap in EnvironmentTilemaps) {
             Gas[] gasArr = environmentTilemap.GetComponentsInChildren<Gas>();
             foreach (Gas gas in gasArr)
-                gas.Move();
+                gas.TurnUpdate();
         }
     }
     public void UpdateFloorView() {
@@ -424,6 +424,9 @@ public class TileMgr {
 
     private Water GetWater(Vector3Int pos, int floor) {
         return EnvironmentTilemaps[floor - MinFloor].GetInstantiatedObject(pos).GetComponent<Water>();
+    }
+    public Gas[] GetGases(int floor) {
+        return EnvironmentTilemaps[floor - MinFloor].transform.GetComponentsInChildren<Gas>();
     }
     private Flammable GetFlammable(Vector3Int pos, int floor) {
         return ObjectTilemaps[floor - MinFloor].GetInstantiatedObject(pos).GetComponent<Flammable>();

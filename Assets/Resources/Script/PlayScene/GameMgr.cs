@@ -367,7 +367,7 @@ public class GameMgr : MonoBehaviour {
     private void EnvironmentTurn() {
         TileMgr.Instance.SpreadFire();
         TileMgr.Instance.Flaming();
-        TileMgr.Instance.MoveGas();
+        TileMgr.Instance.UpdateGas();
         _currGameState = GameState.DISASTER_ALARM;
     }
     private void DisasterAlarm() {

@@ -391,13 +391,43 @@ public class Player : Charactor
 
         while (true) {
             Vector3Int mousePos = GetMousePosOnTilemap();
-            bool isPossible = effector.IsInArea(mousePos) && !TileMgr.Instance.ExistObject(mousePos, floor)
-                && GameMgr.Instance.GetPlayersAt(mousePos, Floor).Count == 0 && GameMgr.Instance.GetSurvivorAt(mousePos, Floor) == null;
+            bool isPossible = effector.IsInArea(mousePos);
+            if (TileMgr.Instance.ExistEnvironment(mousePos, Floor) ||
+                TileMgr.Instance.ExistObject(mousePos, floor) ||
+                GameMgr.Instance.GetPlayersAt(mousePos, floor).Count > 0 ||
+                GameMgr.Instance.GetSurvivorAt(mousePos, floor) != null)
+                isPossible = false;
             effector.Set(mousePos, isPossible);
 
             if (Input.GetMouseButtonDown(0)) {
                 if (isPossible) {
-                    TileMgr.Instance.CreateFireWall(mousePos, floor);
+                    if ((mousePos - currentTilePos).x == 0) { // 가로 3
+                        for (int i = -1; i <= 1; i++) {
+                            Vector3Int targetPos = mousePos;
+                            targetPos.x += i;
+
+                            if (TileMgr.Instance.ExistEnvironment(targetPos, Floor) ||
+                                TileMgr.Instance.ExistObject(targetPos, floor) ||
+                                GameMgr.Instance.GetPlayersAt(targetPos, floor).Count > 0 ||
+                                GameMgr.Instance.GetSurvivorAt(targetPos, floor) != null)
+                                continue;
+                            TileMgr.Instance.CreateFireWall(targetPos, floor);
+                        }
+                    }
+                    else {
+                        for (int i = -1; i <= 1; i++) { // 세로 3
+                            Vector3Int targetPos = mousePos;
+                            targetPos.y += i;
+
+                            if (TileMgr.Instance.ExistEnvironment(targetPos, Floor) ||
+                                TileMgr.Instance.ExistObject(targetPos, floor) ||
+                                GameMgr.Instance.GetPlayersAt(targetPos, floor).Count > 0 ||
+                                GameMgr.Instance.GetSurvivorAt(targetPos, floor) != null)
+                                continue;
+                            TileMgr.Instance.CreateFireWall(targetPos, floor);
+                        }
+                    }
+
                     GameMgr.Instance.OnUseTool();
                 }
                 break;

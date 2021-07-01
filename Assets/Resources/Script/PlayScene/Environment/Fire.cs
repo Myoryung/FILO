@@ -21,6 +21,7 @@ public class Fire : MonoBehaviour {
 
     public void MoveEmber() {
         // 빈 영역 확인
+        EmberArea.Clear();
         for (int y = -2; y <= 2; y++) {
             for (int x = -2; x <= 2; x++) {
                 Vector3Int tempPos = tilePos + new Vector3Int(x, y, 0);

@@ -89,6 +89,9 @@ public class GameData {
     public Tool GetTool(int operatorNumber, int index) {
         return data.tools[operatorNumber, index];
     }
+    public void SetTool(int operatorNumber, int index, Tool tool) {
+        data.tools[operatorNumber, index] = tool;
+    }
 
     public int Money {
         get { return data.money; }

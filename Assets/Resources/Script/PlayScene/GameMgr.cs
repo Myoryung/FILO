@@ -111,6 +111,11 @@ public class GameMgr : MonoBehaviour {
         case GameState.TURN_END: TurnEnd(); break;
         case GameState.STAGE_END: StageEnd(); break;
         }
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            Debug.Log("Input");
+            StartCoroutine(TalkMgr.Instance.StartTalk(0));
+        }
 
         if (bStagePlaying) {
             Player player = players[currPlayerIdx];
@@ -125,8 +130,8 @@ public class GameMgr : MonoBehaviour {
 
     private void StageSetup() {
         // Create TileMgr Instance
-        Debug.Log("Stage Setup");
         TileMgr.CreateInstance(stage);
+        TalkMgr.CreateInstance(stage);
         
         // Load XML
         XmlDocument doc = new XmlDocument();

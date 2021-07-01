@@ -463,7 +463,7 @@ public class Player : Charactor
     }
 
     public void AddTool(Tool tool) {
-        PlayerToolUIMgr.AddToolBtn(UI_ToolBtns.transform, UseTool, tool);
+        PlayerToolMgr.AddToolBtn(UI_ToolBtns.transform, UseTool, tool);
     }
 
     protected override void OnTriggerEnter2D(Collider2D other) {

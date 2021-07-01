@@ -4,9 +4,7 @@ using System;
 
 public enum Tool { FIREWALL, FIRE_EX, O2_CAN, STICKY_BOMB, FLARE };
 
-delegate void OnClickBtn();
-
-class PlayerToolUIMgr {
+class PlayerToolMgr {
     public static readonly GameObject FIREWALL_BTN      = Resources.Load<GameObject>("Prefabs/UI/ToolButtons/FirewallBtn");
     public static readonly GameObject FIRE_EX_BTN       = Resources.Load<GameObject>("Prefabs/UI/ToolButtons/FireExBtn");
     public static readonly GameObject O2_CAN_BTN        = Resources.Load<GameObject>("Prefabs/UI/ToolButtons/O2CanBtn");
@@ -36,5 +34,17 @@ class PlayerToolUIMgr {
         // 콜백 함수 설정
         Button btn = btnObj.GetComponent<Button>();
         btn.onClick.AddListener(() => callback(tool));
+    }
+
+    public static string ToString(Tool tool) {
+        switch (tool) {
+        case Tool.FIREWALL:     return "방화벽";
+        case Tool.FIRE_EX:      return "소화기";
+        case Tool.FLARE:        return "조명탄";
+        case Tool.O2_CAN:       return "산소캔";
+        case Tool.STICKY_BOMB:  return "점착폭탄";
+        }
+
+        return null;
     }
 }

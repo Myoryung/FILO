@@ -52,6 +52,7 @@ public class LobbyMgr : MonoBehaviour
     private Sprite[] profileImages;
 
     private Dictionary<Tool, Sprite> toolSprites;
+    private readonly Color CHAING_COLOR = Color.white, NON_SELECTED_COLOR = new Color(217/255f, 54/255f, 21/255f);
     private Image[] info_toolImages;
     private Image[] select_toolImages;
     private Text[] select_toolTexts;
@@ -108,6 +109,8 @@ public class LobbyMgr : MonoBehaviour
             selectToolUI.transform.Find("ToolText0").GetComponent<Text>(),
             selectToolUI.transform.Find("ToolText1").GetComponent<Text>()
         };
+        for (int i = 0; i < 2; i++)
+            select_toolTexts[i].color = NON_SELECTED_COLOR;
 
         btnImages = new Sprite[12];
 
@@ -228,7 +231,7 @@ public class LobbyMgr : MonoBehaviour
                 selectAbilUI.SetActive(false);
                 selectToolUI.SetActive(true);
 
-                selectToolIndex = 0;
+                selectToolIndex = -1;
                 break;
             case "SelectAbil":
                 operatorRightInfo.SetActive(false);
@@ -279,6 +282,7 @@ public class LobbyMgr : MonoBehaviour
         operatorProfileImage.sprite = profileImages[currentOperatorNum];
 
         LoadToolIcon();
+        selectToolIndex = -1;
     }
 
     public void LoadToolIcon() {
@@ -286,13 +290,26 @@ public class LobbyMgr : MonoBehaviour
             Tool tool = gameData.GetTool(currentOperatorNum, i);
             info_toolImages[i].sprite = toolSprites[tool];
             select_toolImages[i].sprite = toolSprites[tool];
-            select_toolTexts[i].text = tool.ToString();
+            select_toolTexts[i].text = PlayerToolMgr.ToString(tool);
+            select_toolTexts[i].color = NON_SELECTED_COLOR;
         }
     }
     public void ChangeToolIndex(int index) {
+        if (selectToolIndex != -1)
+            LoadToolIcon();
+
+        if (selectToolIndex == index) {
+            selectToolIndex = -1;
+            return;
+        }
+
         selectToolIndex = index;
+        select_toolTexts[selectToolIndex].text = "선택 중";
+        select_toolTexts[selectToolIndex].color = CHAING_COLOR;
     }
     public void ChangeTool(string toolName) {
+        if (selectToolIndex == -1) return;
+
         Tool tool = Tool.FIREWALL;
         switch (toolName) {
         case "FIREWALL":    tool = Tool.FIREWALL;   break;
@@ -302,12 +319,16 @@ public class LobbyMgr : MonoBehaviour
         case "STICKY_BOMB": tool = Tool.STICKY_BOMB;break;
         }
 
-        if (gameData.GetTool(currentOperatorNum, 0) == tool ||
-            gameData.GetTool(currentOperatorNum, 1) == tool)
-            return;
+        int otherIndex = (selectToolIndex+1) % 2;
+        if (gameData.GetTool(currentOperatorNum, otherIndex) == tool)
+            gameData.SetTool(currentOperatorNum, otherIndex, gameData.GetTool(currentOperatorNum, selectToolIndex));
+
+        select_toolTexts[selectToolIndex].color = NON_SELECTED_COLOR;
 
         gameData.SetTool(currentOperatorNum, selectToolIndex, tool);
         gameData.Save();
+
         LoadToolIcon();
+        selectToolIndex = -1;
     }
 }

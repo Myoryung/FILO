@@ -322,7 +322,6 @@ public class Player : Charactor
         {
         case 1: // FireExtinguisher
             StartCoroutine(UseFireExtinguisher());
-            
             break;
         case 2: // StickyBomb
             StartCoroutine(UseStickyBomb());

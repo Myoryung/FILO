@@ -271,9 +271,19 @@ public class GameMgr : MonoBehaviour {
         if (bStageStartReady && bStageStartBtnClicked) {
             bStageStartBtnClicked = false;
 
-            foreach (GameObject oper in operators) {
-                if (oper != null)
-                    players.Add(oper.GetComponent<Player>());
+            GameData gameData = new GameData();
+            for (int i = 0; i < operators.Length; i++) {
+                if (operators[i] == null) continue;
+
+                Player player = operators[i].GetComponent<Player>();
+                
+                // 도구 추가
+                for (int j = 0; j < 2; j++) {
+                    Tool tool = gameData.GetTool(player.OperatorNumber, j);
+                    player.AddTool(tool);
+                }
+
+                players.Add(player);
             }
 
             tablet = null;
@@ -367,7 +377,7 @@ public class GameMgr : MonoBehaviour {
     private void EnvironmentTurn() {
         TileMgr.Instance.SpreadFire();
         TileMgr.Instance.Flaming();
-        TileMgr.Instance.MoveGas();
+        TileMgr.Instance.UpdateGas();
         _currGameState = GameState.DISASTER_ALARM;
     }
     private void DisasterAlarm() {
@@ -417,6 +427,11 @@ public class GameMgr : MonoBehaviour {
         ChangeTimerText();
 
         TileMgr.Instance.UpdateFloorView();
+
+        // 조명탄
+        GameObject[] flareObjs = GameObject.FindGameObjectsWithTag("Flare");
+        foreach (GameObject flareObj in flareObjs)
+            flareObj.GetComponent<Flare>().TurnUpdate();
 
         goalMgr.OnTurnEnd(currTime);
 

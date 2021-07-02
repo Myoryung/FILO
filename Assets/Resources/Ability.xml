@@ -1,0 +1,45 @@
+﻿<Abilities>
+  <Operator>
+    <Level>
+      <Ability>RedundancyOxygen</Ability>
+      <Ability>OxygenTank</Ability>
+    </Level>
+    <Level>
+      <Ability>MacGyver</Ability>
+      <Ability>DoubleHeart</Ability>
+    </Level>
+  </Operator>
+
+  <Operator>
+    <Level>
+      <Ability>Fitness</Ability>
+      <Ability>IntervalTrain</Ability>
+    </Level>
+    <Level>
+      <Ability>MacGyver</Ability>
+      <Ability>SteelBody</Ability>
+    </Level>
+  </Operator>
+
+  <Operator>
+    <Level>
+      <Ability>PartsLightweight</Ability>
+      <Ability>IntervalTrain</Ability>
+    </Level>
+    <Level>
+      <Ability>Refuel</Ability>
+      <Ability>ReinforceParts</Ability>
+    </Level>
+  </Operator>
+
+  <Operator>
+    <Level>
+      <Ability>Nightingale</Ability>
+      <Ability>EquipMini</Ability>
+    </Level>
+    <Level>
+      <Ability>SurvivalPriority</Ability>
+      <Ability>Cardio</Ability>
+    </Level>
+  </Operator>
+</Abilities>

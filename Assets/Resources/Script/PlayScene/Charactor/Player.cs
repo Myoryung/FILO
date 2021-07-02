@@ -32,6 +32,8 @@ public class Player : Charactor
     protected bool isOverComeTrauma = false;
     protected int overcomeTraumaCount = 0;
 
+    private GameObject flarePrefab;
+
     // 타일 충돌체크용 값
     private bool isInSafetyArea = false, isInGas = false, isInStair = false;
     private float startTimeInFire = 0, startTimeInElectric = 0;
@@ -54,9 +56,9 @@ public class Player : Charactor
 
         _anim = GetComponentInChildren<Animator>();
         _currentMental = _maxMental;
-        //SetFOV();
 
         CutScene = GameObject.Find("MiddleUI").transform.Find("CutScene").gameObject;
+        flarePrefab = Resources.Load<GameObject>("Prefabs/Tiles/Flare");
     }
 
     // Update is called once per frame
@@ -95,6 +97,9 @@ public class Player : Charactor
                     RescueSuccess();
             }
         }
+
+        if (isInGas)
+            AddHP(-10);
 
         // 애니메이션 종료
         if (_anim != null)
@@ -327,25 +332,15 @@ public class Player : Charactor
     {
         UI_ToolBtns.SetActive(!UI_ToolBtns.activeSelf); // 도구 UI 보이기
     }
-    public void UseTool(int toolnum) // 도구 UI의 버튼 누를 시 호출되는 함수
+    public void UseTool(Tool tool) // 도구 UI의 버튼 누를 시 호출되는 함수
     {
-        switch(toolnum)
+        switch(tool)
         {
-        case 1: // FireExtinguisher
-            StartCoroutine(UseFireExtinguisher());
-            
-            break;
-        case 2: // StickyBomb
-            StartCoroutine(UseStickyBomb());
-            break;
-        case 3: // FireWall
-            StartCoroutine(UseFireWall());
-            break;
-        case 4: // SmokeAbsorption
-            break;
-        case 5: // O2Can
-            UseO2Can();
-            break;
+        case Tool.FIRE_EX:      StartCoroutine(UseFireExtinguisher());  break;
+        case Tool.STICKY_BOMB:  StartCoroutine(UseStickyBomb());        break;
+        case Tool.FIREWALL:     StartCoroutine(UseFireWall());          break;
+        case Tool.FLARE:        StartCoroutine(UseFlare());             break;
+        case Tool.O2_CAN:       UseO2Can();                             break;
         }
 
         UI_Actives.SetActive(false);
@@ -388,13 +383,73 @@ public class Player : Charactor
 
         while (true) {
             Vector3Int mousePos = GetMousePosOnTilemap();
-            bool isPossible = effector.IsInArea(mousePos) && !TileMgr.Instance.ExistObject(mousePos, floor)
-                && GameMgr.Instance.GetPlayersAt(mousePos, Floor).Count == 0 && GameMgr.Instance.GetSurvivorAt(mousePos, Floor) == null;
+            bool isPossible = effector.IsInArea(mousePos);
+            if (TileMgr.Instance.ExistEnvironment(mousePos, Floor) ||
+                TileMgr.Instance.ExistObject(mousePos, floor) ||
+                GameMgr.Instance.GetPlayersAt(mousePos, floor).Count > 0 ||
+                GameMgr.Instance.GetSurvivorAt(mousePos, floor) != null)
+                isPossible = false;
             effector.Set(mousePos, isPossible);
 
             if (Input.GetMouseButtonDown(0)) {
                 if (isPossible) {
-                    TileMgr.Instance.CreateFireWall(mousePos, floor);
+                    if ((mousePos - currentTilePos).x == 0) { // 가로 3
+                        for (int i = -1; i <= 1; i++) {
+                            Vector3Int targetPos = mousePos;
+                            targetPos.x += i;
+
+                            if (TileMgr.Instance.ExistEnvironment(targetPos, Floor) ||
+                                TileMgr.Instance.ExistObject(targetPos, floor) ||
+                                GameMgr.Instance.GetPlayersAt(targetPos, floor).Count > 0 ||
+                                GameMgr.Instance.GetSurvivorAt(targetPos, floor) != null)
+                                continue;
+                            TileMgr.Instance.CreateFireWall(targetPos, floor);
+                        }
+                    }
+                    else {
+                        for (int i = -1; i <= 1; i++) { // 세로 3
+                            Vector3Int targetPos = mousePos;
+                            targetPos.y += i;
+
+                            if (TileMgr.Instance.ExistEnvironment(targetPos, Floor) ||
+                                TileMgr.Instance.ExistObject(targetPos, floor) ||
+                                GameMgr.Instance.GetPlayersAt(targetPos, floor).Count > 0 ||
+                                GameMgr.Instance.GetSurvivorAt(targetPos, floor) != null)
+                                continue;
+                            TileMgr.Instance.CreateFireWall(targetPos, floor);
+                        }
+                    }
+
+                    GameMgr.Instance.OnUseTool();
+                }
+                break;
+            }
+            else if (Input.GetMouseButtonDown(1) || IsMoving)
+                break;
+            yield return null;
+        }
+
+        effector.Disable();
+    }
+    IEnumerator UseFlare() // 조명탄 사용
+    {
+        InteractEffector effector = new InteractEffector(currentTilePos, floor, InteractEffector.Type.Diamond, 2);
+        effector.Enable();
+
+        while (true) {
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            bool isPossible = effector.IsInArea(mousePos);
+            if (TileMgr.Instance.ExistEnvironment(mousePos, floor) ||
+                TileMgr.Instance.ExistObject(mousePos, floor) ||
+                GameMgr.Instance.GetPlayersAt(mousePos, floor).Count > 0 ||
+                GameMgr.Instance.GetSurvivorAt(mousePos, floor) != null)
+                isPossible = false;
+            effector.Set(mousePos, isPossible);
+
+            if (Input.GetMouseButtonDown(0)) {
+                if (isPossible) {
+                    Vector3 targetPos = TileMgr.Instance.CellToWorld(mousePos, floor);
+                    Instantiate(flarePrefab, targetPos, Quaternion.identity);
                     GameMgr.Instance.OnUseTool();
                 }
                 break;
@@ -438,6 +493,10 @@ public class Player : Charactor
         _anim.SetTrigger("UseAirDrink");
         GameMgr.Instance.OnUseTool();
         SoundManager.instance.PlayAirCanUse();
+    }
+
+    public void AddTool(Tool tool) {
+        PlayerToolMgr.AddToolBtn(UI_ToolBtns.transform, UseTool, tool);
     }
 
     protected override void OnTriggerEnter2D(Collider2D other) {

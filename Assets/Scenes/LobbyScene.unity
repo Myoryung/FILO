@@ -768,7 +768,7 @@ GameObject:
   - component: {fileID: 76368554}
   - component: {fileID: 76368553}
   m_Layer: 5
-  m_Name: Tool0Info (1)
+  m_Name: ToolInfo1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -790,8 +790,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -45, y: -15}
-  m_SizeDelta: {x: 111, y: 30}
+  m_AnchoredPosition: {x: 1.5, y: -15}
+  m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &76368553
 MonoBehaviour:
@@ -819,11 +819,11 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "\uB3C4\uAD6C 2 \uD6A8\uACFC"
 --- !u!222 &76368554
@@ -14702,7 +14702,7 @@ GameObject:
   - component: {fileID: 1719110009}
   - component: {fileID: 1719110008}
   m_Layer: 5
-  m_Name: Tool0Info
+  m_Name: ToolInfo0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14724,8 +14724,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -45, y: 142}
-  m_SizeDelta: {x: 111, y: 30}
+  m_AnchoredPosition: {x: 1.5, y: 142}
+  m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1719110008
 MonoBehaviour:
@@ -14753,11 +14753,11 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "\uB3C4\uAD6C 1 \uD6A8\uACFC"
 --- !u!222 &1719110009

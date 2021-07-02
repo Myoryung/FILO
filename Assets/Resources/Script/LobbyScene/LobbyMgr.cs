@@ -55,6 +55,7 @@ public class LobbyMgr : MonoBehaviour
     private Image[] info_toolImages;
     private Image[] select_toolImages;
     private Text[] select_toolTexts;
+    private Text[] select_toolInfos;
     private int selectToolIndex = 0;
 
     private Dictionary<Ability, Sprite> abilitySprites;
@@ -115,6 +116,10 @@ public class LobbyMgr : MonoBehaviour
         select_toolTexts = new Text[2] {
             selectToolUI.transform.Find("ToolText0").GetComponent<Text>(),
             selectToolUI.transform.Find("ToolText1").GetComponent<Text>()
+        };
+        select_toolInfos = new Text[2] {
+            selectToolUI.transform.Find("SelectedToolInfo").Find("ToolInfo0").GetComponent<Text>(),
+            selectToolUI.transform.Find("SelectedToolInfo").Find("ToolInfo1").GetComponent<Text>()
         };
         for (int i = 0; i < 2; i++)
             select_toolTexts[i].color = NORMAL_COLOR;
@@ -389,6 +394,7 @@ public class LobbyMgr : MonoBehaviour
             info_toolImages[i].sprite = toolSprites[tool];
             select_toolImages[i].sprite = toolSprites[tool];
             select_toolTexts[i].text = PlayerToolMgr.ToString(tool);
+            select_toolInfos[i].text = PlayerToolMgr.ToString(tool) + " | " + PlayerToolMgr.GetInfo(tool);
             select_toolTexts[i].color = NORMAL_COLOR;
         }
     }

@@ -36,6 +36,17 @@ class PlayerToolMgr {
         btn.onClick.AddListener(() => callback(tool));
     }
 
+    public static string GetInfo(Tool tool) {
+        switch (tool) {
+        case Tool.FIREWALL:     return "벽을 만들어 불의 이동을 막는다.";
+        case Tool.FIRE_EX:      return "불을 제거한다.";
+        case Tool.FLARE:        return "대상을 기준으로 3x3칸의 시야를 20분 동안 밝혀준다.";
+        case Tool.O2_CAN:       return "사용자의 산소를 45 채워준다.";
+        case Tool.STICKY_BOMB:  return "가벽을 파괴한다.";
+        }
+
+        return "";
+    }
     public static string ToString(Tool tool) {
         switch (tool) {
         case Tool.FIREWALL:     return "방화벽";

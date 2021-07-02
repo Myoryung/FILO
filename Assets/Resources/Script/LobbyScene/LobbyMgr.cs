@@ -52,13 +52,20 @@ public class LobbyMgr : MonoBehaviour
     private Sprite[] profileImages;
 
     private Dictionary<Tool, Sprite> toolSprites;
-    private readonly Color CHAING_COLOR = Color.white, NON_SELECTED_COLOR = new Color(217/255f, 54/255f, 21/255f);
     private Image[] info_toolImages;
     private Image[] select_toolImages;
     private Text[] select_toolTexts;
     private int selectToolIndex = 0;
 
+    private Dictionary<Ability, Sprite> abilitySprites;
+    private Image[] info_abilImages;
+    private Text[] select_abilTitles;
+    private Text[] select_abilTexts;
+    private Image[,] select_abilImages;
+    private Image[,] select_abilLines;
+
     private GameData gameData = new GameData();
+    private readonly Color HIGHLIGHT_COLOR = new Color(217/255f, 54/255f, 21/255f), NORMAL_COLOR = Color.white;
 
     private void Start()
     {
@@ -96,7 +103,7 @@ public class LobbyMgr : MonoBehaviour
         techDevUI = futureTechSystem.transform.Find("TechDev").gameObject;
         techTestUI = futureTechSystem.transform.Find("TechTest").gameObject;
 
-
+        // 도구
         info_toolImages = new Image[2] {
             operatorRightInfo.transform.Find("Tool0").Find("Tool").GetComponent<Image>(),
             operatorRightInfo.transform.Find("Tool1").Find("Tool").GetComponent<Image>()
@@ -110,7 +117,33 @@ public class LobbyMgr : MonoBehaviour
             selectToolUI.transform.Find("ToolText1").GetComponent<Text>()
         };
         for (int i = 0; i < 2; i++)
-            select_toolTexts[i].color = NON_SELECTED_COLOR;
+            select_toolTexts[i].color = NORMAL_COLOR;
+
+        // 특성
+        info_abilImages = new Image[4];
+        select_abilTitles = new Text[4];
+        select_abilTexts = new Text[4];
+        select_abilImages = new Image[4, 2];
+        select_abilLines = new Image[4, 2];
+
+        for (int i = 0; i < 4; i++) {
+            info_abilImages[i] = operatorRightInfo.transform.Find(string.Format("Abil{0}", i)).GetComponent<Image>();
+            select_abilTitles[i] = selectAbilUI.transform.Find("SelectedAbilInfo").Find(string.Format("Abil{0}", i)).GetComponent<Text>();
+            select_abilTexts[i] = selectAbilUI.transform.Find("SelectedAbilInfo").Find(string.Format("AbilInfo{0}", i)).GetComponent<Text>();
+
+            for (int j = 0; j < 2; j++) {
+                select_abilImages[i, j] = selectAbilUI.transform.Find("AbilTree").Find(string.Format("AbilImage{0}-{1}", i, j)).GetComponent<Image>();
+                select_abilLines[i, j] = selectAbilUI.transform.Find("AbilTree").Find(string.Format("AbilLine{0}-{1}", i, j)).GetComponent<Image>();
+
+                int level = i, index = j;
+                select_abilImages[i, j].GetComponent<Button>().onClick.AddListener(() => ChangeAbility(level, index));
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            Image select_abilCenterLine = selectAbilUI.transform.Find("AbilTree").Find(string.Format("AbilLine{0}", i)).GetComponent<Image>();
+            select_abilCenterLine.color = (gameData.IsCleared(i+1)) ? HIGHLIGHT_COLOR : NORMAL_COLOR;
+        }
+
 
         btnImages = new Sprite[12];
 
@@ -140,6 +173,23 @@ public class LobbyMgr : MonoBehaviour
         toolSprites.Add(Tool.FLARE, Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/ToolIcon/Flare1"));
         toolSprites.Add(Tool.O2_CAN, Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/ToolIcon/OxygenRespirator1"));
         toolSprites.Add(Tool.STICKY_BOMB, Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/ToolIcon/StickyBomb1"));
+
+        abilitySprites = new Dictionary<Ability, Sprite>();
+        abilitySprites.Add(Ability.None,            Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Athena-02_Operator Information-Icon white"));
+        abilitySprites.Add(Ability.Cardio,          Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Cardio"));
+        abilitySprites.Add(Ability.DoubleHeart,     Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Double heart"));
+        abilitySprites.Add(Ability.EquipMini,       Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Equipment miniaturization"));
+        abilitySprites.Add(Ability.Fitness,         Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Fitness"));
+        abilitySprites.Add(Ability.IntervalTrain,   Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Interval training"));
+        abilitySprites.Add(Ability.MacGyver,        Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/MacGyver"));
+        abilitySprites.Add(Ability.Nightingale,     Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Nightingale"));
+        abilitySprites.Add(Ability.OxygenTank,      Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Oxygen tank"));
+        abilitySprites.Add(Ability.PartsLightweight,Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Parts lightweight"));
+        abilitySprites.Add(Ability.RedundancyOxygen,Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Redundancy Oxygen"));
+        abilitySprites.Add(Ability.Refuel,          Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Refuel"));
+        abilitySprites.Add(Ability.ReinforceParts,  Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Reinforce parts"));
+        abilitySprites.Add(Ability.SteelBody,       Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Steel body"));
+        abilitySprites.Add(Ability.SurvivalPriority,Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Survival Priority"));
 
         currentSystemIndex = 0;
         currentSystem = argosSystem;
@@ -225,6 +275,7 @@ public class LobbyMgr : MonoBehaviour
                 banners.SetActive(false);
                 
                 LoadToolIcon();
+                LoadAbilityIcon();
                 break;
             case "SelectTool":
                 operatorRightInfo.SetActive(false);
@@ -282,16 +333,63 @@ public class LobbyMgr : MonoBehaviour
         operatorProfileImage.sprite = profileImages[currentOperatorNum];
 
         LoadToolIcon();
+        LoadAbilityIcon();
         selectToolIndex = -1;
     }
 
-    public void LoadToolIcon() {
+    private void LoadAbilityIcon() {
+        for (int i = 0; i < 4; i++) {
+            // 특성 이미지 적용
+            for (int j = 0; j < 2; j++) {
+                Ability ability = PlayerAbilityMgr.GetAbility(currentOperatorNum, i, j);
+                select_abilImages[i, j].sprite = abilitySprites[ability];
+            }
+
+            // 선택된 특성 강조
+            int selectedIndex = gameData.GetAbilityIndex(currentOperatorNum, i);
+            if (!gameData.IsCleared(i) || selectedIndex == -1) {
+                select_abilImages[i, 0].color = NORMAL_COLOR;
+                select_abilImages[i, 1].color = NORMAL_COLOR;
+                select_abilLines[i, 0].color = NORMAL_COLOR;
+                select_abilLines[i, 1].color = NORMAL_COLOR;
+
+                select_abilTitles[i].text = (gameData.IsCleared(i)) ? PlayerAbilityMgr.ToString(Ability.None) : "";
+                select_abilTexts[i].text = "";
+
+                info_abilImages[i].sprite = abilitySprites[Ability.None];
+            }
+            else {
+                Ability ability = PlayerAbilityMgr.GetAbility(currentOperatorNum, i, selectedIndex);
+                select_abilImages[i, selectedIndex].color = HIGHLIGHT_COLOR;
+                select_abilLines[i, selectedIndex].color = HIGHLIGHT_COLOR;
+                info_abilImages[i].sprite = abilitySprites[ability];
+
+                select_abilTitles[i].text = PlayerAbilityMgr.ToString(ability);
+                select_abilTexts[i].text = PlayerAbilityMgr.GetInfo(ability);
+
+                int otherIndex = (selectedIndex + 1) % 2;
+                select_abilImages[i, otherIndex].color = NORMAL_COLOR;
+                select_abilLines[i, otherIndex].color = NORMAL_COLOR;
+            }
+        }
+
+    }
+    public void ChangeAbility(int level, int index) {
+        if (!gameData.IsCleared(level)) return;
+
+        gameData.SetAbilityIndex(currentOperatorNum, level, index);
+        gameData.Save();
+
+        LoadAbilityIcon();
+    }
+
+    private void LoadToolIcon() {
         for (int i = 0; i < 2; i++) {
             Tool tool = gameData.GetTool(currentOperatorNum, i);
             info_toolImages[i].sprite = toolSprites[tool];
             select_toolImages[i].sprite = toolSprites[tool];
             select_toolTexts[i].text = PlayerToolMgr.ToString(tool);
-            select_toolTexts[i].color = NON_SELECTED_COLOR;
+            select_toolTexts[i].color = NORMAL_COLOR;
         }
     }
     public void ChangeToolIndex(int index) {
@@ -305,7 +403,7 @@ public class LobbyMgr : MonoBehaviour
 
         selectToolIndex = index;
         select_toolTexts[selectToolIndex].text = "선택 중";
-        select_toolTexts[selectToolIndex].color = CHAING_COLOR;
+        select_toolTexts[selectToolIndex].color = HIGHLIGHT_COLOR;
     }
     public void ChangeTool(string toolName) {
         if (selectToolIndex == -1) return;
@@ -323,7 +421,7 @@ public class LobbyMgr : MonoBehaviour
         if (gameData.GetTool(currentOperatorNum, otherIndex) == tool)
             gameData.SetTool(currentOperatorNum, otherIndex, gameData.GetTool(currentOperatorNum, selectToolIndex));
 
-        select_toolTexts[selectToolIndex].color = NON_SELECTED_COLOR;
+        select_toolTexts[selectToolIndex].color = NORMAL_COLOR;
 
         gameData.SetTool(currentOperatorNum, selectToolIndex, tool);
         gameData.Save();

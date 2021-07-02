@@ -7,12 +7,13 @@ using UnityEngine;
 public class GameData {
     [Serializable]
     private class Data {
-        public static readonly int LATEST_VERSION = 1;
-        public int version = 1;
+        public static readonly int LATEST_VERSION = 2;
+        public int version = LATEST_VERSION;
 
         public int money = 0;
         public List<char> stageRanks = new List<char>();
         public Tool[,] tools = new Tool[4,2];
+        public int[,] abilityIndices = new int[4,4];
 
         public Data() {
             // 기본 도구 설정
@@ -21,6 +22,12 @@ public class GameData {
                 tools[i, 1] = Tool.O2_CAN;
             }
             tools[1, 0] = Tool.FLARE; // 해머맨은 소화기 대신 조명탄 사용
+
+            // 특성 기본값 설정 (-1: 미선택, 0: 첫번째 특성, 1: 두번째 특성)
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++)
+                    abilityIndices[i, j] = -1;
+            }
         }
     }
 
@@ -91,6 +98,12 @@ public class GameData {
     }
     public void SetTool(int operatorNumber, int index, Tool tool) {
         data.tools[operatorNumber, index] = tool;
+    }
+    public int GetAbilityIndex(int operatorNumber, int level) {
+        return data.abilityIndices[operatorNumber, level];
+    }
+    public void SetAbilityIndex(int operatorNumber, int level, int index) {
+        data.abilityIndices[operatorNumber, level] = index;
     }
 
     public int Money {

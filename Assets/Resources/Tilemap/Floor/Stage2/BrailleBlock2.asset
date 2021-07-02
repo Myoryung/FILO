@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: BrailleBlock2
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: c57c4c4d0f45b58449456ec8908e454e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 90a9fe6c7deb583409661759ea63976a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

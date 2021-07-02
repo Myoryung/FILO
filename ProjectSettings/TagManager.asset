@@ -28,6 +28,7 @@ TagManager:
   - Flaming
   - Door
   - FloorView
+  - Flare
   layers:
   - Default
   - TransparentFX

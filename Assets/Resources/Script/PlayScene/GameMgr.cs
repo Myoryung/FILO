@@ -428,6 +428,11 @@ public class GameMgr : MonoBehaviour {
 
         TileMgr.Instance.UpdateFloorView();
 
+        // 조명탄
+        GameObject[] flareObjs = GameObject.FindGameObjectsWithTag("Flare");
+        foreach (GameObject flareObj in flareObjs)
+            flareObj.GetComponent<Flare>().TurnUpdate();
+
         goalMgr.OnTurnEnd(currTime);
 
         _currGameState = GameState.PLAYER_TURN;

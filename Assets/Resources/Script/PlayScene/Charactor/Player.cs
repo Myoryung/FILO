@@ -32,6 +32,8 @@ public class Player : Charactor
     protected bool isOverComeTrauma = false;
     protected int overcomeTraumaCount = 0;
 
+    private GameObject flarePrefab;
+
     // 타일 충돌체크용 값
     private bool isInSafetyArea = false, isInGas = false, isInStair = false;
     private float startTimeInFire = 0, startTimeInElectric = 0;
@@ -56,6 +58,7 @@ public class Player : Charactor
         _currentMental = _maxMental;
 
         CutScene = GameObject.Find("MiddleUI").transform.Find("CutScene").gameObject;
+        flarePrefab = Resources.Load<GameObject>("Prefabs/Tiles/Flare");
     }
 
     // Update is called once per frame
@@ -336,7 +339,7 @@ public class Player : Charactor
         case Tool.FIRE_EX:      StartCoroutine(UseFireExtinguisher());  break;
         case Tool.STICKY_BOMB:  StartCoroutine(UseStickyBomb());        break;
         case Tool.FIREWALL:     StartCoroutine(UseFireWall());          break;
-        case Tool.FLARE:        break;
+        case Tool.FLARE:        StartCoroutine(UseFlare());             break;
         case Tool.O2_CAN:       UseO2Can();                             break;
         }
 
@@ -417,6 +420,36 @@ public class Player : Charactor
                         }
                     }
 
+                    GameMgr.Instance.OnUseTool();
+                }
+                break;
+            }
+            else if (Input.GetMouseButtonDown(1) || IsMoving)
+                break;
+            yield return null;
+        }
+
+        effector.Disable();
+    }
+    IEnumerator UseFlare() // 조명탄 사용
+    {
+        InteractEffector effector = new InteractEffector(currentTilePos, floor, InteractEffector.Type.Diamond, 2);
+        effector.Enable();
+
+        while (true) {
+            Vector3Int mousePos = GetMousePosOnTilemap();
+            bool isPossible = effector.IsInArea(mousePos);
+            if (TileMgr.Instance.ExistEnvironment(mousePos, floor) ||
+                TileMgr.Instance.ExistObject(mousePos, floor) ||
+                GameMgr.Instance.GetPlayersAt(mousePos, floor).Count > 0 ||
+                GameMgr.Instance.GetSurvivorAt(mousePos, floor) != null)
+                isPossible = false;
+            effector.Set(mousePos, isPossible);
+
+            if (Input.GetMouseButtonDown(0)) {
+                if (isPossible) {
+                    Vector3 targetPos = TileMgr.Instance.CellToWorld(mousePos, floor);
+                    Instantiate(flarePrefab, targetPos, Quaternion.identity);
                     GameMgr.Instance.OnUseTool();
                 }
                 break;

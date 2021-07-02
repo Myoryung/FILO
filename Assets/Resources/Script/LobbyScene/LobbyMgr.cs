@@ -51,6 +51,7 @@ public class LobbyMgr : MonoBehaviour
     private Sprite[] btnImages;
     private Sprite[] profileImages;
 
+    private GameObject CrossPrefab, SmallCrossPrefab;
     private Dictionary<Tool, Sprite> toolSprites;
     private Image[] info_toolImages;
     private Image[] select_toolImages;
@@ -125,6 +126,9 @@ public class LobbyMgr : MonoBehaviour
             select_toolTexts[i].color = NORMAL_COLOR;
 
         // 특성
+        CrossPrefab = Resources.Load<GameObject>("Prefabs/UI/Cross");
+        SmallCrossPrefab = Resources.Load<GameObject>("Prefabs/UI/SmallCross");
+
         info_abilImages = new Image[4];
         select_abilTitles = new Text[4];
         select_abilTexts = new Text[4];
@@ -142,6 +146,13 @@ public class LobbyMgr : MonoBehaviour
 
                 int level = i, index = j;
                 select_abilImages[i, j].GetComponent<Button>().onClick.AddListener(() => ChangeAbility(level, index));
+            }
+
+            // 미클리어 레벨 특성 X 표시
+            if (!gameData.IsCleared(i)) {
+                Instantiate(CrossPrefab, info_abilImages[i].transform.position, Quaternion.identity, info_abilImages[i].transform);
+                Instantiate(SmallCrossPrefab, select_abilImages[i, 0].transform.position, Quaternion.identity, select_abilImages[i, 0].transform);
+                Instantiate(SmallCrossPrefab, select_abilImages[i, 1].transform.position, Quaternion.identity, select_abilImages[i, 1].transform);
             }
         }
         for (int i = 0; i < 3; i++) {
@@ -180,7 +191,7 @@ public class LobbyMgr : MonoBehaviour
         toolSprites.Add(Tool.STICKY_BOMB, Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/ToolIcon/StickyBomb1"));
 
         abilitySprites = new Dictionary<Ability, Sprite>();
-        abilitySprites.Add(Ability.None,            Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Athena-02_Operator Information-Icon white"));
+        abilitySprites.Add(Ability.None,            Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Athena-02_Operator Information-Icon box"));
         abilitySprites.Add(Ability.Cardio,          Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Cardio"));
         abilitySprites.Add(Ability.DoubleHeart,     Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Double heart"));
         abilitySprites.Add(Ability.EquipMini,       Resources.Load<Sprite>("Sprite/LobbyScene/02_Athena_System/02_Operator Information/Icon/Equipment miniaturization"));

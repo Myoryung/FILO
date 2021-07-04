@@ -361,20 +361,25 @@ public class Player : Charactor
             bool isPossible = effector.IsInArea(mousePos) && TileMgr.Instance.ExistFire(mousePos, floor);
             effector.Set(mousePos, isPossible);
 
-            if (Input.GetMouseButton(0)) {
-                if (isPossible) {
+            if (Input.GetMouseButton(0))
+            {
+                if (isPossible)
+                {
+                    _anim.SetTrigger("ShootExt");
                     TileMgr.Instance.RemoveFire(mousePos, floor);
                     GameMgr.Instance.OnUseTool();
                 }
                 break;
             }
-            else if (Input.GetMouseButtonDown(1) || IsMoving) // 움직이면 취소
+            else if (Input.GetMouseButtonDown(1) || IsMoving)
+            {
+                // 움직이면 취소
                 break;
+            }
             yield return null;
         }
-
-        effector.Disable();
         _anim.SetBool("IsFireExt", false);
+        effector.Disable();
     }
     IEnumerator UseFireWall() // 방화벽 설치
     {
@@ -419,7 +424,7 @@ public class Player : Charactor
                             TileMgr.Instance.CreateFireWall(targetPos, floor);
                         }
                     }
-
+                    _anim.SetTrigger("UseFireWall");
                     GameMgr.Instance.OnUseTool();
                 }
                 break;

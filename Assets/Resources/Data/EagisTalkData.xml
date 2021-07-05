@@ -1,0 +1,49 @@
+<EagisTalkData>
+    <Message>
+      <TalkerIndex>0</TalkerIndex>
+      <Index>0</Index>
+      <Question>대장 살아 돌아와서 정말 다행입니다! 어디 아픈곳은 없으십니까?</Question>
+      <FirstAnswer>아직 아프다</FirstAnswer>
+      <SecondAnswer>끄떡없다</SecondAnswer>
+      <ThirdAnswer>그럭저럭 움직일 만 하다</ThirdAnswer>
+      <FirstResult>하하 엄살이 많이 심해지셨습니다. 같이 재활 겸 운동이나 가시죠</FirstResult>
+      <SecondResult>역시 대장입니다! 생환기념 그때 사주시기로 한 술이나 마시러 가시죠</SecondResult>
+      <ThirdResult>대장 남자가 그럭저럭이 어디있습니까 그래도 멀쩡히 돌아와서 다행입니다</ThirdResult>
+    </Message>
+
+    <Message>
+      <TalkerIndex>1</TalkerIndex>
+      <Index>0</Index>
+      <Question>새로운 대장님이시군요~ 저는 새로 배치받은 구급지도의사 시노에라고합니다</Question>
+      <FirstAnswer>반갑다</FirstAnswer>
+      <SecondAnswer>잘부탁한다</SecondAnswer>
+      <ThirdAnswer>....</ThirdAnswer>
+      <FirstResult>저도 반갑습니다! 이제 서로 같은 팀인데 잘 부탁드립니다</FirstResult>
+      <SecondResult>제가 더 잘부탁드립니다! 이제 서로 같은 현장 투입되는 팀으로 믿음직 하시네요</SecondResult>
+      <ThirdResult>과묵한 편이시군요~ 앞으로 잘 부탁드립니다</ThirdResult>
+    </Message>
+
+  <Message>
+    <TalkerIndex>2</TalkerIndex>
+    <Index>0</Index>
+    <Question>소문으로만 듣던 대장이시군요! 새로 배치 받은 구조대원 레오입니다~ 앞으로 잘 부탁드립니다</Question>
+    <FirstAnswer>반갑다</FirstAnswer>
+    <SecondAnswer>잘 부탁한다</SecondAnswer>
+    <ThirdAnswer>....</ThirdAnswer>
+    <FirstResult>반갑습니다! 앞으로도 잘 부탁드립니다</FirstResult>
+    <SecondResult>저도 잘 부탁드립니다! 전설적인 대원이랑 함께하니까 마음이 든든하네요</SecondResult>
+    <ThirdResult>역시 전설은 다르시네요 무게감이 넘치십니다!</ThirdResult>
+  </Message>
+
+  <Message>
+    <TalkerIndex>3</TalkerIndex>
+    <Index>0</Index>
+    <Question>어디 가서 또 한대 얻어 맞고 왔나 보구나 몸은 괜찮나?</Question>
+    <FirstAnswer>아직 아픕니다</FirstAnswer>
+    <SecondAnswer>끄떡없습니다</SecondAnswer>
+    <ThirdAnswer>걱정해주셔서 감사합니다</ThirdAnswer>
+    <FirstResult>못본새에 엄살이 심해졌구나</FirstResult>
+    <SecondResult>그래 몸은 다치지마라</SecondResult>
+    <ThirdResult>건강해 보이니 다행이다</ThirdResult>
+  </Message>
+</EagisTalkData>

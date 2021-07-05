@@ -58,6 +58,7 @@ public class GameMgr : MonoBehaviour {
     private GameObject[] operators = new GameObject[4];
 
     private GoalMgr goalMgr;
+    private PauseMgr pauseMgr;
 
     private int _stage = 0;
     public int stage {
@@ -65,11 +66,12 @@ public class GameMgr : MonoBehaviour {
     }
 
     public enum GameState {
-        STAGE_SETUP, SELECT_OPERATOR, STAGE_READY,
+        STAGE_SETUP, SELECT_OPERATOR, STAGE_READY, PAUSE,
         PLAYER_TURN, SURVIVOR_TURN, ENVIRONMENT_TURN, DISASTER_ALARM, DISASTER_TURN, TURN_END,
         STAGE_END
     }
     private GameState _currGameState = GameState.STAGE_SETUP;
+    private GameState _prevGameState;
     public GameState CurrGameState {
         get { return _currGameState; }
     }
@@ -103,6 +105,7 @@ public class GameMgr : MonoBehaviour {
         case GameState.STAGE_SETUP: StageSetup(); break;
         case GameState.SELECT_OPERATOR: SelectOperator(); break;
         case GameState.STAGE_READY: StageReady(); break;
+        case GameState.PAUSE: break;
         case GameState.PLAYER_TURN: PlayerTurn(); break;
         case GameState.SURVIVOR_TURN: SurvivorTurn(); break;
         case GameState.ENVIRONMENT_TURN: EnvironmentTurn(); break;
@@ -111,7 +114,9 @@ public class GameMgr : MonoBehaviour {
         case GameState.TURN_END: TurnEnd(); break;
         case GameState.STAGE_END: StageEnd(); break;
         }
-        if(Input.GetKeyDown(KeyCode.O))
+        pauseMgr.Update();
+
+        if (Input.GetKeyDown(KeyCode.O))
         {
             Debug.Log("Input");
             StartCoroutine(TalkMgr.Instance.StartTalk(0));
@@ -238,6 +243,8 @@ public class GameMgr : MonoBehaviour {
         timerText = GameObject.Find("UICanvas/PlayCanvas/TopUI/TurnEndBtn/TimerText").GetComponent<Text>();
         ChangeTimerText();
 
+        pauseMgr = new PauseMgr(goalMgr, OnPause, OnResume, OnGameExit);
+
         // Load Resources
         operatorPrefabs[0] = Resources.Load<GameObject>("Prefabs/Operator/Captain");
         operatorPrefabs[1] = Resources.Load<GameObject>("Prefabs/Operator/HammerMan");
@@ -313,6 +320,7 @@ public class GameMgr : MonoBehaviour {
         _currGameState = GameState.PLAYER_TURN;
         BGM.Play();//배경 음악 시작
     }
+
     private void PlayerTurn() {
         Player currPlayer = players[currPlayerIdx];
         currPlayer.Move();
@@ -456,6 +464,17 @@ public class GameMgr : MonoBehaviour {
             bStageEndSetup = true;
         }
         BGM.Stop();
+    }
+
+    private void OnPause() {
+        _prevGameState = _currGameState;
+        _currGameState = GameState.PAUSE;
+    }
+    private void OnResume() {
+        _currGameState = _prevGameState;
+    }
+    private void OnGameExit() {
+        SceneManager.LoadScene("Scenes/LobbyScene");
     }
 
     public void OnClickStageStartBtn() {

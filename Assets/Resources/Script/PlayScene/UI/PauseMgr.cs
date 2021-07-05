@@ -8,8 +8,15 @@ class PauseMgr {
 
     private GameObject GoalPrefab;
     private const float GOAL_POS_INTERVAL_Y = -75;
+    private const float LOADING_TIME = 0.3f;
 
     private Canvas pauseCanvas, sureCanvas;
+
+    private Transform menuTF, paper1TF, paper2TF, radioTF;
+    private Vector3 menuInitPos, paper1InitPos, paper2InitPos, radioInitPos;
+    private Vector3 menuMoveAmount, paper1MoveAmount, paper2MoveAmount, radioMoveAmount;
+    private float loadingAmount;
+
     private List<Vector3> menuPosList = new List<Vector3>();
     private GameObject menuHeader;
     private int menuHeaderIndex = 0;
@@ -27,14 +34,28 @@ class PauseMgr {
         pauseCanvas = GameObject.Find("UICanvas").transform.Find("PauseCanvas").GetComponent<Canvas>();
         pauseCanvas.enabled = false;
 
+        menuTF = pauseCanvas.transform.Find("Menu");
+        paper1TF = pauseCanvas.transform.Find("Paper1");
+        paper2TF = pauseCanvas.transform.Find("Paper2");
+        radioTF = pauseCanvas.transform.Find("Radio");
+
+        menuInitPos = menuTF.position;
+        paper1InitPos = paper1TF.position;
+        paper2InitPos = paper2TF.position;
+        radioInitPos = radioTF.position;
+
+        menuMoveAmount = new Vector3(638, 0);
+        paper1MoveAmount = new Vector3(-100, 765);
+        paper2MoveAmount = new Vector3(0, 768);
+        radioMoveAmount = new Vector3(-271, 0);
+
         // Paper
-        Transform paperTF = pauseCanvas.transform.Find("Paper2");
-        Vector3 goalPos = paperTF.transform.position + new Vector3(-200, 180);
+        Vector3 goalPos = paper2TF.transform.position + new Vector3(-200, 180);
         List<Goal> goalList = goalMgr.GetMainGoals();
         goalList.AddRange(goalMgr.GetSubGoals());
 
         foreach (Goal goal in goalList) {
-            GameObject goalObj = GameObject.Instantiate(GoalPrefab, goalPos, Quaternion.identity, paperTF);
+            GameObject goalObj = GameObject.Instantiate(GoalPrefab, goalPos, Quaternion.identity, paper2TF);
             goalObj.GetComponent<Text>().text = goal.GetExplanationText();
             goalObj.transform.Find("Status").GetComponent<Text>().text = goal.GetStatusText();
 
@@ -42,7 +63,7 @@ class PauseMgr {
         }
 
         // Menu
-        menuHeader = pauseCanvas.transform.Find("Menu").Find("Header").gameObject;
+        menuHeader = menuTF.Find("Header").gameObject;
         Transform itemsTF = pauseCanvas.transform.Find("Menu").Find("Items");
         for (int i = 0; i < itemsTF.childCount; i++)
             menuPosList.Add(itemsTF.GetChild(i).position);
@@ -63,8 +84,18 @@ class PauseMgr {
             break;
 
         case State.Loading:
-            // TODO: Loading Animation
-            state = State.Pause;
+            float currTime = Time.unscaledDeltaTime;
+            float moveAmount = (loadingAmount + currTime <= LOADING_TIME) ? currTime : LOADING_TIME - loadingAmount;
+            float moveRate = moveAmount / LOADING_TIME;
+
+            menuTF.position += menuMoveAmount * moveRate;
+            paper1TF.position += paper1MoveAmount * moveRate;
+            paper2TF.position += paper2MoveAmount * moveRate;
+            radioTF.position += radioMoveAmount * moveRate;
+
+            loadingAmount += moveAmount;
+            if (loadingAmount >= LOADING_TIME)
+                state = State.Pause;
 
             if (Input.GetKeyDown(KeyCode.Escape))
                 Resume();
@@ -121,6 +152,12 @@ class PauseMgr {
     public void Pause() {
         pauseCanvas.enabled = true;
         state = State.Loading;
+
+        menuTF.position = menuInitPos;
+        paper1TF.position = paper1InitPos;
+        paper2TF.position = paper2InitPos;
+        radioTF.position = radioInitPos;
+        loadingAmount = 0;
 
         Time.timeScale = 0;
         onPauseAction();

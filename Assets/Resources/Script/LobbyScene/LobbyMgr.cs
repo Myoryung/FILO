@@ -68,6 +68,10 @@ public class LobbyMgr : MonoBehaviour
 
     private GameData gameData = new GameData();
     private readonly Color HIGHLIGHT_COLOR = new Color(217/255f, 54/255f, 21/255f), NORMAL_COLOR = Color.white;
+    
+    private GameObject[] eagisTalks;
+    private GameObject currentEagisTalk;
+    private Text eagisTalkerNameText;
 
     private void Start()
     {
@@ -210,6 +214,14 @@ public class LobbyMgr : MonoBehaviour
         currentSystemIndex = 0;
         currentSystem = argosSystem;
         currentSystemBtn = argosBtn;
+
+        eagisTalks = new GameObject[4];
+        for(int i=0; i<eagisTalks.Length; i++)
+        {
+            eagisTalks[i] = eagisSystem.transform.Find("Talk" + i).Find("Talks").gameObject;
+        }
+        currentEagisTalk = eagisTalks[0];
+        eagisTalkerNameText = eagisSystem.transform.Find("TalkerName").GetComponent<Text>();
     }
 
     private void Update()
@@ -445,5 +457,27 @@ public class LobbyMgr : MonoBehaviour
 
         LoadToolIcon();
         selectToolIndex = -1;
+    }
+
+    public void ChangeEagisTalker(int index)
+    {
+        currentEagisTalk.SetActive(false);
+        currentEagisTalk = eagisTalks[index];
+        currentEagisTalk.SetActive(true);
+        switch(index)
+        {
+            case 0:
+                eagisTalkerNameText.text = "# 빅 토 르";
+                break;
+            case 1:
+                eagisTalkerNameText.text = "# 시 노 에";
+                break;
+            case 2:
+                eagisTalkerNameText.text = "# 레       오";
+                break;
+            case 3:
+                eagisTalkerNameText.text = "# 선 배 님";
+                break;
+        }
     }
 }

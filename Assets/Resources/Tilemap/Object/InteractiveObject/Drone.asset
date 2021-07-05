@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb22b0a52ca32f41a3aecbc6156e8a2, type: 3}
   m_Name: Drone
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 4f3791b8a2991144b9e470c32097b865, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8925acfa2cb6d5842873a44ad37aeb92, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 public class ObjectTile : Tile {
     public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go) {
-        if (go != null) {
+        if (go != null && TileMgr.Instance != null) {
             int order = TileMgr.GetOrder(go.transform.position, position);
             go.GetComponent<SortingGroup>().sortingOrder = order;
         }

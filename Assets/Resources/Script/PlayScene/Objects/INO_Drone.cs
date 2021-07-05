@@ -28,18 +28,10 @@ public class INO_Drone : InteractiveObject {
 
         // 날개 오브젝트 Load
         wingsObj = transform.Find("Wings").gameObject;
-        wingsMovingObj = transform.Find("Wings_Moving").gameObject;
-
-        movingWingObjs[0] = wingsMovingObj.transform.Find("LT").gameObject;
-        movingWingObjs[1] = wingsMovingObj.transform.Find("RT").gameObject;
-        movingWingObjs[2] = wingsMovingObj.transform.Find("LB").gameObject;
-        movingWingObjs[3] = wingsMovingObj.transform.Find("RB").gameObject;
+        wingsMovingObj = transform.Find("MovingWings").gameObject;
 
         wingsObj.SetActive(true);
         wingsMovingObj.SetActive(false);
-        foreach (GameObject movingWingObj in movingWingObjs)
-            movingWingObj.SetActive(true);
-
     }
 
     private void Update() {
@@ -48,8 +40,6 @@ public class INO_Drone : InteractiveObject {
             totalMoveAmount += moveAmount;
 
             transform.position += Vector3.up * moveAmount;
-            foreach (GameObject wingObj in movingWingObjs)
-                wingObj.transform.Rotate(0, 0, WING_ROTATE_SPEED * Time.deltaTime);
 
             if (totalMoveAmount >= FLY_DISTANCE) {
                 state = State.END;

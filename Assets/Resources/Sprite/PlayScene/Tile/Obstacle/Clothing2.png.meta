@@ -3,6 +3,12 @@ guid: a5f341bfc546db64991082edfa2970fe
 TextureImporter:
   internalIDToNameTable:
   - first:
+      213: -4126216495253675350
+    second: Clothing1_0
+  - first:
+      213: 3582360030865292598
+    second: Clothing1_1
+  - first:
       213: -6090277068645867932
     second: Clothing2_0
   - first:
@@ -11,9 +17,6 @@ TextureImporter:
   - first:
       213: 3286549072864408404
     second: Clothing2_2
-  - first:
-      213: 1154322083749019856
-    second: Clothing2_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -55,14 +58,14 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.25}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -115,7 +118,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -123,12 +126,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape:
-      - - {x: -51, y: 61}
-        - {x: -62, y: 19}
-        - {x: -62, y: -64}
-        - {x: 64, y: -64}
-        - {x: 64, y: -30}
-        - {x: 24, y: 61}
+      - - {x: -46, y: 24}
+        - {x: -46, y: -64}
+        - {x: 50, y: -64}
+        - {x: 50, y: 24}
       tessellationDetail: 0
       bones: []
       spriteID: 46ed7a3164dfa7ba0800000000000000
@@ -141,7 +142,7 @@ TextureImporter:
       name: Clothing2_1
       rect:
         serializedVersion: 2
-        x: 128
+        x: 0
         y: 128
         width: 128
         height: 128
@@ -150,11 +151,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape:
-      - - {x: -64, y: -64}
-        - {x: 62, y: -64}
-        - {x: 62, y: -36}
-        - {x: 60, y: -34}
-        - {x: -64, y: -34}
+      - - {x: -46, y: 64}
+        - {x: -46, y: -64}
+        - {x: 53, y: -64}
+        - {x: 53, y: 64}
       tessellationDetail: 0
       bones: []
       spriteID: 869b1000e4a95a340800000000000000
@@ -176,11 +176,11 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape:
-      - - {x: -62, y: 64}
-        - {x: -62, y: 15}
-        - {x: 12, y: -63}
-        - {x: 64, y: -63}
-        - {x: 64, y: 64}
+      - - {x: -46, y: -8}
+        - {x: 35, y: -8}
+        - {x: 49, y: -5}
+        - {x: 49, y: 64}
+        - {x: -46, y: 64}
       tessellationDetail: 0
       bones: []
       spriteID: 453f8f808fa2c9d20800000000000000
@@ -189,36 +189,12 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Clothing2_3
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape:
-      - - {x: -64, y: 64}
-        - {x: -64, y: -64}
-        - {x: 59, y: -64}
-        - {x: 62, y: -63}
-        - {x: 64, y: -36}
-        - {x: 63, y: 24}
-        - {x: 62, y: 64}
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0d0cf3eb1d9f40010800000000000000
-      internalID: 1154322083749019856
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
-    physicsShape: []
+    physicsShape:
+    - - {x: -49, y: -125}
+      - {x: -49, y: -15}
+      - {x: 48, y: -15}
+      - {x: 48, y: -125}
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
     internalID: 0

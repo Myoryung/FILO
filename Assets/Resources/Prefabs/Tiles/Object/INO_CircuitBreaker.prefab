@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cbSprite:
-  - {fileID: 21300000, guid: 7e46fc53a4f913c4aab3bb6df0ae95f4, type: 3}
+  - {fileID: 21300000, guid: b8e7c10c0410d7b4486cab9c57d4b832, type: 3}
   - {fileID: 21300000, guid: ea61ce1629574f248b49e29c81e044f6, type: 3}
 --- !u!1001 &7656977785951858269
 PrefabInstance:
@@ -107,6 +107,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3565129872050101379, guid: 477731a3a6734bc499f536e925d9889d,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 3565129872050101379, guid: 477731a3a6734bc499f536e925d9889d,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 1.28
       objectReference: {fileID: 0}
     - target: {fileID: 8498692799874255803, guid: 477731a3a6734bc499f536e925d9889d,
         type: 3}

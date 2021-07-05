@@ -473,7 +473,7 @@ public class LobbyMgr : MonoBehaviour
                 eagisTalkerNameText.text = "# 시 노 에";
                 break;
             case 2:
-                eagisTalkerNameText.text = "# 레       오";
+                eagisTalkerNameText.text = "# 레    오";
                 break;
             case 3:
                 eagisTalkerNameText.text = "# 선 배 님";

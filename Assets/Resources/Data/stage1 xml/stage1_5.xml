@@ -1,0 +1,20 @@
+<TalkData>
+  <Talk>
+    <ID>005</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>대장, 점점 불이 커지고 있습니다!</Content>
+      <Look>Surprise</Look>
+    </Message>
+    
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>아직 분명 생존자가 더 있을거다. 그림자를 밟지 않도록......</Content>
+      <Look>Sad</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

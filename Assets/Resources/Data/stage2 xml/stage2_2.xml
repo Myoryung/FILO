@@ -1,0 +1,54 @@
+<TalkData>
+  <Talk>
+    <ID>022</ID>
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>지하 2층도 이미 불이 크게 번졌습니다. 근원지가 이 근처인 것 같은데요.</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>대장! 터널쪽에 생존자가 다수 감지됩니다!</Content>
+      <Look>Surprise</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>터널 입구를 방화벽이 막고 있어</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>제 망치로 길을 열라는 뜻이죠?</Content>
+      <Look>Happy</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>아니, 차단기를 찾아서 문을 열어야 해</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>차단기는 동쪽 계단 근처인 것 같아요</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>차단기를 먼저 찾아 문을 연 후에 다같이 터널에 진입한다.</Content>
+      <Look>Normal</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

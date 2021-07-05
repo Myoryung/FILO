@@ -1,6 +1,6 @@
 <TalkData>
   <Talk>
-    <ID>001</ID>
+    <ID>1</ID>
     <Message>
       <Type>Message</Type>
       <Speaker>상황실</Speaker>
@@ -73,7 +73,7 @@
   </Talk>
 
   <Talk>
-    <ID>002</ID>
+    <ID>2</ID>
 
     <Message>
       <Type>Message</Type>
@@ -99,7 +99,7 @@
   </Talk>
 
   <Talk>
-    <ID>003</ID>
+    <ID>3</ID>
 
     <Message>
       <Type>Message</Type>
@@ -133,7 +133,7 @@
   </Talk>
 
   <Talk>
-    <ID>004</ID>
+    <ID>4</ID>
 
     <Message>
       <Type>Message</Type>
@@ -159,7 +159,7 @@
   </Talk>
 
   <Talk>
-    <ID>005</ID>
+    <ID>5</ID>
 
     <Message>
       <Type>Message</Type>
@@ -178,7 +178,7 @@
   </Talk>
 
   <Talk>
-    <ID>006</ID>
+    <ID>6</ID>
 
     <Message>
       <Type>Message</Type>
@@ -197,7 +197,7 @@
   </Talk>
   
   <Talk>
-    <ID>007</ID>
+    <ID>7</ID>
 
     <Message>
       <Type>Message</Type>

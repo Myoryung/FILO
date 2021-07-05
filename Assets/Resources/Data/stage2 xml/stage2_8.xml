@@ -1,0 +1,27 @@
+<TalkData>
+  <Talk>
+    <ID>028</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>레오, 주변에 생존자가 남아있는지 확인해줘</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>생체반응이 더 이상 감지되지 않아요 대장, 모두 구출한 것 같습니다.</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>그럼 우리도 지휘본부로 복귀한다.</Content>
+      <Look>Happy</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

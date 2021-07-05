@@ -1,0 +1,20 @@
+<TalkData>
+  <Talk>
+    <ID>006</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>방금 무너진 구역에서 비명 소리가 들립니다!</Content>
+      <Look>Surprise</Look>
+    </Message>
+    
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>설계도에 없는 공간인데?</Content>
+      <Look>Surprise</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

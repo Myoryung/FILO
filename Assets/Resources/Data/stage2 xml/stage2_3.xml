@@ -1,0 +1,39 @@
+<TalkData>
+  <Talk>
+    <ID>023</ID>
+
+    <Message>
+      <Type>CutScene</Type>
+      <ImageName>CutScene2</ImageName>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>시노에</Speaker>
+      <Content>터널 입구가 막혀있던 탓에 유독 가스로 완전히 가득차있어</Content>
+      <Look>Surpirse</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>지하 터널엔 환풍 시설이 반드시 있을텐데</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>찾았어요! 터널 중앙입니다.</Content>
+      <Look>Happy</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>좋아 환풍 시설의 가동을 우선시 하고 터널안의 모든 생존자를 구출한다.</Content>
+      <Look>Normal</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

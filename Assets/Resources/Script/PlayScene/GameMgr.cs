@@ -804,6 +804,26 @@ public class GameMgr : MonoBehaviour {
         gameInfo.OnUseTool();
     }
 
+    public void UltHeal(int index)
+    {
+        foreach(Player player in players)
+        {
+            if(index == player.OperatorNumber)
+            {
+                players[index].AddHP(players[index].MaxHP * 0.5f);
+                players[index].AddO2(players[index].MaxO2 * 0.5f);
+                break;
+            }
+        }
+        foreach (Player player in players)
+        {
+            if(player.OperatorNumber == Nurse.OPERATOR_NUMBER)
+            {
+                player.IsUsedUlt = true;
+            }
+        }
+    }
+
     public void StartTalk(int ID)
     {
         StartCoroutine(TalkMgr.Instance.StartTalk(ID));

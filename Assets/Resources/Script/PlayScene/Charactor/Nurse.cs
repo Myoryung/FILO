@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Nurse : Player {
 
     public const int OPERATOR_NUMBER = 3;
+    private GameObject Heal_UI;
     public override int OperatorNumber {
         get { return OPERATOR_NUMBER; }
     }
@@ -19,6 +20,7 @@ public class Nurse : Player {
     protected override void Start()
     {
         base.Start();
+        Heal_UI = GameObject.Find("MiddleUI").transform.Find("Heal_UI").gameObject;
     }
 
     // Update is called once per frame
@@ -91,29 +93,12 @@ public class Nurse : Player {
 
     IEnumerator HealDrone(Action act)
     {
-        while(true)
+        Heal_UI.SetActive(true);
+        while(!isUsedUlt)
         {
-            if (Input.GetMouseButton(0))
-            {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                mousePos.z = transform.position.z;
-
-                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector3.forward, 100.0f);
-                if(hit)
-                {
-                    if(hit.transform.CompareTag("Player"))
-                    {
-                        Player target = hit.transform.GetComponent<Player>();
-                        target.AddHP(target.MaxHP / 2);
-                        target.AddO2(target.MaxO2 / 2);
-                        //카메라 타겟 연출 추가 필요
-                        //카메라 복귀 연출 추가 필요
-                        break;
-                    }
-                }
-            }
             yield return null;
         }
+        Heal_UI.SetActive(false);
         playerAct = act;
     }
 }

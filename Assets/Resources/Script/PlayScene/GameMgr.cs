@@ -116,12 +116,6 @@ public class GameMgr : MonoBehaviour {
         }
         pauseMgr.Update();
 
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Debug.Log("Input");
-            StartCoroutine(TalkMgr.Instance.StartTalk(0));
-        }
-
         if (bStagePlaying) {
             Player player = players[currPlayerIdx];
             ChangeMentalText(player);

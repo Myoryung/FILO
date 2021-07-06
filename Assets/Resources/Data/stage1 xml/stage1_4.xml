@@ -1,0 +1,27 @@
+<TalkData>
+  <Talk>
+    <ID>004</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>전력이 차단되어서 작동하지 않아</Content>
+      <Look>Normal</Look>
+    </Message>
+    
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>얼른 차단기를 찾아 보죠</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>상황실</Speaker>
+      <Content>(맵에는 대원들과 상호작용할 수 있는 오브젝트들이 존재합니다. 숨겨진 엘리베이터 전원차단기를 찾아 작동시켜야 합니다.)</Content>
+      <Look>Normal</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

@@ -1,0 +1,27 @@
+<TalkData>
+  <Talk>
+    <ID>002</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>상황실</Speaker>
+      <Content>(빅토르는 특수능력: 파쇄망치로 벽을 파괴하여 진입로를 확보할 수 있습니다. 금이 간 벽을 파괴하세요)</Content>
+      <Look>Normal</Look>
+    </Message>
+    
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>길이 막혀 있어…여길 뚫어야 해</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>망치 나가신다!!</Content>
+      <Look>Angry</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

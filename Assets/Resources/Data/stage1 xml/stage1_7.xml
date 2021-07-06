@@ -1,0 +1,18 @@
+<TalkData>
+  <Talk>
+    <ID>007</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>!!!!!</Content>
+      <Look>Surprise</Look>
+    </Message>
+
+    <Message>
+      <Type>CutScene</Type>
+      <ImageName>CutScene1</ImageName>
+    </Message>
+
+  </Talk>
+</TalkData>

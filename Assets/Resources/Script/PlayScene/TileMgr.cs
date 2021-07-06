@@ -387,8 +387,8 @@ public class TileMgr {
     {
         if (ObjectTilemaps[floor - MinFloor].GetTile(pos) != null)
         {
-            if (ObjectTilemaps[floor - MinFloor].GetInstantiatedObject(pos).layer
-                == LayerMask.NameToLayer("Obstacle"))
+            if (ObjectTilemaps[floor - MinFloor].GetInstantiatedObject(pos) != null &&
+                ObjectTilemaps[floor - MinFloor].GetInstantiatedObject(pos).layer == LayerMask.NameToLayer("Obstacle"))
                 return true;
             else
                 return false;

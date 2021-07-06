@@ -31,10 +31,6 @@
         <EndTime>18:20</EndTime>
       </Goal>
 
-      <Goal>
-        <Type>RESCUE_SURVIVOR</Type>
-        <Count>8</Count>
-      </Goal>
     </Main>
     <Sub>
     </Sub>

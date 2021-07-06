@@ -10719,7 +10719,7 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: -125.91113, g: -125.91113, b: -125.91113, a: -125.91113}
   - m_RefCount: 1
-    m_Data: {r: 0.7803948, g: 0.46813104, b: 0.47823533, a: 1}
+    m_Data: {r: 0.99753904, g: 0.6142704, b: 0.6495399, a: 1}
   - m_RefCount: 1154
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray:
@@ -11232,7 +11232,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 1
       m_AllTileFlags: 1073741825
-  - first: {x: -8, y: 6, z: 0}
+  - first: {x: 9, y: 4, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 2
@@ -11241,7 +11241,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 1
       m_AllTileFlags: 1073741825
-  - first: {x: 8, y: 6, z: 0}
+  - first: {x: -8, y: 6, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 2
@@ -11310,7 +11310,7 @@ Tilemap:
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -19, y: -9, z: 0}
-  m_Size: {x: 28, y: 17, z: 1}
+  m_Size: {x: 29, y: 17, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb22b0a52ca32f41a3aecbc6156e8a2, type: 3}
   m_Name: Socket
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 9453bd6147ca2714799a6ea5353fb2c2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a09481db9cdd0ca44973f777ed13c6d5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

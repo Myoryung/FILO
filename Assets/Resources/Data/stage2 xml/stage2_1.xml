@@ -1,0 +1,47 @@
+<TalkData>
+  <Talk>
+    <ID>021</ID>
+    <Message>
+      <Type>Message</Type>
+      <Speaker>상황실</Speaker>
+      <Content>번화가의 지하철역에서 화재 발생, 현장의 유독가스 배출을 우선시 할 것</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>상황실</Speaker>
+      <Content>(새로운 대원이 2명 추가되었습니다. 총 4명의 대원을 조작할 수 있습니다.)</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>(음악을 흥얼거린다.)</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>시노에</Speaker>
+      <Content>레오, 이제 현장이야. 임무에 필요없는 물건은 치워줬으면 하는데? </Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>레오</Speaker>
+      <Content>네~! 알겠습니다.</Content>
+      <Look>Happy</Look>
+    </Message>
+
+      <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>현장 상황 파악이 첫번째다. 각자 지정된 위치에서 구조를 시작하도록</Content>
+      <Look>Normal</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

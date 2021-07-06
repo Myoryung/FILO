@@ -1,0 +1,35 @@
+<TalkData>
+  <Talk>
+    <ID>003</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>대장! 여기 생존자가 있습니다.</Content>
+      <Look>Surprise</Look>
+    </Message>
+    
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>HQ, 2층 입구에서 생존자 1명 발견.</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>상황실</Speaker>
+      <Content>현장에 탈출 슈트를 준비해두었다. 생존자 구출 시 탈출 슈트로 인도할 것</Content>
+      <Content>(생존자에게 다가가 구조 상호작용을 하면 구조할 수 있습니다. 해당 대원은 구조중 상태로 변합니다.)</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>상황실</Speaker>
+      <Content>(생존자에게 다가가 구조 상호작용을 하면 구조할 수 있습니다. 해당 대원은 구조중 상태로 변합니다.)</Content>
+      <Look>Normal</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

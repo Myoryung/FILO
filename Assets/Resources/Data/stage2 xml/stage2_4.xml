@@ -1,0 +1,41 @@
+<TalkData>
+  <Talk>
+    <ID>024</ID>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>......!!</Content>
+      <Look>Surpirse</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>(뭐지 이 위화감은?)</Content>
+      <Look>Angry</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>빅토르</Speaker>
+      <Content>대장, 왜 그러십니까? 안색이 안좋은데요</Content>
+      <Look>Normal</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>아무것도 아냐......</Content>
+      <Look>Sad</Look>
+    </Message>
+
+    <Message>
+      <Type>Message</Type>
+      <Speaker>신화준</Speaker>
+      <Content>(지하철 화재는 처음인데 익숙한 느낌이 들어…...)</Content>
+      <Look>Sad</Look>
+    </Message>
+
+  </Talk>
+</TalkData>

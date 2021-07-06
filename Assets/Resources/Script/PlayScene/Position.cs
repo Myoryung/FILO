@@ -25,4 +25,12 @@ class Position {
     public Vector3Int Point {
         get { return new Vector3Int(x, y, 0); }
     }
+    public override bool Equals(object obj) {
+        if (obj is Position other)
+            return x == other.x && y == other.y && floor == other.floor;
+        return this == obj;
+    }
+    public override int GetHashCode() {
+        return Point.GetHashCode() + floor.GetHashCode();
+    }
 }

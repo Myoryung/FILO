@@ -848,6 +848,11 @@ public class Player : Charactor
     {
         get { return isOverComeTrauma; }
     }
+    public bool IsUsedUlt
+    {
+        get { return isUsedUlt; }
+        set { isUsedUlt = value; }
+    }
 
     public bool EqualsRescuingSurvivor(Survivor survivor) {
         return _rescuingSurvivor == survivor;

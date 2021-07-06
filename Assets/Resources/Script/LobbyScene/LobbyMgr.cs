@@ -10,6 +10,8 @@ public class LobbyMgr : MonoBehaviour
 
     public Text newsContents;
 
+    public GameObject StageInfoPopUp;
+
     private GameObject argosSystem;
     private GameObject athenaSystem;
     private GameObject eagisSystem;
@@ -72,6 +74,8 @@ public class LobbyMgr : MonoBehaviour
     private GameObject[] eagisTalks;
     private GameObject currentEagisTalk;
     private Text eagisTalkerNameText;
+
+    private bool isPopUpOn = false;
 
     private void Start()
     {
@@ -227,6 +231,14 @@ public class LobbyMgr : MonoBehaviour
     private void Update()
     {
         NewsFlow();
+        if(isPopUpOn)
+        {
+            if(Input.GetMouseButtonDown(0))
+            {
+                StageInfoPopUp.SetActive(false);
+                isPopUpOn = false;
+            }
+        }
     }
 
     void NewsFlow()
@@ -328,6 +340,12 @@ public class LobbyMgr : MonoBehaviour
         }
     }
 
+    public void EnableStageInfoPopUp()
+    {
+        StageInfoPopUp.SetActive(true);
+        isPopUpOn = true;
+    }
+
     public void LoadPlayScene()
     {
         SceneManager.LoadScene("Scenes/PlayScene");
@@ -347,15 +365,51 @@ public class LobbyMgr : MonoBehaviour
         {
             case 0:
                 operatorNameText.text = "01. 신화준";
+                operatorBodyText.text = "175cm 73kg";
+                operatorSpecialText.text = "(구)소방청 출신\n" +
+                    "소방청 근무 당시 뛰어난 활약을 보임\n" +
+                    "과묵하고 신중한 성격을 가짐\n" +
+                    "팀원에 대한 책임감이 강함";
+                o2Text.text = "55";
+                hpText.text = "30";
+                useO2Text.text = "2";
+                recorveryO2Text.text = "20";
                 break;
             case 1:
                 operatorNameText.text = "02. 빅토르";
+                operatorBodyText.text = "195cm 145kg";
+                operatorSpecialText.text = "(구)소방청 출신\n" +
+                    "20세 때 불곰과 싸워 이겼다는 소문이 있음\n" +
+                    "러시아 삼보 청소년 국가대표 출신\n" +
+                    "술을 좋아하나 잘 못하니 주의가 필요";
+                o2Text.text = "60";
+                hpText.text = "70";
+                useO2Text.text = "2";
+                recorveryO2Text.text = "20";
                 break;
             case 2:
                 operatorNameText.text = "03. 레    오";
+                operatorBodyText.text = "176cm 65kg";
+                operatorSpecialText.text = "이지스 출신\n" +
+                    "레트로한 일본 전자기기를 선호함\n" +
+                    "사고로 부모님과 팔을 잃음 여동생과 거주중\n" +
+                    "성격이 쾌활하며 붙임성이 좋다";
+                o2Text.text = "70";
+                hpText.text = "80";
+                useO2Text.text = "3";
+                recorveryO2Text.text = "25";
                 break;
             case 3:
                 operatorNameText.text = "04. 시노에";
+                operatorBodyText.text = "167cm 54kg";
+                operatorSpecialText.text = "대형 병원 의사 출신\n" +
+                    "소방청 근무 중이던 약혼자가 있었지만 사망함\n" +
+                    "이중인격이 의심 됨\n" +
+                    "현장에서 매우 민감하게 반응함";
+                o2Text.text = "45";
+                hpText.text = "60";
+                useO2Text.text = "1";
+                recorveryO2Text.text = "35";
                 break;
         }
         operatorProfileImage.sprite = profileImages[currentOperatorNum];

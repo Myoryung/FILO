@@ -115,7 +115,13 @@ public class GameMgr : MonoBehaviour {
         case GameState.STAGE_END: StageEnd(); break;
         }
         pauseMgr.Update();
-
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            GameData gameData = new GameData();
+            gameData.SetStageNumber(1);
+            gameData.Save();
+            SceneManager.LoadScene("Scenes/LobbyScene");
+        }
         if (bStagePlaying) {
             Player player = players[currPlayerIdx];
             ChangeMentalText(player);
@@ -802,6 +808,26 @@ public class GameMgr : MonoBehaviour {
 
     public void OnUseTool() {
         gameInfo.OnUseTool();
+    }
+
+    public void UltHeal(int index)
+    {
+        foreach(Player player in players)
+        {
+            if(index == player.OperatorNumber)
+            {
+                players[index].AddHP(players[index].MaxHP * 0.5f);
+                players[index].AddO2(players[index].MaxO2 * 0.5f);
+                break;
+            }
+        }
+        foreach (Player player in players)
+        {
+            if(player.OperatorNumber == Nurse.OPERATOR_NUMBER)
+            {
+                player.IsUsedUlt = true;
+            }
+        }
     }
 
     public void StartTalk(int ID)

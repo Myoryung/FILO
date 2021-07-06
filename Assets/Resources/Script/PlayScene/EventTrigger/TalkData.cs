@@ -11,7 +11,7 @@ public class Message
     public enum Type { Message, CutScene }
     public Type DataType;
 
-    public enum LookType { Normal, Angry, Sad, None }
+    public enum LookType { Normal, Angry, Sad, Surprise, Happy, None }
     private LookType look;
     private string speaker;
     private string content;

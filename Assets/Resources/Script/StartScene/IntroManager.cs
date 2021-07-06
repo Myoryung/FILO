@@ -99,7 +99,10 @@ public class IntroManager : MonoBehaviour //인트로 화면 Mgr 화면 연출�
             count += Time.deltaTime;
         }
         glitchEffect.enabled = false;
-        SceneManager.LoadScene("Scenes/LobbyScene");
+        GameData gameData = new GameData();
+        gameData.SetStageNumber(0);
+        gameData.Save();
+        SceneManager.LoadScene("Scenes/PlayScene");
         // 컴플리트 및 노이즈
     }
 

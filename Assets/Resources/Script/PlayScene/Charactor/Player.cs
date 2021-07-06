@@ -187,7 +187,6 @@ public class Player : Charactor
                 SoundManager_Walk.instance.PlayWalkSound();//걷는소리 재생
             }
         }
-
         // 산소 소비
         float o2UseRate = 1.0f;
         if (isInGas)
@@ -312,7 +311,8 @@ public class Player : Charactor
                         _rescuingSurvivor.OnStartRescued();
                         playerAct = Action.Rescue; // Rescue 상태로 변경
                         _anim.SetBool("IsRescue", false);
-
+                        if(OperatorNumber == Captain.OPERATOR_NUMBER)
+                            TalkMgr.Instance.SpecialBehaviorTrigger(GameMgr.Instance.stage, TalkMgr.SpecialTalkTrigger.Rescue);
                         if (isInSafetyArea)
                             RescueSuccess();
                     }

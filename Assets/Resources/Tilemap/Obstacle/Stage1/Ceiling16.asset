@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acb22b0a52ca32f41a3aecbc6156e8a2, type: 3}
-  m_Name: Pillar2
+  m_Name: Ceiling16
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: c02b5b8400a3a134e81376e2326fc96c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ad58c2c4e806c944dab96ce5319c5108, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 1
-  m_InstancedGameObject: {fileID: 8266654891535470065, guid: 7805a0f20a3b6544e8f38867301df3cb,
+  m_InstancedGameObject: {fileID: 8266654891535470065, guid: 551bf9b8065bb1b45a76d572c38162a5,
     type: 3}
   m_Flags: 1
   m_ColliderType: 1

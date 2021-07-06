@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb22b0a52ca32f41a3aecbc6156e8a2, type: 3}
   m_Name: Pillar3
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: b7145599cc5635c45b17608a35081096, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5470d985c0038744b9317444ac7d8d06, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

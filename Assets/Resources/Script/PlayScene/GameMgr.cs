@@ -137,7 +137,6 @@ public class GameMgr : MonoBehaviour {
     {
         GameData gameData = new GameData();
         _stage = gameData.GetStageNumber();
-        Debug.Log(_stage);
         // Create TileMgr Instance
         TileMgr.CreateInstance(stage);
         TalkMgr.CreateInstance(stage);
@@ -195,6 +194,8 @@ public class GameMgr : MonoBehaviour {
         operatorCardNum = 0;
         for (int i = 0; i < operatorCard.childCount; i++) {
             GameObject go = operatorCard.GetChild(i).gameObject;
+            if (_stage > 0)
+                go.SetActive(true);
             if (go.activeSelf) {
                 operatorCards[i] = go;
                 operatorCardNum++;

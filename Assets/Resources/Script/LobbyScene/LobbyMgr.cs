@@ -75,8 +75,6 @@ public class LobbyMgr : MonoBehaviour
     private GameObject currentEagisTalk;
     private Text eagisTalkerNameText;
 
-    private bool isPopUpOn = false;
-
     private void Start()
     {
         argosSystem = UICanvas.transform.Find("ArgosSystem").gameObject;
@@ -231,14 +229,6 @@ public class LobbyMgr : MonoBehaviour
     private void Update()
     {
         NewsFlow();
-        if(isPopUpOn)
-        {
-            if(Input.GetMouseButtonDown(0))
-            {
-                StageInfoPopUp.SetActive(false);
-                isPopUpOn = false;
-            }
-        }
     }
 
     void NewsFlow()
@@ -257,6 +247,7 @@ public class LobbyMgr : MonoBehaviour
         {
             case 0:
                 currentSystemBtn.sprite = btnImages[0];
+                StageInfoPopUp.SetActive(false);
                 break;
             case 1:
                 debriefing.SetActive(false);
@@ -343,7 +334,6 @@ public class LobbyMgr : MonoBehaviour
     public void EnableStageInfoPopUp()
     {
         StageInfoPopUp.SetActive(true);
-        isPopUpOn = true;
     }
 
     public void LoadPlayScene()

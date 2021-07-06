@@ -1,0 +1,49 @@
+<Stage>
+  <StartTime>17:40</StartTime>
+  <StageNamePreview>02. 퍼져가는 연기, 갇힌 시민</StageNamePreview>
+  <StageName>EMERGENCY[퍼져가는 연기, 갇힌 시민]</StageName>
+  <StageContent>
+    CENTRAL ROAD 지하철에서 화재가
+    방화범이 일으킨 것으로 추정되는 발생했다.
+
+    CENTRAL ROAD역에서 HALFMOON역 방면으로
+    다수의 불길을 감지하였고 현재 두 역간의
+    통행이 방화벽으로 인해 통제된 상태이며
+    현재 두 역간 통로에 다수의 시민이 확인된 상태이다.
+
+    SONAR 팀 출동하여 두 역사 사이의 시민들의
+    안전을 최우선으로 작전 수행한다.
+  </StageContent>
+  <Objects>
+    <Door></Door>
+
+    <Socket></Socket>
+
+    <Elevator></Elevator>
+  </Objects>
+
+  <Disasters>
+  </Disasters>
+  <Goals>
+    <Main>
+      <Goal>
+        <Type>DEADLINE</Type>
+        <EndTime>18:20</EndTime>
+      </Goal>
+
+      <Goal>
+        <Type>RESCUE_SURVIVOR</Type>
+        <Count>8</Count>
+      </Goal>
+    </Main>
+    <Sub>
+    </Sub>
+  </Goals>
+
+  <Floors>
+    <FloorSize>4</FloorSize>
+    <MinFloor>1</MinFloor>
+    <MaxFloor>4</MaxFloor>
+    <StartFloor>1</StartFloor>
+  </Floors>
+</Stage>

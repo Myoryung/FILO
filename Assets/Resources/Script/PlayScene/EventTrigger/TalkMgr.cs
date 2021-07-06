@@ -71,6 +71,12 @@ public class TalkMgr
                             case "Sad":
                                 looktype = Message.LookType.Sad;
                                 break;
+                            case "Surprise":
+                                looktype = Message.LookType.Surprise;
+                                break;
+                            case "Happy":
+                                looktype = Message.LookType.Happy;
+                                break;
                             default:
                                 looktype = Message.LookType.None;
                                 break;
@@ -101,10 +107,6 @@ public class TalkMgr
             contentText = talkUI.transform.Find("ContentText").GetComponent<Text>();
         }
         //대화에 사용될 일러스트 할당
-        Sprite captainBasic = Resources.Load<Sprite>("Sprite/Ilust/Captain/Captain_basic");
-        Sprite hammerBasic = Resources.Load<Sprite>("Sprite/Ilust/HammerMan/Hammerman_basic");
-        talkerPanel.Add("신화준", captainBasic);
-        talkerPanel.Add("빅토르", hammerBasic);
     }
 
     public IEnumerator StartTalk(int ID)
@@ -118,7 +120,7 @@ public class TalkMgr
                 switch (talklist[ID][i].DataType)
                 {
                     case Message.Type.Message:
-                        ChangeTalkPanel(talklist[ID][i].GetSpeaker());
+                        ChangeTalkPanel(talklist[ID][i].GetSpeaker(), talklist[ID][i].GetLook());
                         talklist[ID][i].ShowMessage(speakerText, contentText);
                         break;
                     case Message.Type.CutScene:
@@ -139,45 +141,50 @@ public class TalkMgr
         }
     }
 
-    private void ChangeTalkPanel(string Speaker)
+    private void ChangeTalkPanel(string Speaker, Message.LookType look)
     {
-        if(!talkerPanel.ContainsKey(Speaker))
-        {
-            if (leftPanel.sprite != null)
-                leftPanel.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-            if (rightPanel.sprite != null)
-                rightPanel.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-            lastestTalker = Speaker;
-            return;
-        }
         if(leftPanel.sprite == null)
         {
-            leftPanel.sprite = talkerPanel[Speaker];
+            leftPanel.sprite = GetPanelLook(Speaker, look);
             leftPanel.color = new Color(1, 1, 1, 1);
             if (rightPanel.sprite != null)
                 rightPanel.color = new Color(0.5f, 0.5f, 0.5f, 1);
             leftTalker = Speaker;
         }
-        else if(rightPanel.sprite == null)
+        else if(leftPanel.sprite != null && leftTalker == Speaker)
         {
-            rightPanel.sprite = talkerPanel[Speaker];
+            leftPanel.sprite = GetPanelLook(Speaker, look);
+            leftPanel.color = new Color(1, 1, 1, 1);
+            if (rightPanel.sprite != null)
+                rightPanel.color = new Color(0.5f, 0.5f, 0.5f, 1);
+        }
+        else if(rightPanel.sprite == null && lastestTalker != Speaker)
+        {
+            rightPanel.sprite = GetPanelLook(Speaker, look);
             rightPanel.color = new Color(1, 1, 1, 1);
             if (leftPanel.sprite != null)
                 leftPanel.color = new Color(0.5f, 0.5f, 0.5f, 1);
             rightTalker = Speaker;
         }
+        else if(rightPanel.sprite != null && rightTalker == Speaker)
+        {
+            rightPanel.sprite = GetPanelLook(Speaker, look);
+            rightPanel.color = new Color(1, 1, 1, 1);
+            if (leftPanel.sprite != null)
+                leftPanel.color = new Color(0.5f, 0.5f, 0.5f, 1);
+        }
         else if(leftTalker != Speaker && rightTalker != Speaker)
         {
             if(leftTalker == lastestTalker)
             {
-                rightPanel.sprite = talkerPanel[Speaker];
+                rightPanel.sprite = GetPanelLook(Speaker, look);
                 rightPanel.color = new Color(1, 1, 1, 1);
                 leftPanel.color = new Color(0.5f, 0.5f, 0.5f, 1);
                 rightTalker = Speaker;
             }
             else if(rightTalker == lastestTalker)
             {
-                leftPanel.sprite = talkerPanel[Speaker];
+                leftPanel.sprite = GetPanelLook(Speaker, look);
                 leftPanel.color = new Color(1, 1, 1, 1);
                 rightPanel.color = new Color(0.5f, 0.5f, 0.5f, 1);
                 leftTalker = Speaker;
@@ -189,6 +196,94 @@ public class TalkMgr
         }
         lastestTalker = Speaker;
     }
+
+    Sprite GetPanelLook(string Speaker, Message.LookType look)
+    {
+        Debug.Log(Speaker);
+        Debug.Log(look);
+        switch(Speaker)
+        {
+            case "신화준":
+                switch (look)
+                {
+                    case Message.LookType.Normal:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Captain/Captain_basic");
+                    case Message.LookType.Sad:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Captain/Captain_sad");
+                    case Message.LookType.Angry:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Captain/Captain_anger");
+                    case Message.LookType.Surprise:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Captain/Captain_surprised");
+                    case Message.LookType.Happy:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Captain/Captain_joy");
+                    case Message.LookType.None:
+                        return null;
+                }
+                break;
+            case "빅토르":
+                switch (look)
+                {
+                    case Message.LookType.Normal:
+                        return Resources.Load<Sprite>("Sprite/Ilust/HammerMan/Hammerman_basic");
+                    case Message.LookType.Sad:
+                        return Resources.Load<Sprite>("Sprite/Ilust/HammerMan/Hammerman_sadness");
+                    case Message.LookType.Angry:
+                        return Resources.Load<Sprite>("Sprite/Ilust/HammerMan/Hammerman_anger");
+                    case Message.LookType.Surprise:
+                        return Resources.Load<Sprite>("Sprite/Ilust/HammerMan/Hammerman_surprised");
+                    case Message.LookType.Happy:
+                        return Resources.Load<Sprite>("Sprite/Ilust/HammerMan/Hammerman_joy");
+                    case Message.LookType.None:
+                        return null;
+                }
+                break;
+            case "레오":
+                switch (look)
+                {
+                    case Message.LookType.Normal:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Rescuer/Rescueman_basic2");
+                    case Message.LookType.Sad:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Rescuer/Rescueman_sadness2");
+                    case Message.LookType.Angry:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Rescuer/Rescueman_anger2");
+                    case Message.LookType.Surprise:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Rescuer/Rescueman_surprised2");
+                    case Message.LookType.Happy:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Rescuer/Rescueman_joy2");
+                    case Message.LookType.None:
+                        return null;
+                }
+                break;
+            case "시노에":
+                switch (look)
+                {
+                    case Message.LookType.Normal:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Nurse/Nurse_1_basic");
+                    case Message.LookType.Sad:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Nurse/Nurse_1_sadness");
+                    case Message.LookType.Angry:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Nurse/Nurse_1_anger");
+                    case Message.LookType.Surprise:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Nurse/Nurse_1_surprised");
+                    case Message.LookType.Happy:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Nurse/Nurse_joy");
+                    case Message.LookType.None:
+                        return null;
+                }
+                break;
+            case "상황실":
+                switch (look)
+                {
+                    case Message.LookType.Normal:
+                        return Resources.Load<Sprite>("Sprite/Ilust/Senior/Senior_basic");
+                    case Message.LookType.None:
+                        return null;
+                }
+                break;
+        }
+        return null;
+    }
+
     void ClearPanel()
     {
         leftPanel.sprite = null;
@@ -196,6 +291,9 @@ public class TalkMgr
         rightPanel.sprite = null;
         rightPanel.color = new Color(1, 1, 1, 0);
         cutScenePopPanel.color = new Color(1, 1, 1, 0);
+        leftTalker = null;
+        rightTalker = null;
+        lastestTalker = null;
     }
 
     public void SpecialBehaviorTrigger(int stage, SpecialTalkTrigger trigger)

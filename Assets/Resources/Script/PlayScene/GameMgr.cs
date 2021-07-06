@@ -115,7 +115,13 @@ public class GameMgr : MonoBehaviour {
         case GameState.STAGE_END: StageEnd(); break;
         }
         pauseMgr.Update();
-
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            GameData gameData = new GameData();
+            gameData.SetStageNumber(1);
+            gameData.Save();
+            SceneManager.LoadScene("Scenes/LobbyScene");
+        }
         if (bStagePlaying) {
             Player player = players[currPlayerIdx];
             ChangeMentalText(player);

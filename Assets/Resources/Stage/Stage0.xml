@@ -87,6 +87,8 @@
       <Point>-5,-5</Point>
       <Floor>2</Floor>
       <Turn>1</Turn>
+      <HaveTalk>true</HaveTalk>
+      <TalkID>6</TalkID>
     </Disaster>
 
     <Disaster>
@@ -94,6 +96,8 @@
       <Point>7,-2</Point>
       <Floor>3</Floor>
       <Turn>5</Turn>
+      <HaveTalk>false</HaveTalk>
+      <TalkID>0</TalkID>
     </Disaster>
   
   </Disasters>

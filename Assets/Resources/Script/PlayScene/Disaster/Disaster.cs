@@ -9,12 +9,16 @@ public class Disaster {
     public readonly Vector3Int position;
     public readonly int floor;
     private int leftTurn;
+    private bool isHaveTalk;
+    private int talkID;
 
-    public Disaster(DisasterType type, Vector3Int position, int floor, int turn) {
+    public Disaster(DisasterType type, Vector3Int position, int floor, int turn, bool talkFlag, int talkID) {
         this.type = type;
         this.position = position;
         this.leftTurn = turn;
         this.floor = floor;
+        this.isHaveTalk = talkFlag;
+        this.talkID = talkID;
 	}
 
     public virtual void Update() {
@@ -30,6 +34,12 @@ public class Disaster {
     public bool IsSatisfiedWhenNextTurn {
         get { return LeftTurn <= 1; }
 	}
+    public bool IsHaveTalk{
+        get { return isHaveTalk; }
+    }
+    public int TalkID{
+        get { return talkID; }
+    }
 
     public static DisasterType StringToType(string text) {
         switch (text) {

@@ -127,7 +127,11 @@ public class GameMgr : MonoBehaviour {
         }
     }
 
-    private void StageSetup() {
+    private void StageSetup()
+    {
+        GameData gameData = new GameData();
+        _stage = gameData.GetStageNumber();
+        Debug.Log(_stage);
         // Create TileMgr Instance
         TileMgr.CreateInstance(stage);
         TalkMgr.CreateInstance(stage);
@@ -292,8 +296,8 @@ public class GameMgr : MonoBehaviour {
         }
     }
     private void StageReady() {
-        
-        
+
+        TalkMgr.Instance.SpecialBehaviorTrigger(stage, TalkMgr.SpecialTalkTrigger.SelectDone);
         selectCanvas.enabled = false;
         playCanvas.enabled = true;
 
@@ -448,6 +452,7 @@ public class GameMgr : MonoBehaviour {
                 GameData gameData = new GameData();
                 gameData.Money += report.Reward;
                 gameData.SetRank(_stage, report.Rank);
+                gameData.SetStageNumber(gameData.GetStageNumber() + 1);
                 gameData.Save();
             }
             else {
@@ -761,6 +766,10 @@ public class GameMgr : MonoBehaviour {
             goalMgr.OnRescueImportantSurvivor();
         else
             goalMgr.OnRescueSurvivor();
+        if(goalMgr.IsSatisfied_rescueSurvivor())
+        {
+            
+        }
         gameInfo.OnRescueSurvivor();
         Destroy(survivor.gameObject);
 
@@ -793,5 +802,10 @@ public class GameMgr : MonoBehaviour {
 
     public void OnUseTool() {
         gameInfo.OnUseTool();
+    }
+
+    public void StartTalk(int ID)
+    {
+        StartCoroutine(TalkMgr.Instance.StartTalk(ID));
     }
 }

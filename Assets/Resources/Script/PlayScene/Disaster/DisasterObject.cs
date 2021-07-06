@@ -58,4 +58,9 @@ public abstract class DisasterObject : MonoBehaviour {
     public bool IsActive {
         get { return bActive; }
     }
+
+    public void OnDisasterTalkTrigger(int ID)
+    {
+        StartCoroutine(TalkMgr.Instance.StartTalk(ID));
+    }
 }

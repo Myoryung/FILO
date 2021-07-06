@@ -6,6 +6,7 @@ using System.Xml;
 
 public class TalkMgr
 {
+    public enum SpecialTalkTrigger { GameStart, SelectDone, GoalSuccess, Rescue, Interact }
     private static TalkMgr m_instance;
 
     public static TalkMgr Instance
@@ -33,6 +34,7 @@ public class TalkMgr
     private string lastestTalker;
     private Dictionary<string, Sprite> talkerPanel = new Dictionary<string, Sprite>();
     private Dictionary<int, List<Message>> talklist = new Dictionary<int, List<Message>>();
+    private Dictionary<int, bool> isTalkUsed = new Dictionary<int, bool>();
     private TalkMgr(int stage)
     {
         //XML 생성
@@ -48,6 +50,7 @@ public class TalkMgr
             List<Message> messages = new List<Message>();
             int id = int.Parse(talk.SelectSingleNode("ID").InnerText);
             talklist.Add(id, messages);
+            isTalkUsed.Add(id, false);
             for(int i=0;i<datas.Count; i++)
             {
                 switch (datas[i].SelectSingleNode("Type").InnerText)
@@ -106,29 +109,34 @@ public class TalkMgr
 
     public IEnumerator StartTalk(int ID)
     {
-        talkUI.GetComponent<Canvas>().enabled = true;
-        Debug.Log(talklist[ID].Count);
-        for(int i=0; i<talklist[ID].Count; i++)
+        if (!isTalkUsed[ID])
         {
-            switch(talklist[ID][i].DataType)
+            talkUI.GetComponent<Canvas>().enabled = true;
+            Debug.Log(talklist[ID].Count);
+            for (int i = 0; i < talklist[ID].Count; i++)
             {
-                case Message.Type.Message:
-                    ChangeTalkPanel(talklist[ID][i].GetSpeaker());
-                    talklist[ID][i].ShowMessage(speakerText, contentText);
-                    break;
-                case Message.Type.CutScene:
-                    talklist[ID][i].ShowCutScene(cutScenePopPanel);
-                    if (leftPanel.sprite != null)
-                        leftPanel.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-                    if (rightPanel.sprite != null)
-                        rightPanel.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-                    cutScenePopPanel.color = new Color(1, 1, 1, 1);
-                    break;
+                switch (talklist[ID][i].DataType)
+                {
+                    case Message.Type.Message:
+                        ChangeTalkPanel(talklist[ID][i].GetSpeaker());
+                        talklist[ID][i].ShowMessage(speakerText, contentText);
+                        break;
+                    case Message.Type.CutScene:
+                        talklist[ID][i].ShowCutScene(cutScenePopPanel);
+                        if (leftPanel.sprite != null)
+                            leftPanel.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+                        if (rightPanel.sprite != null)
+                            rightPanel.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+                        cutScenePopPanel.color = new Color(1, 1, 1, 1);
+                        break;
+                }
+                yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
+                yield return new WaitForSeconds(0.15f);
             }
-            yield return new WaitUntil(() => Input.GetKeyUp(KeyCode.Space));
-            yield return new WaitForSeconds(1.0f);
+            talkUI.GetComponent<Canvas>().enabled = false;
+            isTalkUsed[ID] = true;
+            ClearPanel();
         }
-        talkUI.GetComponent<Canvas>().enabled = false;
     }
 
     private void ChangeTalkPanel(string Speaker)
@@ -180,5 +188,41 @@ public class TalkMgr
             return;
         }
         lastestTalker = Speaker;
+    }
+    void ClearPanel()
+    {
+        leftPanel.sprite = null;
+        leftPanel.color = new Color(1, 1, 1, 0);
+        rightPanel.sprite = null;
+        rightPanel.color = new Color(1, 1, 1, 0);
+        cutScenePopPanel.color = new Color(1, 1, 1, 0);
+    }
+
+    public void SpecialBehaviorTrigger(int stage, SpecialTalkTrigger trigger)
+    {
+        switch(stage)
+        {
+            case 0:
+                if(trigger == SpecialTalkTrigger.SelectDone)
+                    GameMgr.Instance.StartTalk(1);
+                break;
+            case 1:
+                switch(trigger)
+                {
+                    case SpecialTalkTrigger.GameStart:
+                        GameMgr.Instance.StartTalk(1);
+                        break;
+                    case SpecialTalkTrigger.Rescue:
+                        GameMgr.Instance.StartTalk(4);
+                        break;
+                    case SpecialTalkTrigger.Interact:
+                        GameMgr.Instance.StartTalk(7);
+                        break;
+                    case SpecialTalkTrigger.GoalSuccess:
+                        GameMgr.Instance.StartTalk(8);
+                        break;
+                }
+                break;
+        }
     }
 }

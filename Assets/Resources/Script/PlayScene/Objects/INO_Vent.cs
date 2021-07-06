@@ -10,6 +10,7 @@ public class INO_Vent : InteractiveObject {
     public override void Activate() {
         if (!IsAvailable()) return;
         base.Activate();
+        TalkMgr.Instance.SpecialBehaviorTrigger(GameMgr.Instance.stage, TalkMgr.SpecialTalkTrigger.Interact);
 
         Gas[] gases = TileMgr.Instance.GetGases(floor);
         foreach (Gas gas in gases)

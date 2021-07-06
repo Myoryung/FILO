@@ -146,4 +146,8 @@ public class GoalMgr {
         if (rescueImportantSurvivor != null)
             rescueImportantSurvivor.IncreaseSurvivorNum();
     }
+    public bool IsSatisfied_rescueSurvivor()
+    {
+        return (rescueSurvivor != null) ? rescueSurvivor.IsSatisfied() : false;
+    }
 }

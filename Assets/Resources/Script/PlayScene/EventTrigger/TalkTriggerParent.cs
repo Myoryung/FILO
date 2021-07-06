@@ -22,7 +22,7 @@ public class TalkTriggerParent : MonoBehaviour
         }
         if(flag && !isDone)
         {
-            StartCoroutine(TalkMgr.Instance.StartTalk(talkID));
+            GameMgr.Instance.StartTalk(talkID);
             isDone = true;
         }
     }

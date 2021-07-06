@@ -24,8 +24,14 @@ public class DisasterMgr {
 
             int floor = int.Parse(disasterNode.SelectSingleNode("Floor").InnerText);
             int turn = int.Parse(disasterNode.SelectSingleNode("Turn").InnerText);
+            int ID = int.Parse(disasterNode.SelectSingleNode("TalkID").InnerText);
+            bool flag;
+            if (disasterNode.SelectSingleNode("HaveTalk").InnerText == "true")
+                flag = true;
+            else
+                flag = false;
 
-            disasters.Add(new Disaster(type, point, floor, turn));
+            disasters.Add(new Disaster(type, point, floor, turn, flag, ID));
         }
 
         disasters.Sort(delegate (Disaster e1, Disaster e2) {
@@ -72,6 +78,10 @@ public class DisasterMgr {
         GameObject gameObj = (GameObject)Object.Instantiate(obj, pos, Quaternion.identity, GameMgr.Instance.transform);
         DisasterObject disasterObject = gameObj.GetComponent<DisasterObject>();
         disasterObject.Pos = disaster.position;
+        if(disaster.IsHaveTalk)
+        {
+            disasterObject.OnDisasterTalkTrigger(disaster.TalkID);
+        }
 
         return disasterObject;
     }

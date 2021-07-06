@@ -15,6 +15,8 @@ public class GameData {
         public Tool[,] tools = new Tool[4,2];
         public int[,] abilityIndices = new int[4,4];
 
+        public int stageNumber;
+
         public Data() {
             // 기본 도구 설정
             for (int i = 0; i < 4; i++) {
@@ -110,4 +112,6 @@ public class GameData {
         get { return data.money; }
         set { data.money = value; }
     }
+    public void SetStageNumber(int value) { data.stageNumber = value; }
+    public int GetStageNumber() { return data.stageNumber; }
 }

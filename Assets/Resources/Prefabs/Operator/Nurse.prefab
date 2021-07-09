@@ -18,7 +18,7 @@ MonoBehaviour:
   _maxo2: 70
   _useo2: 2
   _maxHp: 60
-  _movespeed: 500
+  _movespeed: 5
   _body: {fileID: 7984753905415634252}
   MTGage: {fileID: 251350723416212560}
   UI_ToolBtns: {fileID: 251350724365905704}
@@ -65,6 +65,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: UseTool
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160280372633, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Offset.y
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160280372633, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_UsedByComposite
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160280372633, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160280372633, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 52279160280372633, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 1.28
       objectReference: {fileID: 0}
     - target: {fileID: 52279160280372634, guid: b69ac7dd96b17f74c81723af895a4306,
         type: 3}
@@ -610,6 +635,21 @@ PrefabInstance:
         type: 3}
       propertyPath: skillUseO2
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6183583148326409530, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Offset.y
+      value: -0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6183583148326409530, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6183583148326409530, guid: b69ac7dd96b17f74c81723af895a4306,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 1.28
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6139787915764308413, guid: b69ac7dd96b17f74c81723af895a4306, type: 3}

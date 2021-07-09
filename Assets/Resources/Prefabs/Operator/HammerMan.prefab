@@ -19,7 +19,7 @@ MonoBehaviour:
   _useo2: 3
   _maxHp: 60
   _movespeed: 5
-  _body: {fileID: 0}
+  _body: {fileID: 8420395744928467056}
   MTGage: {fileID: 573911847975162530}
   UI_ToolBtns: {fileID: 573911846758496730}
   _maxMental: 4
@@ -1186,6 +1186,11 @@ PrefabInstance:
       propertyPath: m_Bounds.m_Extent.y
       value: 254.49998
       objectReference: {fileID: 0}
+    - target: {fileID: 4890902217124657449, guid: 63fb3b14228b80146827f67e9cf539d3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5046006750808432759, guid: 63fb3b14228b80146827f67e9cf539d3,
         type: 3}
       propertyPath: m_Bounds.m_Center.x
@@ -1603,3 +1608,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63fb3b14228b80146827f67e9cf539d3, type: 3}
+--- !u!4 &8420395744928467056 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8305857437252106342, guid: 63fb3b14228b80146827f67e9cf539d3,
+    type: 3}
+  m_PrefabInstance: {fileID: 549179687694151702}
+  m_PrefabAsset: {fileID: 0}

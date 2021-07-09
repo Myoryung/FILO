@@ -13,8 +13,8 @@ public class Nurse : Player {
     protected override void Awake()
     {
         base.Awake();
-        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator3");
-        ultName = "회복 드론";
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/PlayScene/UI/CutScene/Ultimate_medic"); 
+         ultName = "회복 드론";
     }
     // Start is called before the first frame update
     protected override void Start()

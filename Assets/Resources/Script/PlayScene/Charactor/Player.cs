@@ -280,7 +280,7 @@ public class Player : Charactor
     {
         playerAct = Action.ActiveUlt;
         CutScene.transform.Find("Ilustration").GetComponent<Image>().sprite = cutSceneIlust;
-        CutScene.transform.GetChild(0).Find("UltText").GetComponent<Text>().text = ultName;
+        CutScene.transform.GetChild(1).Find("UltText").GetComponent<Text>().text = ultName;
         CutScene.SetActive(true);
         CutScene.GetComponent<Animator>().SetBool("IsActive", true);
         yield return new WaitForSeconds(3.0f);
@@ -555,6 +555,7 @@ public class Player : Charactor
         }
     }
 	protected override void OnTriggerExit2D(Collider2D collision) {
+        Debug.Log(collision.gameObject.name);
         base.OnTriggerExit2D(collision);
 
         switch (collision.tag) {

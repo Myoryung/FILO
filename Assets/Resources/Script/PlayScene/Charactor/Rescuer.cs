@@ -14,7 +14,7 @@ public class Rescuer : Player {
     protected override void Awake()
     {
         base.Awake();
-        cutSceneIlust = Resources.Load<Sprite>("Sprite/OperatorSelect_UI/Operator/Operator2");
+        cutSceneIlust = Resources.Load<Sprite>("Sprite/PlayScene/UI/CutScene/Ultimate_engineer");
         robotDog = Instantiate<GameObject>(robotDogPrefab, transform.position, Quaternion.identity);
         //강아지 여러번 생성되는거 방지해야함
         ultName = "도와줘 멍멍아";

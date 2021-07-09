@@ -31,6 +31,7 @@ public abstract class InteractiveObject : MonoBehaviour
 
         floor = transform.parent.parent.GetComponent<Floor>().floor;
         tilePos = TileMgr.Instance.WorldToCell(transform.position, floor);
+        Debug.Log(gameObject.name+tilePos);
     }
 
     public virtual bool IsActive() {

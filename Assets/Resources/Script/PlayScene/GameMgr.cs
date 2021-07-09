@@ -8,6 +8,8 @@ using System.Xml;
 public class GameMgr : MonoBehaviour {
     private static GameMgr _instance; // Singleton
 
+    public AudioClip BGM_Stage1;
+    public AudioClip BGM_Stage2;
     private AudioSource BGM;//BGM(배경음악)오디오 소스
     public static GameMgr Instance // 하이어라키에 존재합니다잉
     {
@@ -50,7 +52,7 @@ public class GameMgr : MonoBehaviour {
 
     private Tablet tablet;
     private Sprite operatorDepoyedSprite;
-    private Sprite[] operatorProfileImage = new Sprite[2];
+    private Sprite[] operatorProfileImage = new Sprite[4];
     private GameObject[] operatorCards = new GameObject[4];
     private int operatorCardNum;
 
@@ -91,7 +93,7 @@ public class GameMgr : MonoBehaviour {
     private void Awake()
     {
         BGM = GetComponent<AudioSource>();
-        BGM.volume = 0.2f;
+        BGM.volume = 0.6f;
         
         if (_instance)
         {
@@ -137,6 +139,14 @@ public class GameMgr : MonoBehaviour {
     {
         GameData gameData = new GameData();
         _stage = gameData.GetStageNumber();
+        if (_stage == 0)
+        {
+            BGM.clip = BGM_Stage1;
+        }
+        if (_stage == 1)
+        {
+            BGM.clip = BGM_Stage2;
+        }
         // Create TileMgr Instance
         TileMgr.CreateInstance(stage);
         TalkMgr.CreateInstance(stage);
@@ -258,6 +268,8 @@ public class GameMgr : MonoBehaviour {
 
         operatorProfileImage[0] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-leader");
         operatorProfileImage[1] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-hammerman");
+        operatorProfileImage[2] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-Engineer");
+        operatorProfileImage[3] = Resources.Load<Sprite>("Sprite/PlayScene/UI/PlayerCard/IDcard-Medic-02");
 
         operatorDepoyedSprite = Resources.Load<Sprite>("Sprite/PlayScene/OperatorSelect_UI/Operator/Operater_card-Depolyed");
 
@@ -510,7 +522,11 @@ public class GameMgr : MonoBehaviour {
             players[prevPlayerIdx].OnUnsetMain();
             players[currPlayerIdx].OnSetMain();
             TileMgr.Instance.SwitchFloorTilemap(players[currPlayerIdx].Floor);
-            _CardProfile.sprite = operatorProfileImage[currPlayerIdx];
+            if (players[currPlayerIdx].OperatorNumber != RobotDog.OPERATOR_NUMBER)
+            {
+                _CardProfile.sprite = operatorProfileImage[currPlayerIdx];
+            }
+
             SetFocusToCurrOperator();
         }
         if(players[currPlayerIdx].OperatorNumber == RobotDog.OPERATOR_NUMBER)
